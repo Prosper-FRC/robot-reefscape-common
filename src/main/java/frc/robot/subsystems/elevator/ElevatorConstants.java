@@ -9,6 +9,13 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class ElevatorConstants {
+  public record ElevatorHardware(
+    int kMotorId,
+    double kGearing,
+    double kDrumRadiusMeters,
+    double kDrumCircumferenceMeters
+  ) {}
+
   public record ElevatorGains(
     // Feedback control
     double kP, 
@@ -24,7 +31,7 @@ public class ElevatorConstants {
     double kA, 
     double kG) {}
 
-  public record TalonFXConfiguration(
+  public record TalonConfiguration(
     boolean kInvert,
     boolean kEnableStatorCurrentLimit,
     boolean kEnableSupplyCurrentLimit,
@@ -38,22 +45,11 @@ public class ElevatorConstants {
     double kDrumRadiusMeters,
     boolean kSimulateGravity,
     double kStartingHeightMeters,
-    double kMeasurementStdDevs
-  ) {}
+    double kMeasurementStdDevs) {}
 
   // Taken from mech and electrical
-  public static final int kMotorID = 50;
-
-  public static final double kGearing = 9.0 / 1.0;
-  /*
-   * Outside sprocket radius: 0.944 in
-   * Root sprocket radius: 0.819
-   */
   public static final double kDrumRadiusMeters = Units.inchesToMeters(0.944);
   public static final double kDrumCircumferenceMeters = 2.0 * Math.PI * kDrumRadiusMeters;
-
-  // empty carriage load = .8kg
-  // prototype carriage load = 5kg
 
   public static final double kMaxPositionMeters = 1.65;
   public static final double kMinPositionMeters = 0.0;
@@ -63,6 +59,16 @@ public class ElevatorConstants {
 
   /** The frequency that telemetry form the motor is pushed to the CANBus */
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
+
+  public static final ElevatorHardware kRoboElevatorHardware = new ElevatorHardware(
+    50, // Motor CAN ID
+    9.0 / 1.0,  // Gearing
+    /*
+    * Outside sprocket radius: 0.944 in
+    * Root sprocket radius: 0.819
+    */
+    kDrumRadiusMeters, // Drum (sprocket) radius
+    kDrumCircumferenceMeters); // Drum (sprocket) circumference
 
   public static final ElevatorGains kElevatorGains = 
     switch (Constants.kCurrentMode) {
@@ -101,7 +107,7 @@ public class ElevatorConstants {
         0.0);
   };
 
-  public static final TalonFXConfiguration kMotorConfiguration = new TalonFXConfiguration(
+  public static final TalonConfiguration kMotorConfiguration = new TalonConfiguration(
     false, 
     true, 
     true, 
@@ -111,6 +117,8 @@ public class ElevatorConstants {
 
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
+    // empty carriage load = .8kg
+    // prototype carriage load = 5kg
     5.0, 
     kDrumRadiusMeters, 
     true, 

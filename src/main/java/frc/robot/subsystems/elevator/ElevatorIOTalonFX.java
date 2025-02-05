@@ -23,10 +23,12 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 
-import frc.robot.Constants;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorGains;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHardware;
+import frc.robot.subsystems.elevator.ElevatorConstants.TalonConfiguration;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
-  private final TalonFX kMotor = new TalonFX(ElevatorConstants.kMotorID, Constants.kCanbusName);
+  private final TalonFX kMotor;
 
   private TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
@@ -42,41 +44,50 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final VoltageOut kVoltageControl = new VoltageOut(0.0);
   private final MotionMagicVoltage kPositionControl = new MotionMagicVoltage(0.0);
 
-  public ElevatorIOTalonFX() {
+  // Save drum circumference for converting
+  private final double kDrumCircumferenceMeters;
+
+  public ElevatorIOTalonFX(String canbus,
+    ElevatorHardware hardware,
+    TalonConfiguration configuration,
+    ElevatorGains gains) {
+    kMotor = new TalonFX(hardware.kMotorId(), canbus);
+    kDrumCircumferenceMeters = hardware.kDrumCircumferenceMeters();
+
     // Apply configurations
-    motorConfiguration.Slot0.kP = ElevatorConstants.kElevatorGains.kP();
-    motorConfiguration.Slot0.kI = ElevatorConstants.kElevatorGains.kI();
-    motorConfiguration.Slot0.kD = ElevatorConstants.kElevatorGains.kD();
-    motorConfiguration.Slot0.kS = ElevatorConstants.kElevatorGains.kS();
-    motorConfiguration.Slot0.kV = ElevatorConstants.kElevatorGains.kV();
-    motorConfiguration.Slot0.kA = ElevatorConstants.kElevatorGains.kA();
-    motorConfiguration.Slot0.kG = ElevatorConstants.kElevatorGains.kG();
+    motorConfiguration.Slot0.kP = gains.kP();
+    motorConfiguration.Slot0.kI = gains.kI();
+    motorConfiguration.Slot0.kD = gains.kD();
+    motorConfiguration.Slot0.kS = gains.kS();
+    motorConfiguration.Slot0.kV = gains.kV();
+    motorConfiguration.Slot0.kA = gains.kA();
+    motorConfiguration.Slot0.kG = gains.kG();
     motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = 
-      ElevatorConstants.kElevatorGains.kMaxVelocityMetersPerSecond();
+      gains.kMaxVelocityMetersPerSecond();
     motorConfiguration.MotionMagic.MotionMagicAcceleration = 
-      ElevatorConstants.kElevatorGains.kMaxAccelerationMetersPerSecondSquared();
+      gains.kMaxAccelerationMetersPerSecondSquared();
     motorConfiguration.MotionMagic.MotionMagicJerk = 
-      ElevatorConstants.kElevatorGains.kJerkMetersPerSecondCubed();
+      gains.kJerkMetersPerSecondCubed();
 
     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = 
-      ElevatorConstants.kMotorConfiguration.kEnableSupplyCurrentLimit();
+      configuration.kEnableSupplyCurrentLimit();
     motorConfiguration.CurrentLimits.SupplyCurrentLimit = 
-      ElevatorConstants.kMotorConfiguration.kSupplyCurrentLimitAmps();
+      configuration.kSupplyCurrentLimitAmps();
     motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = 
-      ElevatorConstants.kMotorConfiguration.kEnableStatorCurrentLimit();
+      configuration.kEnableStatorCurrentLimit();
     motorConfiguration.CurrentLimits.StatorCurrentLimit = 
-      ElevatorConstants.kMotorConfiguration.kStatorCurrentLimitAmps();
+      configuration.kStatorCurrentLimitAmps();
 
-    motorConfiguration.MotorOutput.NeutralMode = ElevatorConstants.kMotorConfiguration.kNeutralMode();
+    motorConfiguration.MotorOutput.NeutralMode = configuration.kNeutralMode();
     motorConfiguration.MotorOutput.Inverted = 
-      ElevatorConstants.kMotorConfiguration.kInvert() 
+      configuration.kInvert() 
         ? InvertedValue.CounterClockwise_Positive 
         : InvertedValue.Clockwise_Positive;
 
     // Reset position on startup
     kMotor.setPosition(0.0);
 
-    motorConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kGearing;
+    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.kGearing();
     // Rotor sensor is the built-in sensor
     motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
@@ -180,7 +191,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
      * Multiply by two since this is a two-stage cascading-elevator where both stages move
      * simultaneously. If this was a three-stage cascading-elevator we would multiply by 3
      */
-    return rotations * ElevatorConstants.kDrumCircumferenceMeters * 2.0;
+    return rotations * kDrumCircumferenceMeters * 2.0;
   }
 
   private double metersToRotations(double meters) {
@@ -188,6 +199,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
      * Divide by two since this is a two-stage cascading-elevator where both stages move
      * simultaneously. If this was a three-stage cascading-elevator we would divide by 3
      */
-    return (meters / ElevatorConstants.kDrumCircumferenceMeters) / 2.0;
+    return (meters / kDrumCircumferenceMeters) / 2.0;
   }
 }
