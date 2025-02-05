@@ -8,7 +8,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
-  public record KrakenConfiguration(
+  public record TalonFXConfiguration(
     boolean kInvert,
     boolean kEnableStatorCurrentLimit,
     boolean kEnableSupplyCurrentLimit,
@@ -52,7 +52,7 @@ public class IntakeConstants {
   /** The frequency that telemetry form the motor is pushed to the CANBus */
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
 
-  public static final KrakenConfiguration kMotorConfiguration = new KrakenConfiguration(
+  public static final TalonFXConfiguration kMotorConfiguration = new TalonFXConfiguration(
     false, 
     true, 
     true, 

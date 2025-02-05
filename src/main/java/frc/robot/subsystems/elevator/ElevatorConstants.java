@@ -24,7 +24,7 @@ public class ElevatorConstants {
     double kA, 
     double kG) {}
 
-  public record KrakenConfiguration(
+  public record TalonFXConfiguration(
     boolean kInvert,
     boolean kEnableStatorCurrentLimit,
     boolean kEnableSupplyCurrentLimit,
@@ -101,7 +101,7 @@ public class ElevatorConstants {
         0.0);
   };
 
-  public static final KrakenConfiguration kMotorConfiguration = new KrakenConfiguration(
+  public static final TalonFXConfiguration kMotorConfiguration = new TalonFXConfiguration(
     false, 
     true, 
     true, 
