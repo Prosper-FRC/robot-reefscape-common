@@ -37,6 +37,8 @@ public class ElevatorConstants {
     boolean kEnableSupplyCurrentLimit,
     double kStatorCurrentLimitAmps,
     double kSupplyCurrentLimitAmps,
+    double kPeakForwardVoltage,
+    double kPeakReverseVoltage,
     NeutralModeValue kNeutralMode) {}
 
   public record SimulationConfiguration(
@@ -113,6 +115,8 @@ public class ElevatorConstants {
     true, 
     60.0, 
     50.0, 
+    12.0,
+    -12.0,
     NeutralModeValue.Brake);
 
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(

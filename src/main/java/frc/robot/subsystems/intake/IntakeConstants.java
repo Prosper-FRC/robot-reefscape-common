@@ -8,6 +8,12 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
+  public record IntakeHardware(
+    int kMotorId,
+    double kGearing,
+    double kWheelRadiusMeters
+  ) {}
+
   public record TalonConfiguration(
     boolean kInvert,
     boolean kEnableStatorCurrentLimit,
@@ -34,11 +40,7 @@ public class IntakeConstants {
   ) {}
 
   // Taken from mech and electrical
-  public static final int kMotorID = 56;
   public static final int kCANrangeID = 57;
-
-  public static final double kGearing = 3.0 / 1.0;
-  public static final double kWheelRadiusMeters = Units.inchesToMeters(0.0);
 
   /** The intake subsystem will periodically compare the motors current amperage to this 
    * value, if it is exceeding this value over a certain interval of time, it likely has 
@@ -51,6 +53,11 @@ public class IntakeConstants {
 
   /** The frequency that telemetry form the motor is pushed to the CANBus */
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
+
+  public static final IntakeHardware kRoboIntakeHardware = new IntakeHardware(
+    56, // Motor CAN ID
+    3.0 /1.0, // Gearing
+    Units.inchesToMeters(0.5)); // Wheel radius meters
 
   public static final TalonConfiguration kMotorConfiguration = new TalonConfiguration(
     false, 

@@ -13,25 +13,29 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHardware;
+import frc.robot.subsystems.intake.IntakeConstants.SparkConfiguration;
 
 // NOTE This is a temporary class and is only used for testing. As such the code 
 // in this file should not be used in production
 public class IntakeIOSparkMax implements IntakeIO {
-  private final SparkBase kMotor = 
-    new SparkMax(IntakeConstants.kMotorID, MotorType.kBrushless);
-  private final RelativeEncoder kEncoder = kMotor.getEncoder();
+  private final SparkBase kMotor;
+  private final RelativeEncoder kEncoder;
 
   private SparkMaxConfig motorConfiguration = new SparkMaxConfig();
 
-  public IntakeIOSparkMax() {
+  public IntakeIOSparkMax(ElevatorHardware hardware, SparkConfiguration configuration) {
+    kMotor = new SparkMax(hardware.kMotorId(), MotorType.kBrushless);
+    kEncoder = kMotor.getEncoder();
+
     motorConfiguration.inverted(
-      IntakeConstants.kSparkConfiguration.kInvert());
+      configuration.kInvert());
     motorConfiguration.smartCurrentLimit(
-      IntakeConstants.kSparkConfiguration.kSmartCurrentLimitAmps());
+      configuration.kSmartCurrentLimitAmps());
     motorConfiguration.secondaryCurrentLimit(
-      IntakeConstants.kSparkConfiguration.kSecondaryCurrentLimitAmps());
+      configuration.kSecondaryCurrentLimitAmps());
     motorConfiguration.idleMode(
-      IntakeConstants.kSparkConfiguration.kIdleMode());
+      configuration.kIdleMode());
 
     kMotor.configure(motorConfiguration, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }

@@ -77,6 +77,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       configuration.kEnableStatorCurrentLimit();
     motorConfiguration.CurrentLimits.StatorCurrentLimit = 
       configuration.kStatorCurrentLimitAmps();
+    motorConfiguration.Voltage.PeakForwardVoltage = 
+      configuration.kPeakForwardVoltage();
+    motorConfiguration.Voltage.PeakReverseVoltage = 
+      configuration.kPeakReverseVoltage();
 
     motorConfiguration.MotorOutput.NeutralMode = configuration.kNeutralMode();
     motorConfiguration.MotorOutput.Inverted = 
