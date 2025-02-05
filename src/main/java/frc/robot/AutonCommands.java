@@ -2,8 +2,11 @@ package frc.robot;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.drive.Drive;
 
 public class AutonCommands {
 
@@ -11,7 +14,6 @@ public class AutonCommands {
     // ex: public static final Pose2d A1 = new Pose2d(2.55, 6.550, Rotation2d.fromRadians(0.464));
 
     // Define local storage of subsystems
-    // ex: private Drive robotDrive;
 
     public static enum AutonState {
         ALLIANCE,
@@ -23,11 +25,13 @@ public class AutonCommands {
 
     private SendableChooser<Command> autoChooser;
 
-    public AutonCommands(/* pass subsystems */) {
-        // store subsystems
-        // ex: this.robotDrive = robotDrive;
+    Drive drive;
 
-        autoChooser = new SendableChooser<>();
+    public AutonCommands(Drive drive) {
+        // store subsystems
+        this.drive = drive;
+
+        autoChooser = AutoBuilder.buildAutoChooser();
 
         // Define Auton choices for the dashboard.  Add a named option, and give it a method of this class to run.
 

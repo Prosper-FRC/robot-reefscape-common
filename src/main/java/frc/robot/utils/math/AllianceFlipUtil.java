@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
+// TODO: Needs to be changed every year for new map //
 package frc.robot.utils.math;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -30,7 +31,7 @@ public class AllianceFlipUtil {
 */
   public static Translation2d apply(Translation2d translation) {
     if (shouldFlip()) {
-      return new Translation2d(apply(translation.getX()), translation.getY());
+      return new Translation2d(apply(translation.getX()), Constants.kFieldWidth - translation.getY());
     } else {
       return translation;
     }
@@ -39,7 +40,7 @@ public class AllianceFlipUtil {
   /** Flips a rotation based on the current alliance color. */
   public static Rotation2d apply(Rotation2d rotation) {
     if (shouldFlip()) {
-      return new Rotation2d(-rotation.getCos(), rotation.getSin());
+      return new Rotation2d(-rotation.getCos(), -rotation.getSin());
     } else {
       return rotation;
     }
