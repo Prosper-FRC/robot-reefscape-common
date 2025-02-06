@@ -7,10 +7,25 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.intake.SensorIO;
+import frc.robot.subsystems.intake.SensorIORange;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
+    private final Elevator elevator;
+    private final Intake intake;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -31,13 +46,36 @@ public class RobotContainer {
         // If using AdvantageKit, perform mode-specific instantiation of subsystems.
         switch (Constants.kCurrentMode) {
             case REAL:
-                // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
+                elevator = new Elevator(
+                    new ElevatorIOTalonFX(
+                        Constants.kCanbusName, 
+                        ElevatorConstants.kRoboElevatorHardware, 
+                        ElevatorConstants.kMotorConfiguration, 
+                        ElevatorConstants.kElevatorGains));
+                intake = new Intake(
+                    new IntakeIOTalonFX(
+                        IntakeConstants.kRoboIntakeHardware, 
+                        IntakeConstants.kMotorConfiguration), 
+                    new SensorIORange());
                 break;
             case SIM:
-                // Instantiate subsystems that simulate actual hardware (IOSim modules)
+                elevator = new Elevator(
+                    new ElevatorIOSim(ElevatorConstants.kRoboElevatorHardware,
+                        ElevatorConstants.kSimulationConfiguration,
+                        ElevatorConstants.kElevatorGains,
+                        ElevatorConstants.kMinPositionMeters,
+                        ElevatorConstants.kMaxPositionMeters,
+                        0.02));
+                intake = new Intake(
+                    new IntakeIOSim(
+                        IntakeConstants.kRoboIntakeHardware, 
+                        IntakeConstants.kSimulationConfiguration, 
+                        0.02), 
+                    new SensorIO(){});
                 break;
             default:
-                // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
+                elevator = new Elevator(new ElevatorIO() {});
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){});
                 break;
         }
 
