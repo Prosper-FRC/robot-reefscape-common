@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
+import au.grapplerobotics.CanBridge;
 
 public class Robot extends LoggedRobot {
     private Command mAutonomousCommand;
@@ -20,6 +21,8 @@ public class Robot extends LoggedRobot {
     // ==================== Robot Power On ====================
     @Override
     public void robotInit() {
+        CanBridge.runTCP();
+
         // Set up Logging
         Logger.addDataReceiver(new NT4Publisher());
 

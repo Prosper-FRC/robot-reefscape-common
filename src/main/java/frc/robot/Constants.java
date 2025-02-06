@@ -21,7 +21,7 @@ public final class Constants {
         DriverStation.getAlliance().get() == Alliance.Red ? Alliance.Red : Alliance.Blue;
 
     // ROBOT SEPCIFIC
-    public static final String kCanbusName = "sigma";
+    public static final String kCanbusName = "drivebase";
 
     public static final double kFieldLength = 16.54;
 
