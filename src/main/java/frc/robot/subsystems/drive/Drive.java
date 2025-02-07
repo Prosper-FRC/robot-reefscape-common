@@ -410,7 +410,7 @@ public class Drive extends SubsystemBase{
 
     // Method should be used when robot is facing forwards //
     public void resetGyro() {
-        robotRotation = Constants.kAlliance == Alliance.Blue ? Rotation2d.fromDegrees(0.0) : Rotation2d.fromDegrees(180.0);
+        robotRotation = DriverStation.getAlliance().get() == Alliance.Blue ? Rotation2d.fromDegrees(0.0) : Rotation2d.fromDegrees(180.0);
         setPose(new Pose2d(getEstimatedPose().getTranslation(), robotRotation));
     }
 
