@@ -149,7 +149,7 @@ public class RobotContainer {
 
         driverController.b().onTrue(drive.setDriveStateCommandContinued(DriveState.DRIFT_TEST)).onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
 
-        driverController.y().onTrue(drive.setDriveStateCommandContinued(DriveState.RIGHT_DEG)).onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
+        driverController.y().onTrue(drive.setDriveStateCommandContinued(DriveState.PROCESSOR)).onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
 
         driverController.a().onTrue(drive.characterizeDriveMotors()).onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
         
