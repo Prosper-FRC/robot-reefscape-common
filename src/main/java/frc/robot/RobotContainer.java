@@ -11,12 +11,10 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 
@@ -58,7 +56,7 @@ public class RobotContainer {
                 //         IntakeConstants.kRoboIntakeHardware, 
                 //         IntakeConstants.kMotorConfiguration), 
                 //     new SensorIORange());
-                intake = new Intake(new IntakeIO(){}, new SensorIOLaserCAN());
+                intake = new Intake(new IntakeIO(){}, new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration));
                 break;
             case SIM:
                 elevator = new Elevator(

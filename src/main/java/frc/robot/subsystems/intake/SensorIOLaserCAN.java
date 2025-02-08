@@ -6,6 +6,7 @@ package frc.robot.subsystems.intake;
 
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
+import frc.robot.subsystems.intake.IntakeConstants.SensorConfiguration;
 import au.grapplerobotics.ConfigurationFailedException;
 
 /** 
@@ -15,14 +16,19 @@ import au.grapplerobotics.ConfigurationFailedException;
  * https://grapplerobotics.au/product/lasercan/
  */
 public class SensorIOLaserCAN implements SensorIO {
-  private final LaserCan kSensor = new LaserCan(IntakeConstants.kCANrangeID);
+  private final LaserCan kSensor;
 
-  public SensorIOLaserCAN() {
+  public SensorIOLaserCAN(SensorConfiguration configuration) {
+    kSensor = new LaserCan(configuration.sensorId());
     try {  
       kSensor.setRangingMode(LaserCan.RangingMode.SHORT);
-      kSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(8,8,16,16));
-    } catch(ConfigurationFailedException e) {
-      System.out.println("Configuration Failed! " +e);
+      kSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(
+        configuration.x(),
+        configuration.y(),
+        configuration.w(),
+        configuration.h()));
+    } catch (ConfigurationFailedException e) {
+      System.out.println("Configuration Failed! " + e);
     }
   }
 

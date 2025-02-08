@@ -31,16 +31,18 @@ public class IntakeConstants {
     IdleMode idleMode) {}
 
   public record SensorConfiguration(
-    double detectionThresholdMeters
+    int sensorId,
+    double detectionThresholdMeters,
+    int x,
+    int y,
+    int w,
+    int h
   ) {}
 
   public record SimulationConfiguration(
     DCMotor motorType,
     double measurementStdDevs
   ) {}
-
-  // Taken from mech and electrical
-  public static final int kCANrangeID = 57;
 
   /** The intake subsystem will periodically compare the motors current amperage to this 
    * value, if it is exceeding this value over a certain interval of time, it likely has 
@@ -76,7 +78,12 @@ public class IntakeConstants {
     IdleMode.kCoast);
 
   public static final SensorConfiguration kSensorConfiguration = new SensorConfiguration(
-    1.0);
+    57,
+    1.0,
+    8,
+    8,
+    16,
+    16);
     
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
