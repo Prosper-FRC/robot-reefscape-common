@@ -4,21 +4,25 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeHardware;
+import frc.robot.subsystems.intake.IntakeConstants.SimulationConfiguration;
 
 public class IntakeIOSim implements IntakeIO {
-  private final double kLoopPeriodSec = 0.02;
+  private final double kLoopPeriodSec;
 
   private final DCMotorSim kIntake;
 
   private double appliedVoltage = 0.0;
 
-  public IntakeIOSim() {
+  public IntakeIOSim(IntakeHardware hardware, SimulationConfiguration configuration, double loopPeriodSec) {
     kIntake = new DCMotorSim(
       LinearSystemId.createDCMotorSystem(
-        IntakeConstants.kSimulationConfiguration.kMotorType(), 
-        IntakeConstants.kSimulationConfiguration.kMeasurementStdDevs(), 
-        IntakeConstants.kGearing), 
-      IntakeConstants.kSimulationConfiguration.kMotorType());
+        configuration.motorType(), 
+        configuration.measurementStdDevs(), 
+        hardware.gearing()), 
+      configuration.motorType());
+
+    kLoopPeriodSec = loopPeriodSec;
   }
 
   @Override

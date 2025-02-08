@@ -48,27 +48,27 @@ public class Elevator extends SubsystemBase {
   private double currentElevatorGoalPositionMeters = 0.0;
 
   private final LoggedTunableNumber kP =
-      new LoggedTunableNumber("Elevator/Gains/kP", ElevatorConstants.kElevatorGains.kP());
+      new LoggedTunableNumber("Elevator/Gains/kP", ElevatorConstants.kElevatorGains.p());
   private final LoggedTunableNumber kI =
-      new LoggedTunableNumber("Elevator/Gains/kI", ElevatorConstants.kElevatorGains.kI());
+      new LoggedTunableNumber("Elevator/Gains/kI", ElevatorConstants.kElevatorGains.i());
   private final LoggedTunableNumber kD =
-      new LoggedTunableNumber("Elevator/Gains/kD", ElevatorConstants.kElevatorGains.kD());
+      new LoggedTunableNumber("Elevator/Gains/kD", ElevatorConstants.kElevatorGains.d());
   private final LoggedTunableNumber kS =
-      new LoggedTunableNumber("Elevator/Gains/kS", ElevatorConstants.kElevatorGains.kS());
+      new LoggedTunableNumber("Elevator/Gains/kS", ElevatorConstants.kElevatorGains.s());
   private final LoggedTunableNumber kV =
-      new LoggedTunableNumber("Elevator/Gains/kV", ElevatorConstants.kElevatorGains.kV());
+      new LoggedTunableNumber("Elevator/Gains/kV", ElevatorConstants.kElevatorGains.v());
   private final LoggedTunableNumber kA =
-      new LoggedTunableNumber("Elevator/Gains/kA", ElevatorConstants.kElevatorGains.kA());
+      new LoggedTunableNumber("Elevator/Gains/kA", ElevatorConstants.kElevatorGains.a());
   private final LoggedTunableNumber kG =
-      new LoggedTunableNumber("Elevator/Gains/kG", ElevatorConstants.kElevatorGains.kG());
+      new LoggedTunableNumber("Elevator/Gains/kG", ElevatorConstants.kElevatorGains.g());
   private final LoggedTunableNumber kMaxVelocity =
       new LoggedTunableNumber(
           "Elevator/MotionMagic/kMaxVelocity", 
-          ElevatorConstants.kElevatorGains.kMaxVelocityMetersPerSecond());
+          ElevatorConstants.kElevatorGains.maxVelocityMetersPerSecond());
   private final LoggedTunableNumber kMaxAcceleration =
       new LoggedTunableNumber(
           "Elevator/MotionMagic/kMaxAcceleration", 
-          ElevatorConstants.kElevatorGains.kMaxAccelerationMetersPerSecondSquared());
+          ElevatorConstants.kElevatorGains.maxAccelerationMetersPerSecondSquared());
 
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;

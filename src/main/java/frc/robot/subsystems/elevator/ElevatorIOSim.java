@@ -11,39 +11,24 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorGains;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHardware;
+import frc.robot.subsystems.elevator.ElevatorConstants.SimulationConfiguration;
 
 public class ElevatorIOSim implements ElevatorIO {
-  private final double LOOP_PERIOD_SEC = 0.02;
+  private final double kLoopPeriodSec;
 
-  private final ElevatorSim kElevator = new ElevatorSim(
-    ElevatorConstants.kSimulationConfiguration.kMotorType(),
-    ElevatorConstants.kGearing,
-    ElevatorConstants.kSimulationConfiguration.kCarriageMassKg(),
-    ElevatorConstants.kSimulationConfiguration.kDrumRadiusMeters(),
-    ElevatorConstants.kMinPositionMeters,
-    ElevatorConstants.kMaxPositionMeters,
-    ElevatorConstants.kSimulationConfiguration.kSimulateGravity(),
-    ElevatorConstants.kSimulationConfiguration.kStartingHeightMeters(),
-    ElevatorConstants.kSimulationConfiguration.kMeasurementStdDevs(),
-    ElevatorConstants.kSimulationConfiguration.kMeasurementStdDevs());
+  private final ElevatorSim kElevator;
 
-    // Create and use the feedback and feedforware controllers in here since we 
-    // are using the internal motor controllers
-  private TrapezoidProfile kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
-    ElevatorConstants.kElevatorGains.kMaxVelocityMetersPerSecond(), 
-    ElevatorConstants.kElevatorGains.kMaxAccelerationMetersPerSecondSquared()));
+  // Create and use the feedback and feedforware controllers in here since we 
+  // are using the internal motor controllers
+  private TrapezoidProfile kProfile;
 
-  private final PIDController kFeedback = new PIDController(ElevatorConstants.kElevatorGains.kP(),
-  ElevatorConstants.kElevatorGains.kI(),
-  ElevatorConstants.kElevatorGains.kD());
+  private final PIDController kFeedback;
 
-  // Feedforward still a constant, but we have to reinstantiate the model in order to change the gains
-  private ElevatorFeedforward kFeedforward = 
-    new ElevatorFeedforward(
-      ElevatorConstants.kElevatorGains.kS(), 
-      ElevatorConstants.kElevatorGains.kG(), 
-      ElevatorConstants.kElevatorGains.kV(), 
-      ElevatorConstants.kElevatorGains.kA());
+  // Feedforward still a constant, but we have to reinstantiate the model in 
+  // order to change the gains
+  private ElevatorFeedforward kFeedforward;
 
   // Final goal of the mechanism
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -52,17 +37,46 @@ public class ElevatorIOSim implements ElevatorIO {
 
   private double appliedVoltage = 0.0;
 
+  // Used to determine the current control mode of the simulation hardware
   private boolean feedbackNeedsReset = false;
   private boolean closedLoopControl = false;
 
-  public ElevatorIOSim() {   
+  public ElevatorIOSim(ElevatorHardware hardware,
+    SimulationConfiguration configuration,
+    ElevatorGains gains,
+    double minPositionMeters,
+    double maxPositionMeters,
+    double loopPeriodSec) {
+    kElevator = new ElevatorSim(
+      configuration.motorType(),
+      hardware.gearing(),
+      configuration.carriageMassKg(),
+      configuration.drumRadiusMeters(),
+      minPositionMeters,
+      maxPositionMeters,
+      configuration.simulateGravity(),
+      configuration.startingHeightMeters(),
+      configuration.measurementStdDevs(),
+      configuration.measurementStdDevs());
+
+    kLoopPeriodSec = loopPeriodSec;
+
+    kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
+      gains.maxVelocityMetersPerSecond(), 
+      gains.maxAccelerationMetersPerSecondSquared()));
+
+    kFeedback = new PIDController(gains.p(), gains.i(), gains.d());
+
+    kFeedforward = 
+      new ElevatorFeedforward(gains.s(), gains.g(), gains.v(), gains.a());
+    
     // Reset elevator model to initial configuration in case it wasn't already
     resetPosition();
   }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    kElevator.update(LOOP_PERIOD_SEC);
+    kElevator.update(kLoopPeriodSec);
 
     inputs.isMotorConnected = true;
 
@@ -100,7 +114,7 @@ public class ElevatorIOSim implements ElevatorIO {
     }
     goal = new TrapezoidProfile.State(goalPositionMeters, 0.0);
 
-    setpoint = kProfile.calculate(0.02, setpoint, goal);
+    setpoint = kProfile.calculate(kLoopPeriodSec, setpoint, goal);
 
     double feedforwardEffort = kFeedforward.calculate(setpoint.velocity);
     double feedbackEffort = kFeedback.calculate(kElevator.getPositionMeters(), setpoint.position);
@@ -123,7 +137,8 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setMotionMagicConstraints(double maxVelocity, double maxAcceleration) {
-    kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
+    kProfile = new TrapezoidProfile(
+      new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
   }
 
   @Override

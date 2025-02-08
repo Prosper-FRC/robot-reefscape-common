@@ -13,9 +13,11 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeHardware;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMotorConfiguration;
 
 public class IntakeIOTalonFX implements IntakeIO {
-  private final TalonFX kMotor = new TalonFX(IntakeConstants.kMotorID);
+  private final TalonFX kMotor;
   private TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
   
   // Motor data we wish to log
@@ -27,28 +29,24 @@ public class IntakeIOTalonFX implements IntakeIO {
   
   private VoltageOut voltageControl = new VoltageOut(0.0);
 
-  public IntakeIOTalonFX() {
-    // Apply configurations
-    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = 
-        IntakeConstants.kMotorConfiguration.kEnableSupplyCurrentLimit();
-    motorConfiguration.CurrentLimits.SupplyCurrentLimit = 
-        IntakeConstants.kMotorConfiguration.kSupplyCurrentLimitAmps();
-    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = 
-        IntakeConstants.kMotorConfiguration.kEnableStatorCurrentLimit();
-    motorConfiguration.CurrentLimits.StatorCurrentLimit = 
-        IntakeConstants.kMotorConfiguration.kStatorCurrentLimitAmps();
-    motorConfiguration.Voltage.PeakForwardVoltage = 
-      IntakeConstants.kMotorConfiguration.kPeakForwardVoltage();
-    motorConfiguration.Voltage.PeakReverseVoltage = 
-      IntakeConstants.kMotorConfiguration.kPeakReverseVoltage();
+  public IntakeIOTalonFX(IntakeHardware hardware, IntakeMotorConfiguration configuration) {
+    kMotor = new TalonFX(hardware.motorId());
 
-    motorConfiguration.MotorOutput.NeutralMode = IntakeConstants.kMotorConfiguration.kNeutralMode();
+    // Apply configurations
+    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.enableSupplyCurrentLimit();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
+    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.enableStatorCurrentLimit();
+    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.statorCurrentLimitAmps();
+    motorConfiguration.Voltage.PeakForwardVoltage = configuration.peakForwardVoltage();
+    motorConfiguration.Voltage.PeakReverseVoltage = configuration.peakReverseVoltage();
+
+    motorConfiguration.MotorOutput.NeutralMode = configuration.neutralMode();
     motorConfiguration.MotorOutput.Inverted = 
-    IntakeConstants.kMotorConfiguration.kInvert() 
+    configuration.invert() 
         ? InvertedValue.CounterClockwise_Positive 
         : InvertedValue.Clockwise_Positive;
 
-    motorConfiguration.Feedback.SensorToMechanismRatio = IntakeConstants.kGearing;
+    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.gearing();
     // Rotor sensor is the built-in sensor
     motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 
