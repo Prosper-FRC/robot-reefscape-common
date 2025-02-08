@@ -84,6 +84,17 @@ public class Module {
     }
 
     /**
+     * Run characterization for azimuth motor gains. kA can be used for MOI
+     * Bind this to a button and let it run
+     * @param inputVolts volts fed into the motor
+     */
+    public void runCircularCharacterization(double inputVolts, Rotation2d angle) {
+        setAzimuthPosition(angle);
+        setDriveVelocity(null);
+        setDriveVolts(inputVolts);
+    }
+
+    /**
      * Set the desired velocity/position respectivly to the drive and azimuth with no acceleration
      * @param state desired state (position + velocity)
      * @return set state

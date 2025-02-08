@@ -54,14 +54,15 @@ public class Drive extends SubsystemBase{
         TELEOP,
         AUTO_HEADING,
         AUTON,
-        SYS_ID,
+        DRIVE_SYSID,
+        AZIMUTH_SYSID,
         SNIPER_UP,
         SNIPER_DOWN,
         SNIPER_RIGHT,
         SNIPER_LEFT,
         DRIFT_TEST,
         STOP,
-        RIGHT_DEG
+        PROCESSOR
     }
 
     private Module[] modules; 
@@ -207,7 +208,10 @@ public class Drive extends SubsystemBase{
                 desiredSpeeds = teleopSpeeds;
                 break;
 
-            case SYS_ID:
+            case DRIVE_SYSID:
+                break;
+
+            case AZIMUTH_SYSID:
                 break;
 
             case SNIPER_UP:
@@ -244,7 +248,7 @@ public class Drive extends SubsystemBase{
                 }
                 break;
             
-            case RIGHT_DEG:
+            case PROCESSOR:
                 headingGoal = Rotation2d.fromDegrees(-90.0);
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, 
@@ -297,10 +301,28 @@ public class Drive extends SubsystemBase{
      * @return the command that will be runned
      */
     public Command characterizeDriveMotors() {
-        return setDriveStateCommand(DriveState.SYS_ID).andThen(
+        return setDriveStateCommand(DriveState.DRIVE_SYSID).andThen(
             SysIDCharacterization.runDriveSysIDTests( (voltage) -> {
                 for (var module : modules) module.runLinearCharacterization(voltage);
         }, this));
+    }
+
+    /**
+     * Runs characterization to find the gains of the azimuth motor 
+     * @return the command that will be runned
+     */
+    public Command characterizeAzimuthMotors() {
+        return setDriveStateCommand(DriveState.AZIMUTH_SYSID).andThen(
+            SysIDCharacterization.runDriveSysIDTests( (voltage) -> {
+                runCircularCharacterization(voltage);
+        }, this));
+    }
+
+    public void runCircularCharacterization(double volts){
+        modules[0].runCircularCharacterization( volts, Rotation2d.fromDegrees(-45.0));
+        modules[1].runCircularCharacterization(-volts, Rotation2d.fromDegrees( 45.0));
+        modules[2].runCircularCharacterization( volts, Rotation2d.fromDegrees( 45.0));
+        modules[3].runCircularCharacterization(-volts, Rotation2d.fromDegrees(-45.0));
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds){
