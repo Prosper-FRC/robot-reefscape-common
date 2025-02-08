@@ -24,8 +24,8 @@ public final class Constants {
     public static final String kCanbusName = "drivebase";
 
     // TODO: FIND THIS OUT
-    public static final double kFieldWidth = 16.54;
-    public static final double kFieldLength = 16.54;
+    public static final double kFieldWidth = 17.54;
+    public static final double kFieldLength = 8.05;
 
     public static final double kLoopPeriod = 0.02;
 }
