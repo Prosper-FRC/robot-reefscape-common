@@ -4,7 +4,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHardware;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeHardware;
 import frc.robot.subsystems.intake.IntakeConstants.SimulationConfiguration;
 
 public class IntakeIOSim implements IntakeIO {
@@ -14,7 +14,7 @@ public class IntakeIOSim implements IntakeIO {
 
   private double appliedVoltage = 0.0;
 
-  public IntakeIOSim(ElevatorHardware hardware, SimulationConfiguration configuration, double loopPeriodSec) {
+  public IntakeIOSim(IntakeHardware hardware, SimulationConfiguration configuration, double loopPeriodSec) {
     kIntake = new DCMotorSim(
       LinearSystemId.createDCMotorSystem(
         configuration.motorType(), 
