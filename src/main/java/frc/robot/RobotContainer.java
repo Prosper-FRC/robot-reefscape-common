@@ -91,7 +91,7 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         driverController.y().toggleOnTrue(new InstantCommand(() -> {
-            mainLED.setGradientAnimation(GradientType.kContinuous, Color.kBlack, Color.kDarkBlue, Color.kWhite);;
+            mainLED.setSolidColor(25, 50, 75);
             mainLED.animatePatternRelative(20);
         }));
         driverController.y().toggleOnFalse(new InstantCommand(() -> {
