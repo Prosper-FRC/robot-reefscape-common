@@ -24,16 +24,16 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class VisionIOPV implements VisionIO {
     private String camName;
-    private PhotonCamera limelightCam;
+    private PhotonCamera arduCamera;
     private PhotonPoseEstimator poseEstimator;
     private Transform3d cameraTransform;
 
-    private PhotonCameraSim limelightSim;
+    private PhotonCameraSim arducamSim;
     private VisionSystemSim visionSim;
 
     public VisionIOPV(String name, Transform3d cameraTransform) {
         camName = name;
-        limelightCam = new PhotonCamera(camName);
+        arduCamera = new PhotonCamera(camName);
         this.cameraTransform = cameraTransform;
         // Don't worry about it
         PhotonCamera.setVersionCheckEnabled(false);
@@ -57,9 +57,9 @@ public class VisionIOPV implements VisionIO {
             cameraProp.setLatencyStdDevMs(15);
             // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
             // targets.
-            limelightSim = new PhotonCameraSim(limelightCam, cameraProp);
+            arducamSim = new PhotonCameraSim(arduCamera, cameraProp);
             // Add the simulated camera to view the targets on this simulated field.
-            visionSim.addCamera(limelightSim, cameraTransform);
+            visionSim.addCamera(arducamSim, cameraTransform);
         }
     }
 
@@ -75,7 +75,7 @@ public class VisionIOPV implements VisionIO {
             }
             
             // Gets the camera data
-            List<PhotonPipelineResult> unreadResults = limelightCam.getAllUnreadResults();
+            List<PhotonPipelineResult> unreadResults = arduCamera.getAllUnreadResults();
             poseEstimator.setLastPose(lastRobotPose);
             inputs.hasBeenUpdated = !unreadResults.isEmpty();
             if(!unreadResults.isEmpty()) {
@@ -83,7 +83,7 @@ public class VisionIOPV implements VisionIO {
                 Optional<EstimatedRobotPose> latestEstimatedRobotPose = poseEstimator.update(result);
 
                 // Adds it to data streaming
-                inputs.isConnected = limelightCam.isConnected();
+                inputs.isConnected = arduCamera.isConnected();
 
                 inputs.hasTarget = result.hasTargets();
                 if (result.hasTargets()) {
