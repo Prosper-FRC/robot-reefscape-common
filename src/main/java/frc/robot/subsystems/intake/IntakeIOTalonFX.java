@@ -14,7 +14,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.subsystems.intake.IntakeConstants.IntakeHardware;
-import frc.robot.subsystems.intake.IntakeConstants.TalonConfiguration;
+import frc.robot.subsystems.intake.IntakeConstants.IntakeMotorConfiguration;
 
 public class IntakeIOTalonFX implements IntakeIO {
   private final TalonFX kMotor;
@@ -29,7 +29,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   
   private VoltageOut voltageControl = new VoltageOut(0.0);
 
-  public IntakeIOTalonFX(IntakeHardware hardware, TalonConfiguration configuration) {
+  public IntakeIOTalonFX(IntakeHardware hardware, IntakeMotorConfiguration configuration) {
     kMotor = new TalonFX(hardware.kMotorId());
 
     // Apply configurations

@@ -25,7 +25,7 @@ import edu.wpi.first.units.measure.Voltage;
 
 import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorGains;
 import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHardware;
-import frc.robot.subsystems.elevator.ElevatorConstants.TalonConfiguration;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorMotorConfiguration;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
   private final TalonFX kMotor;
@@ -47,9 +47,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   // Save drum circumference for converting
   private final double kDrumCircumferenceMeters;
 
-  public ElevatorIOTalonFX(String canbus,
+  public ElevatorIOTalonFX(
+    String canbus,
     ElevatorHardware hardware,
-    TalonConfiguration configuration,
+    ElevatorMotorConfiguration configuration,
     ElevatorGains gains) {
     kMotor = new TalonFX(hardware.kMotorId(), canbus);
     kDrumCircumferenceMeters = hardware.kDrumCircumferenceMeters();

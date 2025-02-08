@@ -31,7 +31,7 @@ public class ElevatorConstants {
     double kA, 
     double kG) {}
 
-  public record TalonConfiguration(
+  public record ElevatorMotorConfiguration(
     boolean kInvert,
     boolean kEnableStatorCurrentLimit,
     boolean kEnableSupplyCurrentLimit,
@@ -109,7 +109,7 @@ public class ElevatorConstants {
         0.0);
   };
 
-  public static final TalonConfiguration kMotorConfiguration = new TalonConfiguration(
+  public static final ElevatorMotorConfiguration kMotorConfiguration = new ElevatorMotorConfiguration(
     false, 
     true, 
     true, 

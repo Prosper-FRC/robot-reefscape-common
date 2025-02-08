@@ -14,7 +14,7 @@ public class IntakeConstants {
     double kWheelRadiusMeters
   ) {}
 
-  public record TalonConfiguration(
+  public record IntakeMotorConfiguration(
     boolean kInvert,
     boolean kEnableStatorCurrentLimit,
     boolean kEnableSupplyCurrentLimit,
@@ -59,7 +59,7 @@ public class IntakeConstants {
     3.0 /1.0, // Gearing
     Units.inchesToMeters(0.5)); // Wheel radius meters
 
-  public static final TalonConfiguration kMotorConfiguration = new TalonConfiguration(
+  public static final IntakeMotorConfiguration kMotorConfiguration = new IntakeMotorConfiguration(
     false, 
     true, 
     true, 
