@@ -40,6 +40,7 @@ public class HeadingController {
             kSnapD.get(),
             new TrapezoidProfile.Constraints(kSnapMaxVDPS.get(), kSnapMaxADPSS.get()));
 
+        // Invert this if robot starts to oscillating //
         invert = (RobotBase.isReal()) ? 1.0 : 1.0;
         snapController.enableContinuousInput(0, 360);
         snapController.setTolerance(1.0);

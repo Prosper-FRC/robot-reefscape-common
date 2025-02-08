@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -19,6 +18,10 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOKraken;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.Drive.DriveState;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPV;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
@@ -52,7 +55,11 @@ public class RobotContainer {
                         new Module("FR", new ModuleIOKraken(kFrontRight)),
                         new Module("BL", new ModuleIOKraken(kBackLeft)),
                         new Module("BR", new ModuleIOKraken(kBackRight))
-                    }, new GyroIOPigeon2());
+                    }, new GyroIOPigeon2(), 
+                    new Vision(
+                        new VisionIO[]{
+                            new VisionIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
+                            new VisionIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)}));
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
@@ -61,8 +68,10 @@ public class RobotContainer {
                     new Module("FR", new ModuleIOSim()),
                     new Module("BL", new ModuleIOSim()),
                     new Module("BR", new ModuleIOSim())
-                }, new GyroIO(){});
-                break;
+                }, new GyroIOPigeon2(), 
+                new Vision(new VisionIO[] {
+                    new VisionIO() {}, 
+                    new VisionIO() {}}));
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
                 drive = new Drive( new Module[] {
@@ -70,7 +79,10 @@ public class RobotContainer {
                     new Module("FR", new ModuleIO(){}),
                     new Module("BL", new ModuleIO(){}),
                     new Module("BR", new ModuleIO(){})
-                }, new GyroIO(){});
+                }, new GyroIO(){}, 
+                new Vision(new VisionIO[] {
+                    new VisionIO() {}, 
+                    new VisionIO() {}}));
                 break;
         }
 

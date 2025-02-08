@@ -39,6 +39,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.subsystems.drive.controllers.TeleopController;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.Vision.VisionObservation;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.debugging.SysIDCharacterization;
 import frc.robot.utils.swerve.LocalADStarAK;
@@ -65,6 +67,7 @@ public class Drive extends SubsystemBase{
     private Module[] modules; 
     private GyroIO gyro;
     private GyroInputsAutoLogged gyroInputs = new GyroInputsAutoLogged();
+    private Vision vision;
     
     private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
     private ChassisSpeeds autonDesiredSpeeds = new ChassisSpeeds();
@@ -98,9 +101,10 @@ public class Drive extends SubsystemBase{
     @AutoLogOutput(key="Drive/HeadingGoal")
     private Rotation2d headingGoal = new Rotation2d();
     
-    public Drive(Module[] modules, GyroIO gyro){
+    public Drive(Module[] modules, GyroIO gyro, Vision vision){
         this.modules = modules;
         this.gyro = gyro;
+        this.vision = vision;
         robotRotation = gyroInputs.yawPosition;
 
         swerveOdometry = new SwerveDriveOdometry(kinematics, getRobotRotation(), getModulePositions());
@@ -167,6 +171,22 @@ public class Drive extends SubsystemBase{
             robotRotation = Rotation2d.fromRadians(
                 (swervePoseEstimator.getEstimatedPosition().getRotation().getRadians()
                     + getChassisSpeeds().omegaRadiansPerSecond * 0.02) % 360.0);
+        }
+
+        if(vision != null) {
+            vision.periodic(swervePoseEstimator.getEstimatedPosition(), swerveOdometry.getPoseMeters());
+            VisionObservation[] observations = vision.getVisionObservations();
+            for(VisionObservation observation : observations) {
+                if(observation.hasObserved()) swervePoseEstimator.addVisionMeasurement(
+                    observation.pose(), 
+                    observation.timeStamp(), 
+                    observation.stdDevs());
+
+                Logger.recordOutput(observation.camName()+"/stdDevX", observation.stdDevs().get(0));
+                Logger.recordOutput(observation.camName()+"/stdDevY", observation.stdDevs().get(1));
+                Logger.recordOutput(observation.camName()+"/stdDevTheta", observation.stdDevs().get(2));
+                Logger.recordOutput(observation.camName()+"/Transform", swerveOdometry.getPoseMeters().minus(observation.pose()));
+            }
         }
 
 
