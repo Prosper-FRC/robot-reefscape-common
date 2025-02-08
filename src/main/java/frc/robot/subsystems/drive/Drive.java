@@ -158,6 +158,16 @@ public class Drive extends SubsystemBase {
         headingController.setHeadingGoal(() -> headingGoal);
     }
 
+    /* Periodic Logic: 
+     * Data Collection(Modules, gyro, Vision, odometry)
+     * Update Controller
+     * Setting Chassis Speeds based on state
+     * Teleop sets based of joystick
+     * Autons sets based on pathplanner
+     * etc. etc.
+     * runSwerve() function sets the desired state to modules
+     * State is set by setDriveState which also resets the controllers
+    */
     @Override
     public void periodic() {
         ///////////////////// DATA COLLECTION AND UPDATE CONTROLLERS AND ODOMETRY \\\\\\\\\\\\\\\\\\
@@ -270,7 +280,7 @@ public class Drive extends SubsystemBase {
                 break;
             case AUTO_ALIGN:
                 autoAlignController.reset(getPoseEstimate(), getChassisSpeeds());
-                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.HEXAGONAL, getPoseEstimate());
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.TEST, getPoseEstimate());
                 break;
             default:
         }
@@ -281,6 +291,7 @@ public class Drive extends SubsystemBase {
     public void runSwerve(ChassisSpeeds speeds) {
         desiredSpeeds = SwerveUtils.discretize(speeds, kDriftRate.get());
 
+        /* Logs all the possible drive states, great for debugging */
         SwerveUtils.logPossibleDriveStates(kDoExtraLogging, desiredSpeeds, getModuleStates(), previousSetpoint, robotRotation);
 
         SwerveModuleState[] unOptimizedSetpointStates = new SwerveModuleState[4];
@@ -296,10 +307,12 @@ public class Drive extends SubsystemBase {
 
         for (int i = 0; i < 4; i++) {
             if(useGenerator) {
+                /* Logs the drive feedforward stuff */
                 SwerveUtils.logDriveFeedforward(previousSetpoint.feedforwards(), i);
 
                 setpointStates[i] = new SwerveModuleState(
-                    previousSetpoint.moduleStates()[i].speedMetersPerSecond, 
+                    previousSetpoint.moduleStates()[i].speedMetersPerSecond,
+                    /* setpointAngle = currentAngle if the speed is less than 0.075 */
                     SwerveUtils.removeAzimuthJitter(
                         previousSetpoint.moduleStates()[i], modules[i].getCurrentState()));
 
@@ -307,6 +320,8 @@ public class Drive extends SubsystemBase {
 
                 setpointStates[i].optimize(modules[i].getCurrentState().angle);
 
+                /* Feedforward cases based on driveState */
+                /* 0 unless in auto or auto-align */
                 double driveAmps = calculateDriveFeedforward(
                     unOptimizedSetpointStates[i], setpointStates[i], i);
                 
@@ -411,6 +426,7 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Tolerance/HeadingController")
     public boolean inHeadingTolerance() {
+        /* Accounts for angle wrapping issues with rotation 2D */
         return GeomUtil.getSmallestChangeInRotation(robotRotation, headingGoal).getDegrees() < 1.0;
     }
 

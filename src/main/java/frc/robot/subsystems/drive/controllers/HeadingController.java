@@ -5,7 +5,6 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import java.util.function.Supplier;
 
@@ -40,7 +39,7 @@ public class HeadingController {
     private Supplier<Rotation2d> goal;
     // Me: Sign that there may be something fundamentally wrong with the code :)
     // Me at a later date: Yeah there is a fundamental mistake with the code :)
-    private double invert;
+    // private double invert;
 
     public HeadingController() {
         snapController = new ProfiledPIDController(
@@ -49,7 +48,7 @@ public class HeadingController {
             kSnapD.get(),
             new TrapezoidProfile.Constraints(kSnapMaxVDPS.get(), kSnapMaxADPSS.get()));
 
-        invert = (RobotBase.isReal()) ? -1.0 : 1.0;
+        // invert = (RobotBase.isReal()) ? -1.0 : 1.0;
         snapController.enableContinuousInput(0, 360);
         snapController.setTolerance(1.0);
 
@@ -70,7 +69,7 @@ public class HeadingController {
     // Designed for large jumps toward a setpoint, kind of like an azimuth alignment
     public double getSnapOutput(Rotation2d robotRotation) {
         Logger.recordOutput("Drive/HeadingController/HeadingSetpoint", Rotation2d.fromDegrees(snapController.getSetpoint().position));
-        double output = invert * Math.toRadians(
+        double output = Math.toRadians(
             snapController.calculate(robotRotation.getDegrees(), goal.get().getDegrees()))
             + snapController.getSetpoint().velocity;
 
@@ -88,7 +87,7 @@ public class HeadingController {
 
     // Designed for shoot on move and short distance. In most cases velocityDPS is 0.
     public double getStabilizingOutput(Rotation2d robotRotation, double velocityDPS) {
-        return invert * Math.toRadians(
+        return Math.toRadians(
             stabilizingController.calculate(robotRotation.getDegrees(), goal.get().getDegrees())
             + velocityDPS);
     }

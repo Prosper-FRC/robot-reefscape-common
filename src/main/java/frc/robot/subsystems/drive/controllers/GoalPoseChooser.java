@@ -54,6 +54,9 @@ public class GoalPoseChooser {
         return new Pose2d();
     }
 
+    /* Splits the field into hexagon regions of the reef 
+     * We got the left or right side of the side we are closest
+     */
     public static Pose2d getHexagonalPose(Pose2d robotPose) {
         Rotation2d angleFromReefCenter = Rotation2d.fromRadians(
             Math.atan2(
@@ -96,6 +99,7 @@ public class GoalPoseChooser {
         }
     }
 
+    /* Sets the goal using a command, meant to be used with buttonboard */
     public static Command setGoalCommand(Pose2d goalPose) {
         return Commands.runOnce(()-> buttonBoardGoal = goalPose);
     }

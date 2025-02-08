@@ -16,7 +16,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class HolonomicController {
     public static final LoggedTunableNumber kXP = new LoggedTunableNumber(
-        "AutoAlign/X/kP", 0.1);
+        "AutoAlign/X/kP", 1.0);
     public static final LoggedTunableNumber kXD = new LoggedTunableNumber(
         "AutoAlign/X/kD", 0.0);
     public static final LoggedTunableNumber kXI = new LoggedTunableNumber(
@@ -39,7 +39,7 @@ public class HolonomicController {
         "AutoAlign/X/ToleranceMeters", 0.01);
 
     public static final LoggedTunableNumber kYP = new LoggedTunableNumber(
-        "AutoAlign/Y/kP", 0.1);
+        "AutoAlign/Y/kP", 1.0);
     public static final LoggedTunableNumber kYD = new LoggedTunableNumber(
         "AutoAlign/Y/kD", 0.0);
     public static final LoggedTunableNumber kYI = new LoggedTunableNumber(
@@ -62,7 +62,7 @@ public class HolonomicController {
         "AutoAlign/Y/ToleranceMeters", 0.01);
 
     public static final LoggedTunableNumber kOmegaP = new LoggedTunableNumber(
-        "AutoAlign/Omega/kP", 0.1);
+        "AutoAlign/Omega/kP", 1.0);
     public static final LoggedTunableNumber kOmegaD = new LoggedTunableNumber(
         "AutoAlign/Omega/kD", 0.0);
 
@@ -122,6 +122,10 @@ public class HolonomicController {
         reset( startPose, new ChassisSpeeds() );
     }
 
+    /* Resets the robot based on the position and the speed of the robot 
+     * Resetting with the speed allows the robot to stay controlled
+     * while the driver is moving
+     */
     public void reset(Pose2d robotPose, ChassisSpeeds robotChassisSpeeds) {
         xController.reset( 
             new State(
@@ -139,6 +143,7 @@ public class HolonomicController {
                 Math.toDegrees(robotChassisSpeeds.omegaRadiansPerSecond) ) );
     }
 
+    /* Sets the goals of the controllers. Is not needed for current code */
     public void setGoal(Pose2d goalPose) {
         setGoal(goalPose, new ChassisSpeeds());
     }
@@ -146,7 +151,7 @@ public class HolonomicController {
     public void setGoal(Pose2d goalPose, ChassisSpeeds goalSpeed) {
         xController.setGoal( 
             new TrapezoidProfile.State(
-                goalPose.getX(),
+                goalPose.getX(), 
                 goalSpeed.vxMetersPerSecond) );
         yController.setGoal( 
             new TrapezoidProfile.State(
@@ -162,6 +167,7 @@ public class HolonomicController {
         return calculate(goalPose, new ChassisSpeeds(), currentPose);
     }
 
+    /* Uses 3 PID controllers to set the chassis speeds */
     public ChassisSpeeds calculate(Pose2d goalPose, ChassisSpeeds goalSpeed, Pose2d currentPose) {
         return ChassisSpeeds.fromFieldRelativeSpeeds(
             xController.calculate( 

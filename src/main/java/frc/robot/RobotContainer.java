@@ -100,7 +100,7 @@ public class RobotContainer {
             autoChooser.addDefaultOption("PATHS FAILED: initActionZeroPath", new InstantCommand());
         }
 
-
+        robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
 
         // Pass subsystems to classes that need them for configuration
         robotDrive.acceptJoystickInputs(

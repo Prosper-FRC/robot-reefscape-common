@@ -74,6 +74,8 @@ public class ManualTeleopController {
             zerotoOneClamp(omegaJoystickScalar)
             * Math.pow(omegaAdjustedJoystickInput, rotationExp);
 
+        /* If the exponent is an even number it's always positive */
+        /* You lose the sign when it's squared, so you have to multiply it back in  */
         if (linearExp % 2 == 0) {
             xScaledJoystickInput *= Math.signum(xAdjustedJoystickInput);
             yScaledJoystickInput *= Math.signum(yAdjustedJoystickInput);
@@ -83,7 +85,14 @@ public class ManualTeleopController {
             omegaJoystickInput *= Math.signum(omegaAdjustedJoystickInput);
         }
 
+
         Logger.recordOutput("Drive/Teleop/preOffsetAngle", robotAngle);
+        /* 
+         * Field relative only works if the robot starts on blue side
+         * Because the driver faces the other direction relative to field when on red
+         * So we flip the true field perspective to the red side by adding 180 to 
+         * re-align directions
+        */
         if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) 
             robotAngle = robotAngle.plus(Rotation2d.k180deg);
         Logger.recordOutput("Drive/Teleop/offsetAngle", robotAngle);
@@ -101,10 +110,14 @@ public class ManualTeleopController {
         return desiredSpeeds;
     }
 
+    /* Wheter to use the snipler scalar or not based on the cnodition */
     public double getSniperScalar(boolean isSniper) {
         return isSniper ? kSniperControl.get() : 1.0;
     }
 
+    /*
+     * Takes in the POV angle and then moves the robot in that angle at sniper speeds
+     */
     public ChassisSpeeds computeSniperPOVChassisSpeeds(Rotation2d robotAngle) {
         double omegaAdjustedJoystickInput = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), kRotationDeadband.get());
 

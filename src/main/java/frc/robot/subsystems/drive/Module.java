@@ -57,6 +57,9 @@ public class Module {
         currentState = new SwerveModuleState(inputs.driveVelocityMPS, inputs.azimuthPosition);
         currentPosition = new SwerveModulePosition(inputs.drivePositionM, inputs.azimuthPosition);
 
+        // Runs drive PID
+        // Amperage and acceleration are never not null at the same time
+        // Amperage is the FOC feedforward, and acceleration is the voltage feedforward
         if (velocitySetpointMPS != null) {
             Logger.recordOutput("Drive/"+kLogKey+"/velocitySepointMPS", velocitySetpointMPS);
             if(amperageSetpoint != null) {
@@ -72,12 +75,14 @@ public class Module {
             }
         }
 
+        // Runs azimuth PID
         if (azimuthSetpointAngle != null) {
             double ffOutput = azimuthFF.getKs() * Math.signum(inputs.azimuthVelocity.getDegrees());
             Logger.recordOutput("Drive/"+kLogKey+"/SimpleFeedforward", ffOutput);
             io.setAzimuthPosition(azimuthSetpointAngle, ffOutput);
         }
 
+        // Updates PID
         LoggedTunableNumber.ifChanged(
             hashCode(), () -> {
                 io.setDrivePID(kDriveP.get(), 0.0, kDriveD.get());
@@ -103,6 +108,7 @@ public class Module {
         runCharacterization(inputVolts, new Rotation2d());
     }
 
+    /* Runs characterization of by setting motor voltage and the rotation the module at a specific rotation */
     public void runCharacterization(double inputVolts, Rotation2d rot) {
         setDesiredRotation(rot);
         setDesiredVelocity(null);

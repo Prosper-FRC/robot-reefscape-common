@@ -73,7 +73,6 @@ public class ModuleIOSim implements ModuleIO {
         drivePID.setPID(kP, kI, kD);
     }
 
-
     /////////// AZIMUTH MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setAzimuthVolts(double volts) {
