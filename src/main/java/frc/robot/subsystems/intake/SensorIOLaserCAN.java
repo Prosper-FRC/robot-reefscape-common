@@ -22,13 +22,13 @@ import au.grapplerobotics.ConfigurationFailedException;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/hardware-reference/canrange/index.html
  * https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/hardware/CANrange.html
  */
-public class SensorIORange implements SensorIO {
+public class SensorIOLaserCAN implements SensorIO {
   private final LaserCan kSensor = new LaserCan(IntakeConstants.kCANrangeID);
   
 
   private StatusSignal<Boolean> detectsObject;
 
-  public SensorIORange() {
+  public SensorIOLaserCAN() {
     try
     {  
       kSensor.setRangingMode(LaserCan.RangingMode.SHORT);

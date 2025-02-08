@@ -18,7 +18,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
-import frc.robot.subsystems.intake.SensorIORange;
+import frc.robot.subsystems.intake.SensorIOLaserCAN;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -58,7 +58,7 @@ public class RobotContainer {
                 //         IntakeConstants.kRoboIntakeHardware, 
                 //         IntakeConstants.kMotorConfiguration), 
                 //     new SensorIORange());
-                intake = new Intake(new IntakeIO(){}, new SensorIORange());
+                intake = new Intake(new IntakeIO(){}, new SensorIOLaserCAN());
                 break;
             case SIM:
                 elevator = new Elevator(
