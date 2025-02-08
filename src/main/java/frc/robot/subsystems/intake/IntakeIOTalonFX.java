@@ -33,18 +33,12 @@ public class IntakeIOTalonFX implements IntakeIO {
     kMotor = new TalonFX(hardware.kMotorId());
 
     // Apply configurations
-    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = 
-      configuration.kEnableSupplyCurrentLimit();
-    motorConfiguration.CurrentLimits.SupplyCurrentLimit = 
-      configuration.kSupplyCurrentLimitAmps();
-    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = 
-      configuration.kEnableStatorCurrentLimit();
-    motorConfiguration.CurrentLimits.StatorCurrentLimit = 
-      configuration.kStatorCurrentLimitAmps();
-    motorConfiguration.Voltage.PeakForwardVoltage = 
-      configuration.kPeakForwardVoltage();
-    motorConfiguration.Voltage.PeakReverseVoltage = 
-      configuration.kPeakReverseVoltage();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.kEnableSupplyCurrentLimit();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.kSupplyCurrentLimitAmps();
+    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.kEnableStatorCurrentLimit();
+    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.kStatorCurrentLimitAmps();
+    motorConfiguration.Voltage.PeakForwardVoltage = configuration.kPeakForwardVoltage();
+    motorConfiguration.Voltage.PeakReverseVoltage = configuration.kPeakReverseVoltage();
 
     motorConfiguration.MotorOutput.NeutralMode = configuration.kNeutralMode();
     motorConfiguration.MotorOutput.Inverted = 

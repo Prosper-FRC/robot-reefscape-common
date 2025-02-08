@@ -63,25 +63,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     motorConfiguration.Slot0.kV = gains.kV();
     motorConfiguration.Slot0.kA = gains.kA();
     motorConfiguration.Slot0.kG = gains.kG();
-    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = 
-      gains.kMaxVelocityMetersPerSecond();
-    motorConfiguration.MotionMagic.MotionMagicAcceleration = 
-      gains.kMaxAccelerationMetersPerSecondSquared();
-    motorConfiguration.MotionMagic.MotionMagicJerk = 
-      gains.kJerkMetersPerSecondCubed();
+    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = gains.kMaxVelocityMetersPerSecond();
+    motorConfiguration.MotionMagic.MotionMagicAcceleration = gains.kMaxAccelerationMetersPerSecondSquared();
+    motorConfiguration.MotionMagic.MotionMagicJerk = gains.kJerkMetersPerSecondCubed();
 
-    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = 
-      configuration.kEnableSupplyCurrentLimit();
-    motorConfiguration.CurrentLimits.SupplyCurrentLimit = 
-      configuration.kSupplyCurrentLimitAmps();
-    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = 
-      configuration.kEnableStatorCurrentLimit();
-    motorConfiguration.CurrentLimits.StatorCurrentLimit = 
-      configuration.kStatorCurrentLimitAmps();
-    motorConfiguration.Voltage.PeakForwardVoltage = 
-      configuration.kPeakForwardVoltage();
-    motorConfiguration.Voltage.PeakReverseVoltage = 
-      configuration.kPeakReverseVoltage();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.kEnableSupplyCurrentLimit();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.kSupplyCurrentLimitAmps();
+    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.kEnableStatorCurrentLimit();
+    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.kStatorCurrentLimitAmps();
+    motorConfiguration.Voltage.PeakForwardVoltage = configuration.kPeakForwardVoltage();
+    motorConfiguration.Voltage.PeakReverseVoltage = configuration.kPeakReverseVoltage();
 
     motorConfiguration.MotorOutput.NeutralMode = configuration.kNeutralMode();
     motorConfiguration.MotorOutput.Inverted = 
