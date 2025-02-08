@@ -25,7 +25,7 @@ public class Vision {
     private static final LoggedTunableNumber kMultiXYStdev = new LoggedTunableNumber(
         "Vision/kMultiXYStdev", kMultiStdDevs.get(0));
 
-    private final AprilTagFieldLayout k2025Field = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    private final AprilTagFieldLayout k2025Field = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
     public Vision(VisionIO[] cameras) {
         Logger.recordOutput("Vision/UseSingleTagTransform", KUseSingleTagTransform);
