@@ -25,17 +25,17 @@ public class IntakeIOSparkMax implements IntakeIO {
   private SparkMaxConfig motorConfiguration = new SparkMaxConfig();
 
   public IntakeIOSparkMax(ElevatorHardware hardware, SparkConfiguration configuration) {
-    kMotor = new SparkMax(hardware.kMotorId(), MotorType.kBrushless);
+    kMotor = new SparkMax(hardware.motorId(), MotorType.kBrushless);
     kEncoder = kMotor.getEncoder();
 
     motorConfiguration.inverted(
-      configuration.kInvert());
+      configuration.invert());
     motorConfiguration.smartCurrentLimit(
-      configuration.kSmartCurrentLimitAmps());
+      configuration.smartCurrentLimitAmps());
     motorConfiguration.secondaryCurrentLimit(
-      configuration.kSecondaryCurrentLimitAmps());
+      configuration.secondaryCurrentLimitAmps());
     motorConfiguration.idleMode(
-      configuration.kIdleMode());
+      configuration.idleMode());
 
     kMotor.configure(motorConfiguration, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }

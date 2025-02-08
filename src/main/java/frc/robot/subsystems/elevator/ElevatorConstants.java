@@ -10,44 +10,44 @@ import edu.wpi.first.math.util.Units;
 
 public class ElevatorConstants {
   public record ElevatorHardware(
-    int kMotorId,
-    double kGearing,
-    double kDrumRadiusMeters,
-    double kDrumCircumferenceMeters
+    int motorId,
+    double gearing,
+    double drumRadiusMeters,
+    double drumCircumferenceMeters
   ) {}
 
   public record ElevatorGains(
     // Feedback control
-    double kP, 
-    double kI, 
-    double kD, 
+    double p, 
+    double i, 
+    double d, 
     // Motion magic constraints
-    double kMaxVelocityMetersPerSecond, 
-    double kMaxAccelerationMetersPerSecondSquared, 
-    double kJerkMetersPerSecondCubed, 
+    double maxVelocityMetersPerSecond, 
+    double maxAccelerationMetersPerSecondSquared, 
+    double jerkMetersPerSecondCubed, 
     // Elevator feedforward values
-    double kS, 
-    double kV, 
-    double kA, 
-    double kG) {}
+    double s, 
+    double v, 
+    double a, 
+    double g) {}
 
   public record ElevatorMotorConfiguration(
-    boolean kInvert,
-    boolean kEnableStatorCurrentLimit,
-    boolean kEnableSupplyCurrentLimit,
-    double kStatorCurrentLimitAmps,
-    double kSupplyCurrentLimitAmps,
-    double kPeakForwardVoltage,
-    double kPeakReverseVoltage,
-    NeutralModeValue kNeutralMode) {}
+    boolean invert,
+    boolean enableStatorCurrentLimit,
+    boolean enableSupplyCurrentLimit,
+    double statorCurrentLimitAmps,
+    double supplyCurrentLimitAmps,
+    double peakForwardVoltage,
+    double peakReverseVoltage,
+    NeutralModeValue neutralMode) {}
 
   public record SimulationConfiguration(
-    DCMotor kMotorType,
-    double kCarriageMassKg,
-    double kDrumRadiusMeters,
-    boolean kSimulateGravity,
-    double kStartingHeightMeters,
-    double kMeasurementStdDevs) {}
+    DCMotor motorType,
+    double carriageMassKg,
+    double drumRadiusMeters,
+    boolean simulateGravity,
+    double startingHeightMeters,
+    double measurementStdDevs) {}
 
   // Taken from mech and electrical
   public static final double kDrumRadiusMeters = Units.inchesToMeters(0.944);

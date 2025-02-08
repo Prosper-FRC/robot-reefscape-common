@@ -17,10 +17,10 @@ public class IntakeIOSim implements IntakeIO {
   public IntakeIOSim(ElevatorHardware hardware, SimulationConfiguration configuration, double loopPeriodSec) {
     kIntake = new DCMotorSim(
       LinearSystemId.createDCMotorSystem(
-        configuration.kMotorType(), 
-        configuration.kMeasurementStdDevs(), 
-        hardware.kGearing()), 
-      configuration.kMotorType());
+        configuration.motorType(), 
+        configuration.measurementStdDevs(), 
+        hardware.gearing()), 
+      configuration.motorType());
 
     kLoopPeriodSec = loopPeriodSec;
   }

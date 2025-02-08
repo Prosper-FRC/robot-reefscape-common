@@ -9,34 +9,34 @@ import edu.wpi.first.math.util.Units;
 
 public class IntakeConstants {
   public record IntakeHardware(
-    int kMotorId,
-    double kGearing,
-    double kWheelRadiusMeters
+    int motorId,
+    double gearing,
+    double wheelRadiusMeters
   ) {}
 
   public record IntakeMotorConfiguration(
-    boolean kInvert,
-    boolean kEnableStatorCurrentLimit,
-    boolean kEnableSupplyCurrentLimit,
-    double kStatorCurrentLimitAmps,
-    double kSupplyCurrentLimitAmps,
-    double kPeakForwardVoltage,
-    double kPeakReverseVoltage,
-    NeutralModeValue kNeutralMode) {}
+    boolean invert,
+    boolean enableStatorCurrentLimit,
+    boolean enableSupplyCurrentLimit,
+    double statorCurrentLimitAmps,
+    double supplyCurrentLimitAmps,
+    double peakForwardVoltage,
+    double peakReverseVoltage,
+    NeutralModeValue neutralMode) {}
 
   public record SparkConfiguration(
-    boolean kInvert,
-    int kSmartCurrentLimitAmps,
-    int kSecondaryCurrentLimitAmps,
-    IdleMode kIdleMode) {}
+    boolean invert,
+    int smartCurrentLimitAmps,
+    int secondaryCurrentLimitAmps,
+    IdleMode idleMode) {}
 
   public record SensorConfiguration(
-    double kDetectionThresholdMeters
+    double detectionThresholdMeters
   ) {}
 
   public record SimulationConfiguration(
-    DCMotor kMotorType,
-    double kMeasurementStdDevs
+    DCMotor motorType,
+    double measurementStdDevs
   ) {}
 
   // Taken from mech and electrical

@@ -52,38 +52,38 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     ElevatorHardware hardware,
     ElevatorMotorConfiguration configuration,
     ElevatorGains gains) {
-    kMotor = new TalonFX(hardware.kMotorId(), canbus);
-    kDrumCircumferenceMeters = hardware.kDrumCircumferenceMeters();
+    kMotor = new TalonFX(hardware.motorId(), canbus);
+    kDrumCircumferenceMeters = hardware.drumCircumferenceMeters();
 
     // Apply configurations
-    motorConfiguration.Slot0.kP = gains.kP();
-    motorConfiguration.Slot0.kI = gains.kI();
-    motorConfiguration.Slot0.kD = gains.kD();
-    motorConfiguration.Slot0.kS = gains.kS();
-    motorConfiguration.Slot0.kV = gains.kV();
-    motorConfiguration.Slot0.kA = gains.kA();
-    motorConfiguration.Slot0.kG = gains.kG();
-    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = gains.kMaxVelocityMetersPerSecond();
-    motorConfiguration.MotionMagic.MotionMagicAcceleration = gains.kMaxAccelerationMetersPerSecondSquared();
-    motorConfiguration.MotionMagic.MotionMagicJerk = gains.kJerkMetersPerSecondCubed();
+    motorConfiguration.Slot0.kP = gains.p();
+    motorConfiguration.Slot0.kI = gains.i();
+    motorConfiguration.Slot0.kD = gains.d();
+    motorConfiguration.Slot0.kS = gains.s();
+    motorConfiguration.Slot0.kV = gains.v();
+    motorConfiguration.Slot0.kA = gains.a();
+    motorConfiguration.Slot0.kG = gains.g();
+    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = gains.maxVelocityMetersPerSecond();
+    motorConfiguration.MotionMagic.MotionMagicAcceleration = gains.maxAccelerationMetersPerSecondSquared();
+    motorConfiguration.MotionMagic.MotionMagicJerk = gains.jerkMetersPerSecondCubed();
 
-    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.kEnableSupplyCurrentLimit();
-    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.kSupplyCurrentLimitAmps();
-    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.kEnableStatorCurrentLimit();
-    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.kStatorCurrentLimitAmps();
-    motorConfiguration.Voltage.PeakForwardVoltage = configuration.kPeakForwardVoltage();
-    motorConfiguration.Voltage.PeakReverseVoltage = configuration.kPeakReverseVoltage();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.enableSupplyCurrentLimit();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
+    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.enableStatorCurrentLimit();
+    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.statorCurrentLimitAmps();
+    motorConfiguration.Voltage.PeakForwardVoltage = configuration.peakForwardVoltage();
+    motorConfiguration.Voltage.PeakReverseVoltage = configuration.peakReverseVoltage();
 
-    motorConfiguration.MotorOutput.NeutralMode = configuration.kNeutralMode();
+    motorConfiguration.MotorOutput.NeutralMode = configuration.neutralMode();
     motorConfiguration.MotorOutput.Inverted = 
-      configuration.kInvert() 
+      configuration.invert() 
         ? InvertedValue.CounterClockwise_Positive 
         : InvertedValue.Clockwise_Positive;
 
     // Reset position on startup
     kMotor.setPosition(0.0);
 
-    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.kGearing();
+    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.gearing();
     // Rotor sensor is the built-in sensor
     motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 

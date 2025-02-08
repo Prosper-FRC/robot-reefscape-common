@@ -30,23 +30,23 @@ public class IntakeIOTalonFX implements IntakeIO {
   private VoltageOut voltageControl = new VoltageOut(0.0);
 
   public IntakeIOTalonFX(IntakeHardware hardware, IntakeMotorConfiguration configuration) {
-    kMotor = new TalonFX(hardware.kMotorId());
+    kMotor = new TalonFX(hardware.motorId());
 
     // Apply configurations
-    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.kEnableSupplyCurrentLimit();
-    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.kSupplyCurrentLimitAmps();
-    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.kEnableStatorCurrentLimit();
-    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.kStatorCurrentLimitAmps();
-    motorConfiguration.Voltage.PeakForwardVoltage = configuration.kPeakForwardVoltage();
-    motorConfiguration.Voltage.PeakReverseVoltage = configuration.kPeakReverseVoltage();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.enableSupplyCurrentLimit();
+    motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
+    motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.enableStatorCurrentLimit();
+    motorConfiguration.CurrentLimits.StatorCurrentLimit = configuration.statorCurrentLimitAmps();
+    motorConfiguration.Voltage.PeakForwardVoltage = configuration.peakForwardVoltage();
+    motorConfiguration.Voltage.PeakReverseVoltage = configuration.peakReverseVoltage();
 
-    motorConfiguration.MotorOutput.NeutralMode = configuration.kNeutralMode();
+    motorConfiguration.MotorOutput.NeutralMode = configuration.neutralMode();
     motorConfiguration.MotorOutput.Inverted = 
-    configuration.kInvert() 
+    configuration.invert() 
         ? InvertedValue.CounterClockwise_Positive 
         : InvertedValue.Clockwise_Positive;
 
-    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.kGearing();
+    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.gearing();
     // Rotor sensor is the built-in sensor
     motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
 

@@ -48,27 +48,27 @@ public class ElevatorIOSim implements ElevatorIO {
     double maxPositionMeters,
     double loopPeriodSec) {
     kElevator = new ElevatorSim(
-      configuration.kMotorType(),
-      hardware.kGearing(),
-      configuration.kCarriageMassKg(),
-      configuration.kDrumRadiusMeters(),
+      configuration.motorType(),
+      hardware.gearing(),
+      configuration.carriageMassKg(),
+      configuration.drumRadiusMeters(),
       minPositionMeters,
       maxPositionMeters,
-      configuration.kSimulateGravity(),
-      configuration.kStartingHeightMeters(),
-      configuration.kMeasurementStdDevs(),
-      configuration.kMeasurementStdDevs());
+      configuration.simulateGravity(),
+      configuration.startingHeightMeters(),
+      configuration.measurementStdDevs(),
+      configuration.measurementStdDevs());
 
     kLoopPeriodSec = loopPeriodSec;
 
     kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
-      gains.kMaxVelocityMetersPerSecond(), 
-      gains.kMaxAccelerationMetersPerSecondSquared()));
+      gains.maxVelocityMetersPerSecond(), 
+      gains.maxAccelerationMetersPerSecondSquared()));
 
-    kFeedback = new PIDController(gains.kP(), gains.kI(), gains.kD());
+    kFeedback = new PIDController(gains.p(), gains.i(), gains.d());
 
     kFeedforward = 
-      new ElevatorFeedforward(gains.kS(), gains.kG(), gains.kV(), gains.kA());
+      new ElevatorFeedforward(gains.s(), gains.g(), gains.v(), gains.a());
     
     // Reset elevator model to initial configuration in case it wasn't already
     resetPosition();
