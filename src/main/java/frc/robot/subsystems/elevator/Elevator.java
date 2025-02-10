@@ -42,8 +42,8 @@ public class Elevator extends SubsystemBase {
 
   private final ElevatorIO kHardware;
   private final ElevatorIOInputsAutoLogged kInputs = new ElevatorIOInputsAutoLogged();
-  private final MagneticSensorIOInputs kSensor;
-  private final SensorIOInputsAutoLogged kSensorInputs = new SensorIOInputsAutoLogged();
+  private final MagneticSensorIO kSensor;
+  private final MagneticSensorIOInputsAutoLogged kSensorInputs = new MagneticSensorIOInputsAutoLogged();
 
   private ElevatorGoal currentElevaotrGoal = null;
 
@@ -75,7 +75,7 @@ public class Elevator extends SubsystemBase {
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 
-  public Elevator(ElevatorIO io, MagneticSensorIOInputs ioSensor) {
+  public Elevator(ElevatorIO io, MagneticSensorIO ioSensor) {
     kHardware = io;
     kSensor = ioSensor;
     kVisualizer = new ElevatorVisualizer(getPositionMeters());

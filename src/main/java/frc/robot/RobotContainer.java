@@ -11,6 +11,8 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.MagneticSensorIO;
+import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -50,7 +52,7 @@ public class RobotContainer {
                 //         ElevatorConstants.kRoboElevatorHardware, 
                 //         ElevatorConstants.kMotorConfiguration, 
                 //         ElevatorConstants.kElevatorGains));
-                elevator = new Elevator(new ElevatorIO() {});
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIORev(null));
                 // intake = new Intake(
                 //     new IntakeIOTalonFX(
                 //         IntakeConstants.kRoboIntakeHardware, 
@@ -65,7 +67,8 @@ public class RobotContainer {
                         ElevatorConstants.kElevatorGains,
                         ElevatorConstants.kMinPositionMeters,
                         ElevatorConstants.kMaxPositionMeters,
-                        0.02));
+                        0.02),
+                    new MagneticSensorIO(){});
                 intake = new Intake(
                     new IntakeIOSim(
                         IntakeConstants.kRoboIntakeHardware, 
@@ -74,7 +77,7 @@ public class RobotContainer {
                     new SensorIO(){});
                 break;
             default:
-                elevator = new Elevator(new ElevatorIO() {});
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
                 intake = new Intake(new IntakeIO(){}, new SensorIO(){});
                 break;
         }
