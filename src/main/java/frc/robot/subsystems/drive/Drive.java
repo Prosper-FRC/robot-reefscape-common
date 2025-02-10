@@ -213,23 +213,23 @@ public class Drive extends SubsystemBase {
 
         ///////////////////// SETTING DESIRED SPEEDS FROM DRIVE STATE \\\\\\\\\\\\\\\\\\
         ChassisSpeeds teleopSpeeds = teleopController.computeChassiSpeeds(
-            poseEstimator.getEstimatedPosition().getRotation(), getChassisSpeeds(), false);
+            getPoseEstimate().getRotation(), getChassisSpeeds(), false);
         switch (driveState) {
             case TELEOP:
                 desiredSpeeds = teleopSpeeds;
                 break;
             case TELEOP_SNIPER:
                 desiredSpeeds = teleopController.computeChassiSpeeds(
-                    poseEstimator.getEstimatedPosition().getRotation(), getChassisSpeeds(), true);
+                    getPoseEstimate().getRotation(), getChassisSpeeds(), true);
                 break;
             case POV_SNIPER:
-                desiredSpeeds = teleopController.computeSniperPOVChassisSpeeds(robotRotation);
+                desiredSpeeds = teleopController.computeSniperPOVChassisSpeeds(getPoseEstimate().getRotation());
                 break;
             case HEADING_ALIGN:
                 headingGoal = AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90.0));
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
-                    headingController.getSnapOutput( poseEstimator.getEstimatedPosition().getRotation()));
+                    headingController.getSnapOutput( getPoseEstimate().getRotation()));
                 break;
             case AUTON:
                 desiredSpeeds = ppDesiredSpeeds;
@@ -264,7 +264,7 @@ public class Drive extends SubsystemBase {
         return Commands.runOnce(() -> setDriveState(state), this);
     }
 
-    /* Doesn't end till interuuped */
+    /* Doesn't end till interruped */
     public Command setDriveStateCommandContinued(DriveState state) {
         return new FunctionalCommand(
             () -> setDriveState(state), () -> {}, 
