@@ -29,6 +29,8 @@ public interface ClimbIO {
 
   public default void setPosistion(Rotation2d posistion) {}
 
+  public default void resetPosistion() {}
+
   public default void stop() {}
 
 }

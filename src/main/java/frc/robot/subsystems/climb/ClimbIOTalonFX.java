@@ -90,6 +90,7 @@ public class ClimbIOTalonFX implements ClimbIO{
         inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
     }
 
+    @Override
     public void resetPosistion(){
         Rotation2d value = Rotation2d.fromRotations(kAbsoluteEncoder.get()).minus(kOffset);
         kMotor.setPosition(value.getRotations(), 1.0);

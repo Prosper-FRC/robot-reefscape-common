@@ -52,6 +52,11 @@ public class ClimbIOSim implements ClimbIO{
   }
 
   @Override
+  public void resetPosistion(){
+    kMotor.setAngle(0);
+  }
+
+  @Override
   public void stop(){
     kMotor.setInputVoltage(0.0);
   }
