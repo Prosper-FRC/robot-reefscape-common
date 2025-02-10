@@ -42,6 +42,8 @@ public class Elevator extends SubsystemBase {
 
   private final ElevatorIO kHardware;
   private final ElevatorIOInputsAutoLogged kInputs = new ElevatorIOInputsAutoLogged();
+  private final MagneticSensorIOInputs kSensor;
+  private final SensorIOInputsAutoLogged kSensorInputs = new SensorIOInputsAutoLogged();
 
   private ElevatorGoal currentElevaotrGoal = null;
 
@@ -73,8 +75,9 @@ public class Elevator extends SubsystemBase {
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 
-  public Elevator(ElevatorIO io) {
+  public Elevator(ElevatorIO io, MagneticSensorIOInputs ioSensor) {
     kHardware = io;
+    kSensor = ioSensor;
     kVisualizer = new ElevatorVisualizer(getPositionMeters());
   }
 
@@ -82,6 +85,8 @@ public class Elevator extends SubsystemBase {
   public void periodic() {
     kHardware.updateInputs(kInputs);
     Logger.processInputs("Elevator/Inputs", kInputs);
+    kSensor.updateInputs(kSensorInputs);
+    Logger.processInputs("Elevator/Inputs/Sensor", kSensorInputs);
 
     // Stop and clear goal if disabled. Used if copilot is still pressing button to command
     // elevator to go to a setpoint when the disabled key is pressed

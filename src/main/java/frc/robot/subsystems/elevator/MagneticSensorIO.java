@@ -7,9 +7,9 @@ package frc.robot.subsystems.elevator;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Hardware interface for a digital sensor - used to "home" the elevator */
-public interface SensorIO {
+public interface MagneticSensorIO {
   @AutoLog
-  public static class SensorIOInputs {
+  public static class MagneticSensorIOInputs {
     public boolean isConnected = false;
 
     /** 
@@ -25,5 +25,5 @@ public interface SensorIO {
    * 
    * @param inputs The inputs object
    */
-  public default void updateInputs(SensorIOInputs inputs) {}
+  public default void updateInputs(MagneticSensorIOInputs inputs) {}
 }

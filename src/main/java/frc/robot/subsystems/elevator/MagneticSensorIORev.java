@@ -13,14 +13,14 @@ import frc.robot.subsystems.elevator.ElevatorConstants.SensorHardware;
  * Related documentation:
  * https://docs.revrobotics.com/rev-crossover-products/sensors/magnetic-limit-switch/specs
  */
-public class SensorIOMagnetic implements SensorIO {
+public class MagneticSensorIORev implements MagneticSensorIO {
   private final DigitalInput kSensor;
 
-  public SensorIOMagnetic(SensorHardware hardware) {
+  public MagneticSensorIORev(SensorHardware hardware) {
     kSensor = new DigitalInput(hardware.sensorChannel());
   }
 
-  public void updateInputs(SensorIOInputs inputs) {
+  public void updateInputs(MagneticSensorIOInputs inputs) {
     // Assume sensor is always connected, could implement method for checking if its
     // actually still connected later
     inputs.isConnected = true;
