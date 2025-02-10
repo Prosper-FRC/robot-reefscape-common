@@ -6,11 +6,12 @@ package frc.robot.subsystems.climb;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
 
 /** Constants for a Pivot (Single jointed arm) */
 public class ClimbConstants {
-    /** Motor configuration constants */
-    public record KrakenConfiguration(
+
+    public record ClimbMotorConfiguration(
         boolean kEnableStatorCurrentLimit,
         boolean kEnableSupplyCurrentLimit,
         double kStatorCurrentLimitAmps,
@@ -21,61 +22,48 @@ public class ClimbConstants {
         double kPeakReverseVoltage
     ) {}
 
-    /** Feedback, feedforward, and profile constraints */
-    public record PivotGains(
-        double kP,
-        double kI,
-        double kD,
-        double kS,
-        double kG,
-        double kA,
-        double kV,
-        // Max velocity constraint for the Trapezoidal Motion Profile
-        double kMaxVelocity,
-        // Max acceleration constraint for the Trapezoidal Motion Profile
-        double kMaxAcceleration
+    public record ClimbHardware(
+        int motorId,
+        int absoluteEncoderPort,
+        Rotation2d absoluteEncoderOffset,
+        double gearing,
+        Rotation2d minPosisiton,
+        Rotation2d maxPosisition
     ) {}
 
-    // If using a CANivore, set this boolean to true and set the CANivore name to
-    // what is is. Consult your electrical lead if you are unsure if your team
-    // is using a CANivore. The name can be configured using Phoenix Tuner.
-    public static final boolean kUseCANivore = false;
-    public static final String kCANBusName = "drivebase";
+    public record SimulationConfiguration(
+        DCMotor motorType,
+        double measurementStdDevs
+    ) {}
 
-    // The gearing between your motor shaft and output shaft, consult the
-    // mechanical team for this value
-    public static final double kGearRatio = 96.9 / 1.0;
+    public static final Rotation2d kAbsoluteOffset = Rotation2d.fromRotations(0);
 
-    public static final int kLeaderMotorID = 41;
-    public static final int kFollowerMotorID = 42;
+    public static final Rotation2d kMaxPosistionAngle = Rotation2d.fromRotations(0.5);
+    public static final Rotation2d kMinPosistionAngle = Rotation2d.fromRotations(0);
 
-    // If using a REV ThroughBore as your absolute encoder, set this value to true
-    public static final boolean kUseThroughBore = false;
-    // This is the digital input port of the RoboRIO that your through bore data pin plugs into
-    public static final int kThroughBoreEncoderPort = 0;
-    // If your absolute encoder is mounted anywhere except directly on to the shaft, you need to plug
-    // in the gear ratio between the shaft that your absolute encoder is on, and shaft that your
-    // mechanism is on
-    public static final double kThroughBoreEncoderRatio = 1.0 / 1.0;
+    public static final double kClimbGearing = 125.0;
 
-    // TODO Check if this is accurate
-    // Whether or not the follower-motor will spin in the opposite direction of
-    // the leader-motor. If the follower-motor is mounted facing the opposite
-    // direction of the leader-motor, this value should be set to true.
-    public static final boolean kFollowerMotorOpposeMasterDirection = true;
-
-    /** The frequency that telemetry form the motor is pushed to the CANBus */
     public static final double kStatusSignalUpdateFrequencyHz = 100.0;
+  
+    public static final ClimbHardware kClimbHardwareConfiguration = new ClimbHardware(
+        0, 
+        0, 
+        kAbsoluteOffset,
+        kClimbGearing, 
+        kMinPosistionAngle, 
+        kMaxPosistionAngle);
 
-    // Soft positions limits to prevent the arm from breaking itself
-    public static final Rotation2d kUpperPositionLimit = Rotation2d.fromDegrees(275.0);
-    public static final Rotation2d kLowerPositionLimit = Rotation2d.fromDegrees(0.0);
-
-    // NOTE The configuration only needs to be applied to the leader-motor. The
-    // follower-motor MUST obey the configuration of the leader-motor.
-    public static final KrakenConfiguration kMotorConfiguration =
-        new KrakenConfiguration(true, true, 80.0, 30.0, NeutralModeValue.Brake, false, 12.0, -12.0);
-
-    public static final PivotGains kPivotGains =
-        new PivotGains(75.0, 0.0, 0.0, 0.24, 0.3, 0.0, 0.0, 10.0, 20.0);
+    public static final ClimbMotorConfiguration kMotorConfiguration = new ClimbMotorConfiguration(
+        true, 
+        true, 
+        60.0, 
+        50.0, 
+        NeutralModeValue.Brake, 
+        false, 
+        12.0, 
+        -12.0);
+    
+    public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
+        DCMotor.getKrakenX60(1), 
+        0.0002);
 }

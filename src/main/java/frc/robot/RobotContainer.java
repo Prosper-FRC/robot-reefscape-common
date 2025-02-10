@@ -5,8 +5,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbConstants;
+import frc.robot.subsystems.climb.ClimbIO;
+import frc.robot.subsystems.climb.ClimbIOSim;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
+import frc.robot.subsystems.climb.Climb.ClimbGoal;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -17,6 +25,7 @@ public class RobotContainer {
 
     // Define subsystems
     // ex: private final LEDSubsystem LEDs;
+    private final Climb climb;
 
     // Define other utility classes
     private final AutonCommands autonCommands;
@@ -32,12 +41,20 @@ public class RobotContainer {
         switch (Constants.kCurrentMode) {
             case REAL:
                 // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
+                climb = new Climb(new ClimbIOTalonFX(
+                    ClimbConstants.kClimbHardwareConfiguration,
+                    ClimbConstants.kMotorConfiguration));
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
+                climb = new Climb(new ClimbIOSim(
+                    ClimbConstants.kClimbHardwareConfiguration,
+                    ClimbConstants.kSimulationConfiguration,
+                    0.02));
                 break;
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
+                climb = new Climb(new ClimbIO(){});
                 break;
         }
 
@@ -85,6 +102,16 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        operatorController.rightTrigger().whileTrue(
+            Commands.startEnd(
+                () -> {climb.setGoal(ClimbGoal.kGrab);}, 
+                () -> {climb.setGoal(ClimbGoal.kStop);}, 
+                climb));
 
+        operatorController.leftTrigger().whileTrue(
+            Commands.startEnd(
+                () -> {climb.setGoal(ClimbGoal.kRelease);}, 
+                () -> {climb.setGoal(ClimbGoal.kStop);}, 
+                climb));
     }
 }
