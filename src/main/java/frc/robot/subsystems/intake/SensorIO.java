@@ -6,7 +6,7 @@ package frc.robot.subsystems.intake;
 
 import org.littletonrobotics.junction.AutoLog;
 
-/** Sensor inteface for a CANrange sensor */
+/** Sensor inteface for a LaserCAN sensor */
 public interface SensorIO {
   @AutoLog
   public static class SensorIOInputs {

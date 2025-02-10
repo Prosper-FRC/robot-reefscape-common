@@ -30,17 +30,24 @@ public class IntakeConstants {
     int secondaryCurrentLimitAmps,
     IdleMode idleMode) {}
 
+  /**
+   * See this comment and documentation about the units if x, y, w, h 
+   * https://github.com/Prosper-FRC/robot-reefscape-common/pull/20#discussion_r1947983003
+   * https://grapplerobotics.au/product/lasercan/
+   */
   public record SensorConfiguration(
-    double detectionThresholdMeters
+    int sensorId,
+    double detectionThresholdMeters,
+    int x,
+    int y,
+    int w,
+    int h
   ) {}
 
   public record SimulationConfiguration(
     DCMotor motorType,
     double measurementStdDevs
   ) {}
-
-  // Taken from mech and electrical
-  public static final int kCANrangeID = 57;
 
   /** The intake subsystem will periodically compare the motors current amperage to this 
    * value, if it is exceeding this value over a certain interval of time, it likely has 
@@ -76,7 +83,12 @@ public class IntakeConstants {
     IdleMode.kCoast);
 
   public static final SensorConfiguration kSensorConfiguration = new SensorConfiguration(
-    1.0);
+    57, // Sensor CAN ID
+    1.0, // Sensor detection threshold distance meters (detection distance)
+    8, // Region of interest SPADs starting x-coordinate
+    8, // Region of interest SPADs starting y-coordinate
+    16, // Total region of interest width
+    16); // Totral region of interest height
     
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
