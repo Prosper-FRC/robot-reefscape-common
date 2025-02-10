@@ -83,12 +83,12 @@ public class IntakeConstants {
     IdleMode.kCoast);
 
   public static final SensorConfiguration kSensorConfiguration = new SensorConfiguration(
-    57,
-    1.0,
-    8,
-    8,
-    16,
-    16);
+    57, // Sensor CAN ID
+    1.0, // Sensor detection threshold distance meters (detection distance)
+    8, // Region of interest SPADs starting x-coordinate
+    8, // Region of interest SPADs starting y-coordinate
+    16, // Total region of interest width
+    16); // Totral region of interest height
     
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
