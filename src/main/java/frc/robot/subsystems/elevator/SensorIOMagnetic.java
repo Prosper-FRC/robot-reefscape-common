@@ -19,4 +19,12 @@ public class SensorIOMagnetic implements SensorIO {
   public SensorIOMagnetic(SensorHardware hardware) {
     kSensor = new DigitalInput(hardware.sensorChannel());
   }
+
+  public void updateInputs(SensorIOInputs inputs) {
+    // Assume sensor is always connected, could implement method for checking if its
+    // actually still connected later
+    inputs.isConnected = true;
+
+    inputs.isActivated = kSensor.get();
+  }
 }
