@@ -49,7 +49,7 @@ public class ElevatorConstants {
     double startingHeightMeters,
     double measurementStdDevs) {}
 
-  public record SensorHardware(
+  public record MagneticSensorHardware(
     int sensorChannel
   ){}
 
@@ -132,5 +132,10 @@ public class ElevatorConstants {
     true, 
     0.0, 
     0.0002);
+
+  // TODO Replace with real channel later
+  public static final MagneticSensorHardware kSensorHardware = new MagneticSensorHardware(
+    0
+  );
 }
 

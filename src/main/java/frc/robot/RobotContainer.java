@@ -51,8 +51,9 @@ public class RobotContainer {
                 //         Constants.kCanbusName, 
                 //         ElevatorConstants.kRoboElevatorHardware, 
                 //         ElevatorConstants.kMotorConfiguration, 
-                //         ElevatorConstants.kElevatorGains));
-                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIORev(null));
+                //         ElevatorConstants.kElevatorGains),
+                //     new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO() {});
                 // intake = new Intake(
                 //     new IntakeIOTalonFX(
                 //         IntakeConstants.kRoboIntakeHardware, 

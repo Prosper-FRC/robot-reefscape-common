@@ -5,7 +5,7 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.subsystems.elevator.ElevatorConstants.SensorHardware;
+import frc.robot.subsystems.elevator.ElevatorConstants.MagneticSensorHardware;
 
 /** 
  * A class to interact with the REV Magnetic sensor
@@ -16,7 +16,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants.SensorHardware;
 public class MagneticSensorIORev implements MagneticSensorIO {
   private final DigitalInput kSensor;
 
-  public MagneticSensorIORev(SensorHardware hardware) {
+  public MagneticSensorIORev(MagneticSensorHardware hardware) {
     kSensor = new DigitalInput(hardware.sensorChannel());
   }
 
