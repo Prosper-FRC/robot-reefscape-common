@@ -33,7 +33,7 @@ public class SensorIOLaserCAN implements SensorIO {
         configuration.w(),
         configuration.h()));
     } catch (ConfigurationFailedException e) {
-      System.out.println("Configuration Failed! " + e);
+      System.out.println("ERROR: Intake/SensorIOLaserCAN - Configuration failed, see stacktrace:\n" + e);
     }
   }
 
