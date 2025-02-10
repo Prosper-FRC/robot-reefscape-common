@@ -49,6 +49,10 @@ public class ElevatorConstants {
     double startingHeightMeters,
     double measurementStdDevs) {}
 
+  public record SensorHardware(
+    int sensorChannel
+  ){}
+
   // Taken from mech and electrical
   public static final double kDrumRadiusMeters = Units.inchesToMeters(0.944);
   public static final double kDrumCircumferenceMeters = 2.0 * Math.PI * kDrumRadiusMeters;
