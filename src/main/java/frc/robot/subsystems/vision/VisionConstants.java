@@ -11,16 +11,18 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 public class VisionConstants {
     // From CAD and decided by you in configuration
-    public static final String kLeftCamName = "LEFT";
+    public static final String kLeftCamName = "9492_Left";
     public static final Transform3d kLeftCamTransform = new Transform3d(
         new Translation3d(0.3, -0.3, 0.19),
-        new Rotation3d(1.0, 1.0, 1.0)
+        // Accounts for cameras being on back
+        new Rotation3d(0.0, Math.toRadians(17.1), Math.toDegrees(-40.0 + 180.0))
     );
 
-    public static final String kRightCamName = "RIGHT";
+    public static final String kRightCamName = "9105-Right";
     public static final Transform3d kRightCamTransform = new Transform3d(
         new Translation3d(-0.3, -0.3, 0.19),
-        new Rotation3d(1.0, 1.0, 1.0)
+        // Accounts for cameras being on back
+        new Rotation3d(0.0, Math.toRadians(17.1), Math.toDegrees(40.0 + 180.0))
     );
 
     // TODO: SET TO FALSE UNLESS YOU ACTUALLY KNOW WHAT THIS DOES
