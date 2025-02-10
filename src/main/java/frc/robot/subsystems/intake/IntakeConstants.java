@@ -30,6 +30,11 @@ public class IntakeConstants {
     int secondaryCurrentLimitAmps,
     IdleMode idleMode) {}
 
+  /**
+   * See this comment and documentation about the units if x, y, w, h 
+   * https://github.com/Prosper-FRC/robot-reefscape-common/pull/20#discussion_r1947983003
+   * https://grapplerobotics.au/product/lasercan/
+   */
   public record SensorConfiguration(
     int sensorId,
     double detectionThresholdMeters,

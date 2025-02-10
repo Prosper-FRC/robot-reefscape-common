@@ -21,6 +21,11 @@ public class SensorIOLaserCAN implements SensorIO {
   public SensorIOLaserCAN(SensorConfiguration configuration) {
     kSensor = new LaserCan(configuration.sensorId());
     try {  
+      /*
+       * See this comment and documentation about the units if x, y, w, h 
+       * https://github.com/Prosper-FRC/robot-reefscape-common/pull/20#discussion_r1947983003
+       * https://grapplerobotics.au/product/lasercan/
+       */
       kSensor.setRangingMode(LaserCan.RangingMode.SHORT);
       kSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(
         configuration.x(),
