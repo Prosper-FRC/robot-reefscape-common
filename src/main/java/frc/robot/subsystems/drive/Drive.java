@@ -229,7 +229,7 @@ public class Drive extends SubsystemBase {
                 headingGoal = AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90.0));
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
-                    headingController.getSnapOutput( getPoseEstimate().getRotation()));
+                    headingController.getSnapOutput( getPoseEstimate().getRotation() ));
                 break;
             case AUTON:
                 desiredSpeeds = ppDesiredSpeeds;
@@ -325,6 +325,7 @@ public class Drive extends SubsystemBase {
                 double driveAmps = calculateDriveFeedforward(
                     unOptimizedSetpointStates[i], setpointStates[i], i);
                 
+                /* Multiplies by cos(angleError) to stop the drive from going in the wrong direction */
                 setpointStates[i].cosineScale(modules[i].getCurrentState().angle);
                 optimizedSetpointStates[i] = modules[i].setDesiredStateWithAmperage(setpointStates[i], driveAmps);
             } else {
@@ -439,6 +440,7 @@ public class Drive extends SubsystemBase {
         }, this));
     }
 
+    /* Runs the robot forward at a voltage */
     public void runLinearCharcterization(double volts) {
         setDriveState(DriveState.SYSID_CHARACTERIZATION);
         for(int i = 0; i < 4; i++) modules[i].runCharacterization(volts);
@@ -458,6 +460,7 @@ public class Drive extends SubsystemBase {
             SysIDCharacterization.runDriveSysIDTests( (voltage) -> runAngularCharacterization(voltage), this));
     }
 
+    /* Runs the rotate's robot at a voltage */
     public void runAngularCharacterization(double volts) {
         setDriveState(DriveState.SYSID_CHARACTERIZATION);
         modules[0].runCharacterization( volts, Rotation2d.fromDegrees(-45.0));
