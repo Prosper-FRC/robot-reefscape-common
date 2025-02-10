@@ -6,6 +6,7 @@ package frc.robot.subsystems.intake;
 
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
+import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import frc.robot.subsystems.intake.IntakeConstants.SensorConfiguration;
 import au.grapplerobotics.ConfigurationFailedException;
 
@@ -39,10 +40,15 @@ public class SensorIOLaserCAN implements SensorIO {
 
   @Override
   public void updateInputs(SensorIOInputs inputs) {
-    inputs.isConnected = kSensor.getMeasurement().status == LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT;
+    // Call sensor measruement at start of loop, do not call multiple times as this could make the call
+    // slower. See this issue comment for more info:
+    // https://github.com/Prosper-FRC/robot-reefscape-common/pull/20#discussion_r1947927206
+    Measurement sensorMeasurement = kSensor.getMeasurement();
 
-    if (kSensor.getMeasurement() != null && inputs.isConnected) {
-      inputs.detectsObject = kSensor.getMeasurement().distance_mm < 5;
+    inputs.isConnected = sensorMeasurement.status == LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT;
+
+    if (sensorMeasurement != null && inputs.isConnected) {
+      inputs.detectsObject = sensorMeasurement.distance_mm < 5;
     } else {
       inputs.detectsObject = false;
     }
