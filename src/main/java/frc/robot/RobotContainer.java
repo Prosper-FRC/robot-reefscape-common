@@ -145,17 +145,17 @@ public class RobotContainer {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
     
             driverController.x()
-                .onTrue(robotDrive.setDriveStateCommand(DriveState.DRIFT_TEST))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIFT_TEST))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
             new Trigger(()-> driverController.getHID().getPOV() != -1)
-                .onTrue(robotDrive.setDriveStateCommand(DriveState.POV_SNIPER))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommand(DriveState.LINEAR_TEST))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
