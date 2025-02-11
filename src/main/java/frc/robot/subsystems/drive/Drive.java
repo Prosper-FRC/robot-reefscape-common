@@ -324,7 +324,7 @@ public class Drive extends SubsystemBase {
 
                 setpointStates[i] = new SwerveModuleState(
                     previousSetpoint.moduleStates()[i].speedMetersPerSecond,
-                    /* setpointAngle = currentAngle if the speed is less than 0.075 */
+                    /* setpointAngle = currentAngle if the speed is less than 0.01 */
                     SwerveUtils.removeAzimuthJitter(
                         previousSetpoint.moduleStates()[i], modules[i].getCurrentState()));
 
