@@ -291,7 +291,7 @@ public class Drive extends SubsystemBase {
                 break;
             case DRIVE_TO_POSE:
                 autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
-                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kTest, getPoseEstimate());
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kHexagonal, getPoseEstimate());
                 break;
             default:
         }

@@ -4,8 +4,10 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.utils.math.AllianceFlipUtil;
 
 /* Chooses pose based of strategy and psoe */ 
 public class GoalPoseChooser {
@@ -58,45 +60,51 @@ public class GoalPoseChooser {
      * We got the left or right side of the side we are closest
      */
     public static Pose2d getHexagonalPose(Pose2d robotPose) {
+        Pose2d reefCenter = AllianceFlipUtil.apply(kReefCenter);
         Rotation2d angleFromReefCenter = Rotation2d.fromRadians(
             Math.atan2(
-                robotPose.getY() - kReefCenter.getY(), 
-                robotPose.getX() - kReefCenter.getX()));
+                robotPose.getY() - reefCenter.getY(), 
+                robotPose.getX() - reefCenter.getX()));
+        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg);
         Logger.recordOutput("Drive/GoalPoseAngle", angleFromReefCenter);
+
+        Pose2d goal;
         if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "A");
             if(side.equals(SIDE.LEFT)) {
-                return kDLeft;
-            } else return kDRight;
+                goal = kDLeft;
+            } else goal = kDRight;
         } else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "B");
             if(side.equals(SIDE.LEFT)) {
-                return kELeft;
-            } else return kERight;
+                goal = kELeft;
+            } else goal = kERight;
         } else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "C");
             if(side.equals(SIDE.LEFT)) {
-                return kFLeft;
-            } else return kFRight;
+                goal = kFLeft;
+            } else goal = kFRight;
             // Skipped -150 to 150 because the inBetween function miscopes
             // Putting it in else covers the remainder of the hexagon scope
         } else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "E");
             if(side.equals(SIDE.LEFT)) {
-                return kBLeft;
-            } else return kBRight;
+                goal = kBLeft;
+            } else goal = kBRight;
             // 
         } else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
             Logger.recordOutput("Drive/ReefSide", "F");
             if(side.equals(SIDE.LEFT)) {
-                return kCLeft;
-            } else return kCRight;
+                goal = kCLeft;
+            } else goal = kCRight;
         } else {
             Logger.recordOutput("Drive/ReefSide", "D");
             if(side.equals(SIDE.LEFT)) {
-                return kALeft;
-            } else return kARight;
+                goal = kALeft;
+            } else goal = kARight;
         }
+
+        return AllianceFlipUtil.apply(goal);
     }
 
     /* Sets the goal using a command, meant to be used with buttonboard */
