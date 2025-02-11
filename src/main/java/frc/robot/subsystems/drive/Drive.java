@@ -50,9 +50,10 @@ import frc.robot.utils.swerve.SwerveUtils;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-/* This code is a swerve drivebase 
+/* 
+ * This code is a swerve drivebase 
  * Main logic is handled in periodic() function
-*/
+ */
 public class Drive extends SubsystemBase {
     public static enum DriveState {
         // TELEOP AND AUTON CONTROLS
@@ -82,7 +83,7 @@ public class Drive extends SubsystemBase {
     private SwerveDrivePoseEstimator poseEstimator;
     private Field2d field = new Field2d();
 
-    /* PATHPLANNER AND SETPOINT GENERATOR(USED IN TELEOP */
+    /* PATHPLANNER AND SETPOINT GENERATOR(USED IN TELEOP) */
     public static RobotConfig robotConfig;
     private final SwerveSetpointGenerator setpointGenerator;
     private SwerveSetpoint previousSetpoint = new SwerveSetpoint(
@@ -98,7 +99,7 @@ public class Drive extends SubsystemBase {
     private ChassisSpeeds ppDesiredSpeeds = new ChassisSpeeds();
     private DriveFeedforwards pathPlanningFF = DriveFeedforwards.zeros(4);
 
-    /* CONTROLLERS */
+    /* CONTROLLERS(are used to set chassis speeds) */
     private ManualTeleopController teleopController = new ManualTeleopController();
 
     private HeadingController headingController = new HeadingController();
@@ -149,7 +150,8 @@ public class Drive extends SubsystemBase {
             new PPHolonomicDriveController( kPPTranslationPID, kPPRotationPID ), 
             robotConfig, 
             () -> DriverStation.getAlliance().isPresent() && 
-                DriverStation.getAlliance().get() == Alliance.Red, this);
+                DriverStation.getAlliance().get() == Alliance.Red, 
+            this);
 
         Pathfinding.setPathfinder(new LocalADStarAK());
         PathPlannerLogging.setLogActivePathCallback((activePath) -> Logger.recordOutput(

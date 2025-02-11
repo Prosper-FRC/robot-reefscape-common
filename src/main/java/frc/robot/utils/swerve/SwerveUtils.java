@@ -23,7 +23,9 @@ public class SwerveUtils {
     private static final DCMotor kKrakenFOCModel = DCMotor.getKrakenX60Foc(1);
     private static final double kJitterThreshold = 0.01;
 
-    /*Custom discretize function which has a scalar to over-discretize and compensate for response delay of swerve modules */
+    /* Custom discretize function which has a scalar to over-discretize and compensate for response delay of swerve modules 
+     * https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964
+     */
     public static ChassisSpeeds discretize(ChassisSpeeds speeds, double driftRate) {
         var desiredDeltaPose = new Pose2d(
             speeds.vxMetersPerSecond * dt,
@@ -49,7 +51,7 @@ public class SwerveUtils {
         return isSpeedOptimized(unOptimized, optimized, i) ? - motorAmperage : motorAmperage;
     }
 
-    /* Check if optimize changed module direction */
+    /* Check if optimize changed module velocity direction */
     public static boolean isSpeedOptimized(SwerveModuleState state, SwerveModuleState optimizedState, int i) {
         boolean isSpeedOptimized = !EqualsUtil.epsilonEquals(state.speedMetersPerSecond, optimizedState.speedMetersPerSecond);
         Logger.recordOutput("Drive/Swerve/Feedforward/"+i+"/isSpeedOptimized", isSpeedOptimized);
@@ -78,30 +80,30 @@ public class SwerveUtils {
     /* Log different variations of the desired swerve module states */
     public static void logPossibleDriveStates(boolean doLogging, ChassisSpeeds desiredSpeeds, SwerveModuleState[] currentStates, SwerveSetpoint previousSetpoint, Rotation2d robotRotation) {
         if(doLogging) {
+            /* Regular setpoint generation */
             SwerveModuleState[] unOptimizedSetpointStates = new SwerveModuleState[4];
-            for(int i = 0; i <4; i++) {
+            for(int i = 0; i < 4; i++) {
                 SwerveDriveKinematics.desaturateWheelSpeeds(unOptimizedSetpointStates, kMaxLinearSpeedMPS);
                 unOptimizedSetpointStates[i] = new SwerveModuleState(
                     unOptimizedSetpointStates[i].speedMetersPerSecond,
-                    Math.abs(previousSetpoint.moduleStates()[i].speedMetersPerSecond / kMaxLinearSpeedMPS) < 0.01 ?
-                    currentStates[i].angle : unOptimizedSetpointStates[i].angle);
+                    removeAzimuthJitter(unOptimizedSetpointStates[i], currentStates[i]));
                 unOptimizedSetpointStates[i].optimize(currentStates[i].angle);
                 unOptimizedSetpointStates[i].cosineScale(currentStates[i].angle);
             }
             Logger.recordOutput("Drive/Swerve/preOptimizedSetpoints", unOptimizedSetpointStates);
 
             unOptimizedSetpointStates = DriveConstants.kKinematics.toSwerveModuleStates(desiredSpeeds);
-            for(int i = 0; i <4; i++) {
+            for(int i = 0; i < 4; i++) {
                 unOptimizedSetpointStates[i] = new SwerveModuleState(
                     unOptimizedSetpointStates[i].speedMetersPerSecond,
-                    Math.abs(previousSetpoint.moduleStates()[i].speedMetersPerSecond / kMaxLinearSpeedMPS) < 0.1 ?
-                    currentStates[i].angle : unOptimizedSetpointStates[i].angle);
+                    removeAzimuthJitter(unOptimizedSetpointStates[i], currentStates[i]));
                 unOptimizedSetpointStates[i].optimize(currentStates[i].angle);
                 unOptimizedSetpointStates[i].cosineScale(currentStates[i].angle);
             }
             Logger.recordOutput("Drive/Swerve/saturatedPreOptimizedSetpoints", unOptimizedSetpointStates);
             Logger.recordOutput("Drive/Odometry/preOptimizedChassisSpeeds", DriveConstants.kKinematics.toChassisSpeeds(unOptimizedSetpointStates));
 
+            /* Redux setpoints */
             SwerveModuleState[] swerveModuleStates = DriveConstants.kKinematics.toSwerveModuleStates(desiredSpeeds);
 
             Logger.recordOutput("Drive/Swerve/ReduxSetpoints", swerveModuleStates);
