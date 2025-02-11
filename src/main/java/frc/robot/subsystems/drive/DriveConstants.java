@@ -36,15 +36,10 @@ public class DriveConstants {
 
     public static final double kMaxAzimuthAngularRadiansPS = Math.toRadians(1200);
 
+    /* Plugged into setpoint generator */
     public static final PathConstraints kDriveConstraints = new PathConstraints(
         kMaxLinearSpeedMPS, kMaxLinearAccelerationMPSS, 
         kMaxRotationSpeedRadiansPS, kMaxRotationAccelRadiansPS);
-
-    public static final PathConstraints kAutoAlignConstraints = new PathConstraints(
-        kMaxLinearSpeedMPS / 3.0,
-        kMaxLinearAccelerationMPSS / 2.0,
-        kMaxRotationSpeedRadiansPS / 3.0,
-        kMaxRotationAccelRadiansPS / 1.0);
 
     /* MISC */
     public static final double kDriftRate = RobotBase.isReal() ? 2.5 : 5.57;

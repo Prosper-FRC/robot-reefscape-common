@@ -59,7 +59,7 @@ public class ManualTeleopController {
         int linearExp = (int) Math.round(kLinearInputsExponent.get());
         int rotationExp = (int) Math.round(kRotationInputsExponent.get());
 
-        // Should never exceed 1 for exponent control to work
+        // Should never exceed 1 for exponent control to work. Clamped later as an edge ase
         double xJoystickScalar = getSniperScalar(joystickSniper) * kLinearScalar.get();
         double yJoystickScalar = getSniperScalar(joystickSniper) * kLinearScalar.get();
         double omegaJoystickScalar = getSniperScalar(joystickSniper) * kLinearScalar.get();
@@ -123,6 +123,8 @@ public class ManualTeleopController {
 
         int rotationExp = (int) Math.round(kRotationInputsExponent.get());
 
+        /* If the exponent is an even number it's always positive */
+        /* You lose the sign when it's squared, so you have to multiply it back in  */
         double omegaJoystickScalar = getSniperScalar(true) * kLinearScalar.get();
 
         double omegaJoystickInput =
@@ -133,6 +135,7 @@ public class ManualTeleopController {
             omegaJoystickInput *= Math.signum(omegaAdjustedJoystickInput);
         }
 
+        /* Does polar to rectangular where POV degree is theta, kSniperControl * maxSpeed is r */
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
             kSniperControl.get() * kMaxLinearSpeedMPS * Math.cos(Math.toRadians(povSupplierDegrees.getAsDouble())), 
             kSniperControl.get() * kMaxLinearSpeedMPS * Math.sin(Math.toRadians(povSupplierDegrees.getAsDouble())), 

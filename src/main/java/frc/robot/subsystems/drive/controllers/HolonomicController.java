@@ -122,9 +122,10 @@ public class HolonomicController {
         reset( startPose, new ChassisSpeeds() );
     }
 
-    /* Resets the robot based on the position and the speed of the robot 
+    /* 
+     * Resets the robot based on the position and the speed of the robot 
      * Resetting with the speed allows the robot to stay controlled
-     * while the driver is moving
+     * while the driver is moving before drive to pose is activated
      */
     public void reset(Pose2d robotPose, ChassisSpeeds robotChassisSpeeds) {
         xController.reset( 

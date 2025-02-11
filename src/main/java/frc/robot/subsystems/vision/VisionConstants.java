@@ -29,7 +29,7 @@ public class VisionConstants {
     // This turns on a implementation of Rembrandts single tag vision algorithm
     public static final boolean KUseSingleTagTransform = false;
 
-    // Tuned by your
+    // Tuned by using AdvantageScope data analysis tool(Normal distribution)
     public static final Vector<N3> kSingleStdDevs = (RobotBase.isReal()) ?
         VecBuilder.fill(0.01, 0.01, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
     public static final Vector<N3> kMultiStdDevs = (RobotBase.isReal()) ?

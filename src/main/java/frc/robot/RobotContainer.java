@@ -161,7 +161,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.AUTO_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_POSE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
         }
     }

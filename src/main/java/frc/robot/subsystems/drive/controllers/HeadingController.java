@@ -62,7 +62,7 @@ public class HeadingController {
         goal = goalSupplier;
     }
 
-    public void resetController(Rotation2d robotRotation, Rotation2d robotRotationPerSecond) {
+    public void reset(Rotation2d robotRotation, Rotation2d robotRotationPerSecond) {
         snapController.reset(robotRotation.getDegrees(), robotRotationPerSecond.getDegrees());
     }
 
@@ -82,7 +82,7 @@ public class HeadingController {
         double goalErrorDegrees = snapController.getGoal().position - robotRotation.getDegrees();
         Logger.recordOutput("Drive/HeadingController/setpointErrorDegrees", setpointErrorDegrees);
         Logger.recordOutput("Drive/HeadingController/goalErrorDegrees", goalErrorDegrees);
-        
+
         if(Math.abs(goalErrorDegrees) < kToleranceDegrees.get()) output *= 0.0;
         Logger.recordOutput("Drive/HeadingController/adjustedOutput", output);
 
