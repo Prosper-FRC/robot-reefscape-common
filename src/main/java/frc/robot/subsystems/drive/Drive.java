@@ -27,11 +27,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
-
-import static frc.robot.subsystems.drive.controllers.GoalPoseChooser.*;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
 
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
 import frc.robot.subsystems.drive.controllers.HolonomicController;
@@ -264,7 +262,7 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = null;
                 break;
             default:
-                /* Defaults to Teleop control if no other cases re run*/
+                /* Defaults to Teleop control if no other cases are run*/
         }
 
         ///////////////////////// SETS DESIRED CHASSIS SPEED TO MODULES \\\\\\\\\\\\\\\\\\\\\\\\
@@ -377,8 +375,9 @@ public class Drive extends SubsystemBase {
 
     ////////////// LOCALIZATION(MAINLY RESETING LOGIC) \\\\\\\\\\\\\\\\
     public void resetGyro() {
-        robotRotation = Constants.kAlliance == Alliance.Blue ? 
-            Rotation2d.fromDegrees(0.0) : Rotation2d.fromDegrees(180.0);
+        /* Robot is usually facing the other way(relative to field) when doing cycles on red side, so gyro is reset to 180 */
+        robotRotation = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red) ? 
+            Rotation2d.fromDegrees(180.0) : Rotation2d.fromDegrees(0.0);
         gyro.resetGyro(robotRotation);
         setPose(new Pose2d(getPoseEstimate().getTranslation(), robotRotation));
     }
@@ -480,7 +479,7 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Tolerance/HeadingController")
     public boolean inHeadingTolerance() {
-        /* Accounts for angle wrapping issues with rotation 2D */
+        /* Accounts for angle wrapping issues with rotation 2D error */
         return GeomUtil.getSmallestChangeInRotation(robotRotation, goalRotation).getDegrees() 
             < HeadingController.toleranceDegrees.get();
     }

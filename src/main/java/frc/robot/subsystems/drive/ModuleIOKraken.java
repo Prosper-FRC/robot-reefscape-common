@@ -13,6 +13,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Constants;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
@@ -59,16 +61,16 @@ public class ModuleIOKraken implements ModuleIO {
     private Rotation2d absoluteEncoderOffset;
 
     public ModuleIOKraken(ModuleHardwareConfig config) {
-        driveMotor = new TalonFX(config.driveID(), "drivebase");
+        /* DRIVE INSTANTIATION AND CONFIGURATION */
+        driveMotor = new TalonFX(config.driveID(), Constants.kCanbusName);
         var driveConfig = new TalonFXConfiguration();
         
-        // ONLY WORKS WHEN NOT USING FOC
         driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         driveConfig.CurrentLimits.StatorCurrentLimit = 80;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         driveConfig.CurrentLimits.SupplyCurrentLimit = 60;
 
-        // FOC LIMITS
+        // foc
         driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80.0;
         driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -80.0;
         driveConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.02;
@@ -94,8 +96,9 @@ public class ModuleIOKraken implements ModuleIO {
 
         driveMotor.getConfigurator().apply(driveConfig);
 
+        /* CANCODER INSTANTIATION AND CONFIGURATION */
         absoluteEncoderOffset = config.offset();
-        absoluteEncoder = new CANcoder(config.encoderID(), "drivebase");
+        absoluteEncoder = new CANcoder(config.encoderID(), Constants.kCanbusName);
         absolutePositionSignal = absoluteEncoder.getAbsolutePosition();
         var encoderConfig = new CANcoderConfiguration();
         absoluteEncoder.getConfigurator().apply(encoderConfig);
@@ -103,7 +106,8 @@ public class ModuleIOKraken implements ModuleIO {
         BaseStatusSignal.setUpdateFrequencyForAll(50.0, absolutePositionSignal);
         absoluteEncoder.optimizeBusUtilization();
 
-        azimuthMotor = new TalonFX(config.azimuthID(), "drivebase");
+        /* AZIMUTH INSTANTIATION AND CONFIGURATION */
+        azimuthMotor = new TalonFX(config.azimuthID(), Constants.kCanbusName);
         var turnConfig = new TalonFXConfiguration();
         azimuthMotor.getConfigurator().apply(turnConfig);
 
@@ -122,6 +126,7 @@ public class ModuleIOKraken implements ModuleIO {
         turnConfig.Slot0.kD = kModuleControllerConfigs.azimuthController().getD();
         turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
+        /* Configured but FOC not used on azimuth, just drive motors */
         turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = 30.0;
         turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = -30.0;
 
@@ -186,13 +191,11 @@ public class ModuleIOKraken implements ModuleIO {
 
     @Override
     public void setDriveAmperage(double amps) {
-        org.littletonrobotics.junction.Logger.recordOutput("Drive/Amperage", amps);
         driveMotor.setControl(new TorqueCurrentFOC(amps));
     }
 
     @Override
     public void setDriveVelocity(double velocityMPS, double feedforward) {
-        org.littletonrobotics.junction.Logger.recordOutput("Drive/Sigma", velocityMPS);
         driveMotor.setControl(driveControl
             .withVelocity(velocityMPS)
             .withFeedForward(feedforward));
@@ -205,6 +208,14 @@ public class ModuleIOKraken implements ModuleIO {
         slotConfig.kI = kI;
         slotConfig.kD = kD;
         driveMotor.getConfigurator().apply(slotConfig);
+    }
+
+    /////////// CANCODER METHODS \\\\\\\\\\\
+    @Override
+    public void resetAzimuthEncoder() {
+        azimuthMotor.setPosition(Rotation2d.fromRotations(
+            absoluteEncoder.getAbsolutePosition().getValueAsDouble())
+            .minus(absoluteEncoderOffset).getRotations());
     }
 
     /////////// AZIMUTH MOTOR METHODS \\\\\\\\\\\
@@ -225,13 +236,5 @@ public class ModuleIOKraken implements ModuleIO {
         slotConfig.kI = kI;
         slotConfig.kD = kD;
         azimuthMotor.getConfigurator().apply(slotConfig);
-    }
-
-    /////////// CANCODER METHODS \\\\\\\\\\\
-    @Override
-    public void resetAzimuthEncoder() {
-        azimuthMotor.setPosition(Rotation2d.fromRotations(
-            absoluteEncoder.getAbsolutePosition().getValueAsDouble())
-            .minus(absoluteEncoderOffset).getRotations());
     }
 }

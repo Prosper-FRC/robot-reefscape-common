@@ -30,20 +30,21 @@ public class Module {
     private ModuleIO io;
     private ModuleInputsAutoLogged inputs = new ModuleInputsAutoLogged();
 
+    private final String kLogKey;
+
+    /* Drive Control */
     private Double velocitySetpointMPS = null;
     private Double accelerationSetpointMPSS = null;
     // kDriveA ACTS AS A FUDGE FACTOR, NOT ACTUAL CONSTANT FOR AMPERAGE TUNING
     private Double amperageSetpoint = null;
+    private SimpleMotorFeedforward driveFF = DriveConstants.kModuleControllerConfigs.driveFF();
 
+    /* Azimuth Control */
     private Rotation2d azimuthSetpointAngle = null;
+    private SimpleMotorFeedforward azimuthFF = DriveConstants.kModuleControllerConfigs.azimuthFF();
 
     private SwerveModuleState currentState = new SwerveModuleState();
     private SwerveModulePosition currentPosition = new SwerveModulePosition();
-
-    private final String kLogKey;
-    private SimpleMotorFeedforward driveFF = DriveConstants.kModuleControllerConfigs.driveFF();
-    // Currently unused
-    private SimpleMotorFeedforward azimuthFF = DriveConstants.kModuleControllerConfigs.azimuthFF();
 
     public Module(String key, ModuleIO io) {
         this.io = io;
