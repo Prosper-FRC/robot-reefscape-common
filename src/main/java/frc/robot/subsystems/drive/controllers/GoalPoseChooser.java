@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 /* Chooses pose based of strategy and psoe */ 
 public class GoalPoseChooser {
     public static enum CHOOSER_STRATEGY {
-        TEST,
-        HEXAGONAL,
-        BUTTON_BOARD
+        kTest,
+        kHexagonal,
+        kButtonBoard
     }
 
     public static enum SIDE {
@@ -44,11 +44,11 @@ public class GoalPoseChooser {
 
     public static Pose2d getGoalPose(CHOOSER_STRATEGY strategy, Pose2d pose) {
         switch(strategy) {
-            case TEST:
+            case kTest:
                 return new Pose2d(2.0, 1.0, Rotation2d.fromDegrees(60));
-            case HEXAGONAL:
+            case kHexagonal:
                 return getHexagonalPose(pose);
-            case BUTTON_BOARD:
+            case kButtonBoard:
                 return buttonBoardGoal;
         }
         return new Pose2d();
