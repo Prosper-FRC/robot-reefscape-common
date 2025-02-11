@@ -69,16 +69,20 @@ public class HeadingController {
     // Designed for large jumps toward a setpoint, kind of like an azimuth alignment
     public double getSnapOutput(Rotation2d robotRotation) {
         Logger.recordOutput("Drive/HeadingController/HeadingSetpoint", Rotation2d.fromDegrees(snapController.getSetpoint().position));
-        double output = Math.toRadians(
-            snapController.calculate(robotRotation.getDegrees(), goal.get().getDegrees()))
-            + snapController.getSetpoint().velocity;
+        double pidOutput = snapController.calculate(robotRotation.getDegrees(), goal.get().getDegrees());
+        double ffOutput = snapController.getSetpoint().velocity;
 
-        Logger.recordOutput("Drive/HeadingController/pidOutput", snapController.calculate(robotRotation.getDegrees(), goal.get().getDegrees()));
+        Logger.recordOutput("Drive/HeadingController/pidOutput", pidOutput);
+        Logger.recordOutput("Drive/HeadingController/ffOutput", ffOutput);
+        double output = Math.toRadians(pidOutput + ffOutput);
+
         Logger.recordOutput("Drive/HeadingController/unAdjustedOutput", output);
         double setpointErrorDegrees = snapController.getSetpoint().position - robotRotation.getDegrees();
+
         double goalErrorDegrees = snapController.getGoal().position - robotRotation.getDegrees();
         Logger.recordOutput("Drive/HeadingController/setpointErrorDegrees", setpointErrorDegrees);
         Logger.recordOutput("Drive/HeadingController/goalErrorDegrees", goalErrorDegrees);
+        
         if(Math.abs(goalErrorDegrees) < kToleranceDegrees.get()) output *= 0.0;
         Logger.recordOutput("Drive/HeadingController/adjustedOutput", output);
 

@@ -58,7 +58,7 @@ public class Module {
         currentPosition = new SwerveModulePosition(inputs.drivePositionM, inputs.azimuthPosition);
 
         // Runs drive PID
-        // Amperage and acceleration are never not null at the same time
+        // if Amperage and acceleration are null at the same time no feedforward is used
         // Amperage is the FOC feedforward, and acceleration is the voltage feedforward
         if (velocitySetpointMPS != null) {
             Logger.recordOutput("Drive/"+kLogKey+"/velocitySepointMPS", velocitySetpointMPS);
@@ -104,11 +104,12 @@ public class Module {
             }, kTurnS);
     }
 
+    /* Runs characterization of by setting motor drive voltage and rotates the module forward */
     public void runCharacterization(double inputVolts) {
         runCharacterization(inputVolts, new Rotation2d());
     }
 
-    /* Runs characterization of by setting motor voltage and the rotation the module at a specific rotation */
+    /* Runs characterization of by setting motor drive voltage and the rotation the module at a specific rotation */
     public void runCharacterization(double inputVolts, Rotation2d rot) {
         setDesiredRotation(rot);
         setDesiredVelocity(null);
@@ -142,11 +143,13 @@ public class Module {
         velocitySetpointMPS = velocitySetpoint;
     }
 
-    public void setDesiredAmperage(Double torqueNM) {
+    /* Nulls the acceleration, and sets the amperage(FOC) feedforward */
+    public void setDesiredAmperage(Double amperage) {
         this.accelerationSetpointMPSS = null;
-        this.amperageSetpoint = torqueNM;
+        this.amperageSetpoint = amperage;
     }
 
+    /* Nulls the amperage, and sets the acceleration(Voltage) feedforward */
     public void setDesiredAcceleration(Double accelerationMPSS) {
         this.amperageSetpoint = null;
         this.accelerationSetpointMPSS = accelerationMPSS;

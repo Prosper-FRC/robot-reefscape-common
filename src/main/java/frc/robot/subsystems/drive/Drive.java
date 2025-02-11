@@ -76,7 +76,7 @@ public class Drive extends SubsystemBase {
     private GyroInputsAutoLogged gyroInputs = new GyroInputsAutoLogged();
     private Vision vision;
 
-    /* LOCALIZATION */
+    /* LOCALIZATION(tracks position and orientation of robot) */
     private Rotation2d robotRotation;
     private SwerveDriveOdometry odometry;
     private SwerveDrivePoseEstimator poseEstimator;
@@ -255,7 +255,7 @@ public class Drive extends SubsystemBase {
                 break;
         }
 
-        ///////////////////////// SETS SPEED TO MODULES \\\\\\\\\\\\\\\\\\\\\\\\
+        ///////////////////////// SETS DESIRED CHASSIS SPEED TO MODULES \\\\\\\\\\\\\\\\\\\\\\\\
         if (desiredSpeeds != null) runSwerve(desiredSpeeds);
     }
 
