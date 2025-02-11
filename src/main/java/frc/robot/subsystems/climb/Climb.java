@@ -59,6 +59,17 @@ public class Climb extends SubsystemBase{
         if(goal != null){
             setVoltage(goal.getGoalVolts());
         }
+
+        // Continuously check if climb has moved beyond its limitations, note
+        // that we only need to compare the left voltage as that is the lead
+        // motor
+        if (getPosistion().getDegrees() > ClimbConstants.kMaxPosistionAngle.getDegrees() && (kLeftInputs.appliedVoltage > 0.0)) {
+            stop();
+        } else if (getPosistion().getDegrees() > ClimbConstants.kMinPosistionAngle.getDegrees() && (kLeftInputs.appliedVoltage < 0.0)) {
+            stop();
+        } else {
+            // Do nothing if limits are not reached
+        }
     }
 
     public void setGoal(ClimbGoal desiredGoal){
