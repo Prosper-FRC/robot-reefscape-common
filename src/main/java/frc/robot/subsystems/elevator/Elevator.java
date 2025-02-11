@@ -10,8 +10,10 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 
@@ -75,6 +77,11 @@ public class Elevator extends SubsystemBase {
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 
+  private final LinearFilter kHomingFilterAmps = LinearFilter.movingAverage(5);
+
+  private boolean isHoming = false;
+  private boolean hasHomed = false;
+
   public Elevator(ElevatorIO io, MagneticSensorIO ioSensor) {
     kHardware = io;
     kSensor = ioSensor;
@@ -94,26 +101,52 @@ public class Elevator extends SubsystemBase {
       stop();
     }
 
-    if (currentElevaotrGoal != null) {
-      currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
-      setPosition(currentElevatorGoalPositionMeters);
-      kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
+    double elevatorAverageCurrentAmps = kHomingFilterAmps.calculate(kInputs.statorCurrentAmps);
 
-      Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
-    } else {
-      Logger.recordOutput("Elevator/Goal", "NONE");
-      kVisualizer.setGoalLine(0.0, false);
-    }
+    // Check if we are homing 
+    if (!isHoming) {
+      // Run the elevator goal
+      if (currentElevaotrGoal != null) {
+        currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
+        setPosition(currentElevatorGoalPositionMeters);
+        kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
+  
+        Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
+      } else {
+        Logger.recordOutput("Elevator/Goal", "NONE");
+        kVisualizer.setGoalLine(0.0, false);
+      }
 
-    // Check if elevator is attempting to move beyond its limitations
-    if (getPositionMeters() > ElevatorConstants.kMaxPositionMeters
-        && kInputs.appliedVoltage > 0.0) {
-      kHardware.stop();
-    } else if (getPositionMeters() < ElevatorConstants.kMinPositionMeters
-        && kInputs.appliedVoltage < 0.0) {
-      kHardware.stop();
+      // Check if elevator is attempting to move beyond its limitations
+      if (getPositionMeters() > ElevatorConstants.kMaxPositionMeters
+          && kInputs.appliedVoltage > 0.0) {
+        kHardware.stop();
+      } else if (getPositionMeters() < ElevatorConstants.kMinPositionMeters
+          && kInputs.appliedVoltage < 0.0) {
+        kHardware.stop();
+      } else {
+        // Do nothing if limits are not reached
+      }
     } else {
-      // Do nothing if limits are not reached
+      // If we are homing...
+      if (RobotBase.isReal()) {
+        // If the magnetic sensor is activated, we've completed homing
+        if (kSensorInputs.isActivated) {
+          resetPosition();
+          stop();
+          hasHomed = true;
+          isHoming = false;
+        } else {
+        // Otherwise, continue to run the elevator downwards
+          kHardware.setVoltage(-2.0);
+          hasHomed = false;
+          isHoming = true;
+        }
+      } else {
+        // If we're in sim, do not simulate homing, just cancel
+        hasHomed = true;
+        isHoming = false;
+      }
     }
 
     // This says that if the value is changed in the advantageScope tool,
@@ -193,6 +226,32 @@ public class Elevator extends SubsystemBase {
     positionGoalMeters = MathUtil.clamp(
       positionGoalMeters, ElevatorConstants.kMinPositionMeters, ElevatorConstants.kMaxPositionMeters);
     kHardware.setPosition(positionGoalMeters);
+  }
+
+  /** 
+   * Initiates the homing sequence, note that this will override all other actions until completed or
+   * cancelled
+   */
+  public void homeElevator() {
+    isHoming = true;
+    hasHomed = false;
+    // Pass in null goal so the elevator doesn't go anywhere if homing is cancelled
+    setGoal(null);
+  }
+
+  /** Cancels the homing sequence */
+  public void cancelHoming() {
+    isHoming = false;
+  }
+
+  /**
+   * Check if the elevator has completed its homing routine, note that this will reset 
+   * when the homing sequence is recalled
+   * 
+   * @return If the elevator has completed homing
+   */
+  public boolean hasHomed() {
+    return hasHomed;
   }
 
   /**
