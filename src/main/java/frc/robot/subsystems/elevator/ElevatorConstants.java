@@ -57,6 +57,12 @@ public class ElevatorConstants {
   public static final double kDrumRadiusMeters = Units.inchesToMeters(0.944);
   public static final double kDrumCircumferenceMeters = 2.0 * Math.PI * kDrumRadiusMeters;
 
+  /** The number of motor current reading samples the homing filter averages over, 
+   * this number cannot be 0 */
+  public static final int kLinearFilterSampleCount = 5;
+  public static final int kAmpFilterThreshold = 40;
+  public static final boolean kHomeWithCurrent = false;
+
   public static final double kMaxPositionMeters = 1.65;
   public static final double kMinPositionMeters = 0.0;
 

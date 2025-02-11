@@ -78,7 +78,7 @@ public class Elevator extends SubsystemBase {
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 
-  private final LinearFilter kHomingFilterAmps = LinearFilter.movingAverage(5);
+  private final LinearFilter kHomingFilterAmps = LinearFilter.movingAverage(ElevatorConstants.kLinearFilterSampleCount);
 
   private LoggedNetworkBoolean simulatedHomingSensorActivator = 
     new LoggedNetworkBoolean("Elevator/hasHomed", false);
@@ -92,6 +92,7 @@ public class Elevator extends SubsystemBase {
     kVisualizer = new ElevatorVisualizer(getPositionMeters());
   }
 
+  @SuppressWarnings("unused")
   @Override
   public void periodic() {
     kHardware.updateInputs(kInputs);
@@ -135,7 +136,8 @@ public class Elevator extends SubsystemBase {
       // If we are homing...
       if (RobotBase.isReal()) {
         // If the magnetic sensor is activated, we've completed homing
-        if (kSensorInputs.isActivated) {
+        if (kSensorInputs.isActivated || (ElevatorConstants.kHomeWithCurrent && (
+            elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold))) {
           resetPosition();
           stop();
           hasHomed = true;
