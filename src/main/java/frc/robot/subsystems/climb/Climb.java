@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climb extends SubsystemBase{
@@ -31,17 +32,25 @@ public class Climb extends SubsystemBase{
     @AutoLogOutput(key="Climb/Goal")
     private ClimbGoal goal = null;
 
-    private final ClimbIO io;
-    private final ClimbIOInputsAutoLogged kInputs = new ClimbIOInputsAutoLogged();
+    private final ClimbIO kLeftIo;
+    private final ClimbIOInputsAutoLogged kLeftInputs = new ClimbIOInputsAutoLogged();
 
-    public Climb(ClimbIO io){
-        this.io = io;
+    private final ClimbIO kRightIo;
+    private final ClimbIOInputsAutoLogged kRightInputs = new ClimbIOInputsAutoLogged();
+
+
+    public Climb(ClimbIO[] motors){
+        kLeftIo = motors[0];
+        kRightIo = motors[1];
     }
 
     @Override
     public void periodic() {
-        io.updateInputs(kInputs);
-        Logger.processInputs("Climb/Inputs", kInputs);
+        kLeftIo.updateInputs(kLeftInputs);
+        Logger.processInputs("Climb/LeftInputs", kLeftInputs);
+
+        kRightIo.updateInputs(kRightInputs);
+        Logger.processInputs("Climb/RightInputs", kRightInputs);
 
         if(!DriverStation.isEnabled()){
             stop();
@@ -58,11 +67,19 @@ public class Climb extends SubsystemBase{
 
     public void stop(){
         goal = null;
-        io.stop();
+
+        if(RobotBase.isReal()){
+            kLeftIo.stop();
+        }
+
+        else{
+            kLeftIo.stop();
+            kRightIo.stop();
+        }
     }
 
     public Rotation2d getPosistion(){
-        return kInputs.relativePosistion;
+        return kLeftInputs.relativePosistion;
     }
 
     public void setVoltage(double voltage){
@@ -75,7 +92,14 @@ public class Climb extends SubsystemBase{
         }
 
         else{
-            io.setVoltage(voltage);
+            if(RobotBase.isReal()){
+                kLeftIo.setVoltage(voltage);
+            }
+
+            else{
+                kLeftIo.setVoltage(voltage);
+                kRightIo.setVoltage(voltage);
+            }
         }
     }
 }

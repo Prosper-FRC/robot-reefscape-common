@@ -15,9 +15,10 @@ public interface ClimbIO {
     public boolean isMotorConnected = false;
 
     // Logging the position and velocity in meters since this is a linear mechanism
-    public Rotation2d absolutePosistion = Rotation2d.fromRotations(0.0);
-    public Rotation2d relativePosistion = Rotation2d.fromRotations(0.0);
+    public Rotation2d absolutePosistion = new Rotation2d();
+    public Rotation2d relativePosistion = new Rotation2d();
     public double appliedVoltage = 0.0;
+
     public double supplyCurrentAmps = 0.0;
     public double statorCurrentAmps = 0.0;
     public double temperatureCelsius = 0.0;

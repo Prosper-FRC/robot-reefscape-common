@@ -10,7 +10,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 
 /** Constants for a Pivot (Single jointed arm) */
 public class ClimbConstants {
-
     public record ClimbMotorConfiguration(
         boolean kEnableStatorCurrentLimit,
         boolean kEnableSupplyCurrentLimit,
@@ -24,7 +23,6 @@ public class ClimbConstants {
 
     public record ClimbHardware(
         int motorId,
-        int absoluteEncoderPort,
         Rotation2d absoluteEncoderOffset,
         double gearing,
         Rotation2d minPosisiton,
@@ -36,6 +34,8 @@ public class ClimbConstants {
         double measurementStdDevs
     ) {}
 
+    
+    public static final int kAbsoluteEncoderPort = 0;
     public static final Rotation2d kAbsoluteOffset = Rotation2d.fromRotations(0);
 
     public static final Rotation2d kMaxPosistionAngle = Rotation2d.fromRotations(0.5);
@@ -45,21 +45,37 @@ public class ClimbConstants {
 
     public static final double kStatusSignalUpdateFrequencyHz = 100.0;
   
-    public static final ClimbHardware kClimbHardwareConfiguration = new ClimbHardware(
-        0, 
+    public static final ClimbHardware kFollowerClimbHardwareConfiguration = new ClimbHardware(
         0, 
         kAbsoluteOffset,
         kClimbGearing, 
         kMinPosistionAngle, 
         kMaxPosistionAngle);
 
-    public static final ClimbMotorConfiguration kMotorConfiguration = new ClimbMotorConfiguration(
+    public static final ClimbMotorConfiguration kLeadMotorConfiguration = new ClimbMotorConfiguration(
         true, 
         true, 
         60.0, 
         50.0, 
         NeutralModeValue.Brake, 
         false, 
+        12.0, 
+        -12.0);
+
+    public static final ClimbHardware kLeadClimbHardwareConfiguration = new ClimbHardware(
+        0, 
+        kAbsoluteOffset,
+        kClimbGearing, 
+        kMinPosistionAngle, 
+        kMaxPosistionAngle);
+
+    public static final ClimbMotorConfiguration kFollowerMotorConfiguration = new ClimbMotorConfiguration(
+        true, 
+        true, 
+        60.0, 
+        50.0, 
+        NeutralModeValue.Brake, 
+        true, 
         12.0, 
         -12.0);
     

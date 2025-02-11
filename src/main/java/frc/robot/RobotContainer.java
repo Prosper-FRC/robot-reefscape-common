@@ -41,20 +41,29 @@ public class RobotContainer {
         switch (Constants.kCurrentMode) {
             case REAL:
                 // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
-                climb = new Climb(new ClimbIOTalonFX(
-                    ClimbConstants.kClimbHardwareConfiguration,
-                    ClimbConstants.kMotorConfiguration));
+                climb = new Climb(new ClimbIO[]{
+                    new ClimbIOTalonFX(ClimbConstants.kLeadClimbHardwareConfiguration, ClimbConstants.kLeadMotorConfiguration),
+                    // Follower motor! //
+                    new ClimbIOTalonFX(ClimbConstants.kFollowerClimbHardwareConfiguration, ClimbConstants.kFollowerMotorConfiguration, ClimbConstants.kLeadClimbHardwareConfiguration.motorId())});
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
-                climb = new Climb(new ClimbIOSim(
-                    ClimbConstants.kClimbHardwareConfiguration,
-                    ClimbConstants.kSimulationConfiguration,
-                    0.02));
+                climb = new Climb(new ClimbIO[]{
+                    new ClimbIOSim(
+                        ClimbConstants.kLeadClimbHardwareConfiguration, 
+                        ClimbConstants.kSimulationConfiguration, 
+                        0.02),
+
+                    new ClimbIOSim(
+                        ClimbConstants.kFollowerClimbHardwareConfiguration, 
+                        ClimbConstants.kSimulationConfiguration, 
+                        0.02)});
                 break;
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
-                climb = new Climb(new ClimbIO(){});
+                climb = new Climb(new ClimbIO[]{
+                    new ClimbIO(){},
+                    new ClimbIO(){}});
                 break;
         }
 

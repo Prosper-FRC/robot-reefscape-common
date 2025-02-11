@@ -3,6 +3,7 @@ package frc.robot.subsystems.climb;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -16,6 +17,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import frc.robot.subsystems.climb.ClimbConstants.ClimbHardware;
 import frc.robot.subsystems.climb.ClimbConstants.ClimbMotorConfiguration;
+import static frc.robot.subsystems.climb.ClimbConstants.*;
 
 public class ClimbIOTalonFX implements ClimbIO{
     private final TalonFX kMotor;
@@ -37,7 +39,7 @@ public class ClimbIOTalonFX implements ClimbIO{
         ClimbMotorConfiguration configuration){
         
         kMotor = new TalonFX(hardware.motorId());
-        kAbsoluteEncoder = new DutyCycleEncoder(hardware.absoluteEncoderPort());
+        kAbsoluteEncoder = new DutyCycleEncoder(kAbsoluteEncoderPort);
         kOffset = hardware.absoluteEncoderOffset();
 
         motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = configuration.kEnableStatorCurrentLimit();
@@ -73,6 +75,16 @@ public class ClimbIOTalonFX implements ClimbIO{
         resetPosistion();
 
     }
+
+    public ClimbIOTalonFX(
+        ClimbHardware followerHardware, 
+        ClimbMotorConfiguration followerConfiguration,
+        int leaderID) {
+            this(followerHardware, followerConfiguration);
+            //TODO: Flip depending on if the motors go the opposite direction
+            kMotor.setControl(new Follower(leaderID, false));
+        }
+
 
     @Override
     public void updateInputs(ClimbIOInputs inputs){
