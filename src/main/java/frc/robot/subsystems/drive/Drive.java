@@ -256,9 +256,10 @@ public class Drive extends SubsystemBase {
             case LINEAR_TEST:
                 desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(linearTestSpeedMPS.get(), 0.0, 0.0), robotRotation);
                 break;
+            /* Set by characterization commands in the CHARACTERIZATION header. Wheel characterization is currently unimplemented */
             case SYSID_CHARACTERIZATION:
             case WHEEL_CHARACTERIZATION:
-                /* If null, then PID isnt set, so characterization can set motors w/o interruption */
+                /* If null, then PID isn't set, so characterization can set motors w/o interruption */
                 desiredSpeeds = null;
                 break;
             default:
@@ -296,7 +297,7 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    ////////////// SPEED TO MODULES \\\\\\\\\\\\\\\\
+    ////////////// CHASSIS SPEED TO MODULES \\\\\\\\\\\\\\\\
     /* Sets the desired swerve module states to the robot */
     public void runSwerve(ChassisSpeeds speeds) {
         desiredSpeeds = SwerveUtils.discretize(speeds, driftRate.get());
@@ -422,7 +423,10 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    /* ANGULAR CHARACTERIZATION: The angular movement of the drivetrain(basically used to get drivebase MOI)*/
+    /* 
+     * ANGULAR CHARACTERIZATION: The angular movement of the drivetrain(basically used to get drivebase MOI)
+     * https://choreo.autos/usage/estimating-moi/
+     */
     public Command characterizeAngularMotion() {
         return setDriveStateCommand(DriveState.SYSID_CHARACTERIZATION).andThen(
             SysIDCharacterization.runDriveSysIDTests( (voltage) -> runAngularCharacterization(voltage), this));
