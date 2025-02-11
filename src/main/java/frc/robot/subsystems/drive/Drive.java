@@ -58,7 +58,7 @@ public class Drive extends SubsystemBase {
         TELEOP,
         TELEOP_SNIPER,
         POV_SNIPER,
-        PROCESSOR_HEADING,
+        PROCESSOR_HEADING_ALIGN,
         DRIVE_TO_POSE,
         AUTON, 
         STOP,
@@ -233,7 +233,7 @@ public class Drive extends SubsystemBase {
             case POV_SNIPER:
                 desiredSpeeds = teleopController.computeSniperPOVChassisSpeeds(getPoseEstimate().getRotation());
                 break;
-            case PROCESSOR_HEADING:
+            case PROCESSOR_HEADING_ALIGN:
                 goalRotation = AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90.0));
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
@@ -285,7 +285,7 @@ public class Drive extends SubsystemBase {
     public void setDriveState(DriveState state) {
         driveState = state;
         switch(driveState) {
-            case PROCESSOR_HEADING:
+            case PROCESSOR_HEADING_ALIGN:
                 headingController.reset(robotRotation, gyroInputs.yawVelocityPS);            
                 break;
             case DRIVE_TO_POSE:
