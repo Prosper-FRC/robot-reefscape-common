@@ -103,17 +103,17 @@ public class Drive extends SubsystemBase {
     private ManualTeleopController teleopController = new ManualTeleopController();
 
     private HeadingController headingController = new HeadingController();
-    @AutoLogOutput(key="Drive/HeadingController/HeadingGoal")
-    private Rotation2d headingGoal = new Rotation2d();
+    @AutoLogOutput(key="Drive/HeadingController/GoalRotation")
+    private Rotation2d goalRotation = new Rotation2d();
 
     private HolonomicController autoAlignController = new HolonomicController();
     @AutoLogOutput(key="Drive/HeadingController/GoalPose")
     private Pose2d goalPose = new Pose2d();
 
     /* TUNABLE NUMBERS FOR DRIVEBASE CONSTANTS AND TESTS */
-    private final static LoggedTunableNumber kDriftRate = new LoggedTunableNumber("Drive/DriftRate", DriveConstants.kDriftRate);
-    private final static LoggedTunableNumber kRotationDriftTestSpeed = new LoggedTunableNumber("Drive/DriftRotationTest", 360);
-    private final static LoggedTunableNumber kLinearTestSpeed = new LoggedTunableNumber("Drive/DriftLinearTest", 4.5);
+    private final static LoggedTunableNumber driftRate = new LoggedTunableNumber("Drive/DriftRate", DriveConstants.kDriftRate);
+    private final static LoggedTunableNumber rotationDriftTestSpeedDeg = new LoggedTunableNumber("Drive/DriftRotationTestDeg", 360);
+    private final static LoggedTunableNumber linearTestSpeedMPS = new LoggedTunableNumber("Drive/LinearTestMPS", 4.5);
 
     public Drive(Module[] modules, GyroIO gyro, Vision vision) {
         this.modules = modules;
@@ -161,7 +161,7 @@ public class Drive extends SubsystemBase {
 
         SmartDashboard.putData(field);
 
-        headingController.setHeadingGoal(() -> headingGoal);
+        headingController.setHeadingGoal(() -> goalRotation);
     }
 
     /*
@@ -236,7 +236,7 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = teleopController.computeSniperPOVChassisSpeeds(getPoseEstimate().getRotation());
                 break;
             case PROCESSOR_HEADING:
-                headingGoal = AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90.0));
+                goalRotation = AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90.0));
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
@@ -252,11 +252,11 @@ public class Drive extends SubsystemBase {
                 break;
             case DRIFT_TEST:
                 desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                    new ChassisSpeeds(kLinearTestSpeed.get(), 0.0, 
-                        Math.toRadians(kRotationDriftTestSpeed.get())), robotRotation);
+                    new ChassisSpeeds(linearTestSpeedMPS.get(), 0.0, 
+                        Math.toRadians(rotationDriftTestSpeedDeg.get())), robotRotation);
                 break;
             case LINEAR_TEST:
-                desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(kLinearTestSpeed.get(), 0.0, 0.0), robotRotation);
+                desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(new ChassisSpeeds(linearTestSpeedMPS.get(), 0.0, 0.0), robotRotation);
                 break;
             case SYSID_CHARACTERIZATION:
             case WHEEL_CHARACTERIZATION:
@@ -301,7 +301,7 @@ public class Drive extends SubsystemBase {
     ////////////// SPEED TO MODULES \\\\\\\\\\\\\\\\
     /* Sets the desired swerve module states to the robot */
     public void runSwerve(ChassisSpeeds speeds) {
-        desiredSpeeds = SwerveUtils.discretize(speeds, kDriftRate.get());
+        desiredSpeeds = SwerveUtils.discretize(speeds, driftRate.get());
 
         /* Logs all the possible drive states, great for debugging */
         SwerveUtils.logPossibleDriveStates(kDoExtraLogging, desiredSpeeds, getModuleStates(), previousSetpoint, robotRotation);
@@ -481,8 +481,8 @@ public class Drive extends SubsystemBase {
     @AutoLogOutput(key = "Drive/Tolerance/HeadingController")
     public boolean inHeadingTolerance() {
         /* Accounts for angle wrapping issues with rotation 2D */
-        return GeomUtil.getSmallestChangeInRotation(robotRotation, headingGoal).getDegrees() 
-            < HeadingController.kToleranceDegrees.get();
+        return GeomUtil.getSmallestChangeInRotation(robotRotation, goalRotation).getDegrees() 
+            < HeadingController.toleranceDegrees.get();
     }
 
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {

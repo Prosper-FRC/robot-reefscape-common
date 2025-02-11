@@ -16,19 +16,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class ManualTeleopController {
-    public static final LoggedTunableNumber kLinearScalar =
+    public static final LoggedTunableNumber linearScalar =
         new LoggedTunableNumber("Drive/Teleop/LinearScalar", 1);
-    public static final LoggedTunableNumber kLinearDeadBand =
+    public static final LoggedTunableNumber linearDeadBand =
         new LoggedTunableNumber("Drive/Teleop/Deadband", 0.075);
-    public static final LoggedTunableNumber kLinearInputsExponent =
+    public static final LoggedTunableNumber linearInputsExponent =
         new LoggedTunableNumber("Drive/Teleop/LinearInputsExponent", 2);
-    public static final LoggedTunableNumber kRotationScalar =
+    public static final LoggedTunableNumber rotationScalar =
         new LoggedTunableNumber("Drive/Teleop/RotationScalar", 0.5);
-    public static final LoggedTunableNumber kRotationInputsExponent =
+    public static final LoggedTunableNumber rotationInputsExponent =
         new LoggedTunableNumber("Drive/Teleop/RotationInputExponent", 1.0);
-    public static final LoggedTunableNumber kRotationDeadband =
+    public static final LoggedTunableNumber rotationDeadband =
         new LoggedTunableNumber("Drive/Teleop/RotationDeadband", 0.1);
-    public static final LoggedTunableNumber kSniperControl =
+    public static final LoggedTunableNumber sniperControl =
         new LoggedTunableNumber("Drive/Teleop/SniperControl", 0.2);
 
     private boolean fieldRelative = true;
@@ -51,18 +51,18 @@ public class ManualTeleopController {
     }
 
     public ChassisSpeeds computeChassiSpeeds(Rotation2d robotAngle, ChassisSpeeds currentRobotRelativeSpeeds, boolean joystickSniper) {
-        double xAdjustedJoystickInput = MathUtil.applyDeadband(xSupplier.getAsDouble(), kLinearDeadBand.get());
-        double yAdjustedJoystickInput = MathUtil.applyDeadband(ySupplier.getAsDouble(), kLinearDeadBand.get());
-        double omegaAdjustedJoystickInput = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), kRotationDeadband.get());
+        double xAdjustedJoystickInput = MathUtil.applyDeadband(xSupplier.getAsDouble(), linearDeadBand.get());
+        double yAdjustedJoystickInput = MathUtil.applyDeadband(ySupplier.getAsDouble(), linearDeadBand.get());
+        double omegaAdjustedJoystickInput = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), rotationDeadband.get());
 
         // EXPONENTS CAN ONLY BE INTEGERS FOR THIS TO WORK DUE TO MODULUS
-        int linearExp = (int) Math.round(kLinearInputsExponent.get());
-        int rotationExp = (int) Math.round(kRotationInputsExponent.get());
+        int linearExp = (int) Math.round(linearInputsExponent.get());
+        int rotationExp = (int) Math.round(rotationInputsExponent.get());
 
         // Should never exceed 1 for exponent control to work. Clamped later as an edge ase
-        double xJoystickScalar = getSniperScalar(joystickSniper) * kLinearScalar.get();
-        double yJoystickScalar = getSniperScalar(joystickSniper) * kLinearScalar.get();
-        double omegaJoystickScalar = getSniperScalar(joystickSniper) * kLinearScalar.get();
+        double xJoystickScalar = getSniperScalar(joystickSniper) * linearScalar.get();
+        double yJoystickScalar = getSniperScalar(joystickSniper) * linearScalar.get();
+        double omegaJoystickScalar = getSniperScalar(joystickSniper) * linearScalar.get();
 
         double xScaledJoystickInput =
             zerotoOneClamp(xJoystickScalar)
@@ -112,20 +112,20 @@ public class ManualTeleopController {
 
     /* Wheter to use the snipler scalar or not based on the cnodition */
     public double getSniperScalar(boolean isSniper) {
-        return isSniper ? kSniperControl.get() : 1.0;
+        return isSniper ? sniperControl.get() : 1.0;
     }
 
     /*
      * Takes in the POV angle and then moves the robot in that angle at sniper speeds
      */
     public ChassisSpeeds computeSniperPOVChassisSpeeds(Rotation2d robotAngle) {
-        double omegaAdjustedJoystickInput = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), kRotationDeadband.get());
+        double omegaAdjustedJoystickInput = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), rotationDeadband.get());
 
-        int rotationExp = (int) Math.round(kRotationInputsExponent.get());
+        int rotationExp = (int) Math.round(rotationInputsExponent.get());
 
         /* If the exponent is an even number it's always positive */
         /* You lose the sign when it's squared, so you have to multiply it back in  */
-        double omegaJoystickScalar = getSniperScalar(true) * kLinearScalar.get();
+        double omegaJoystickScalar = getSniperScalar(true) * linearScalar.get();
 
         double omegaJoystickInput =
             zerotoOneClamp(omegaJoystickScalar)
@@ -137,8 +137,8 @@ public class ManualTeleopController {
 
         /* Does polar to rectangular where POV degree is theta, kSniperControl * maxSpeed is r */
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
-            kSniperControl.get() * kMaxLinearSpeedMPS * Math.cos(Math.toRadians(povSupplierDegrees.getAsDouble())), 
-            kSniperControl.get() * kMaxLinearSpeedMPS * Math.sin(Math.toRadians(povSupplierDegrees.getAsDouble())), 
+            sniperControl.get() * kMaxLinearSpeedMPS * Math.cos(Math.toRadians(povSupplierDegrees.getAsDouble())), 
+            sniperControl.get() * kMaxLinearSpeedMPS * Math.sin(Math.toRadians(povSupplierDegrees.getAsDouble())), 
             DriveConstants.kMaxRotationSpeedRadiansPS * omegaJoystickInput);
 
         if (fieldRelative) {

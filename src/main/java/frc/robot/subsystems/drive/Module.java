@@ -9,22 +9,22 @@ import org.littletonrobotics.junction.Logger;
 import static frc.robot.subsystems.drive.DriveConstants.kModuleControllerConfigs;
 
 public class Module {
-    public static final LoggedTunableNumber kDriveP = new LoggedTunableNumber(
+    public static final LoggedTunableNumber driveP = new LoggedTunableNumber(
         "Module/Drive/kP", kModuleControllerConfigs.driveController().getP());
-    public static final LoggedTunableNumber kDriveD = new LoggedTunableNumber(
+    public static final LoggedTunableNumber driveD = new LoggedTunableNumber(
         "Module/Drive/kD", kModuleControllerConfigs.driveController().getD());
-    public static final LoggedTunableNumber kDriveS = new LoggedTunableNumber(
+    public static final LoggedTunableNumber driveS = new LoggedTunableNumber(
         "Module/Drive/kS", kModuleControllerConfigs.driveFF().getKs());
-    public static final LoggedTunableNumber kDriveV = new LoggedTunableNumber(
+    public static final LoggedTunableNumber driveV = new LoggedTunableNumber(
         "Module/Drive/kV", kModuleControllerConfigs.driveFF().getKv());
-    public static final LoggedTunableNumber kDriveA = new LoggedTunableNumber(
+    public static final LoggedTunableNumber driveA = new LoggedTunableNumber(
         "Module/Drive/kA", kModuleControllerConfigs.driveFF().getKa());
 
-    public static final LoggedTunableNumber kTurnP = new LoggedTunableNumber(
+    public static final LoggedTunableNumber turnP = new LoggedTunableNumber(
         "Module/AzimuthP", kModuleControllerConfigs.azimuthController().getP());
-    public static final LoggedTunableNumber kTurnD = new LoggedTunableNumber(
+    public static final LoggedTunableNumber turnD = new LoggedTunableNumber(
         "Module/AzimuthD", kModuleControllerConfigs.azimuthController().getD());
-    public static final LoggedTunableNumber kTurnS = new LoggedTunableNumber(
+    public static final LoggedTunableNumber turnS = new LoggedTunableNumber(
         "Module/AzimuthS", kModuleControllerConfigs.azimuthFF().getKs());
 
     private ModuleIO io;
@@ -59,7 +59,7 @@ public class Module {
 
         // Runs drive PID
         // if Amperage and acceleration are null at the same time no feedforward is used
-        // Amperage is the FOC feedforward, and acceleration is the voltage feedforward
+        // Amperage is the FOC feedforward, and acceleration is the voltage feedforward. TODO: Remove Accel
         if (velocitySetpointMPS != null) {
             Logger.recordOutput("Drive/"+kLogKey+"/velocitySepointMPS", velocitySetpointMPS);
             if(amperageSetpoint != null) {
@@ -85,23 +85,23 @@ public class Module {
         // Updates PID
         LoggedTunableNumber.ifChanged(
             hashCode(), () -> {
-                io.setDrivePID(kDriveP.get(), 0.0, kDriveD.get());
-            }, kDriveP, kDriveD);
+                io.setDrivePID(driveP.get(), 0.0, driveD.get());
+            }, driveP, driveD);
 
         LoggedTunableNumber.ifChanged(
             hashCode(), () -> {
-                driveFF = new SimpleMotorFeedforward(kDriveS.get(), kDriveV.get(), kDriveA.get());
-            }, kDriveS, kDriveV, kDriveA);
+                driveFF = new SimpleMotorFeedforward(driveS.get(), driveV.get(), driveA.get());
+            }, driveS, driveV, driveA);
 
         LoggedTunableNumber.ifChanged(
             hashCode(), () -> {
-                io.setAzimuthPID(kTurnP.get(), 0.0, kTurnD.get());
-            }, kTurnP, kTurnD);
+                io.setAzimuthPID(turnP.get(), 0.0, turnD.get());
+            }, turnP, turnD);
 
         LoggedTunableNumber.ifChanged(
             hashCode(), () -> {
-                azimuthFF = new SimpleMotorFeedforward(kTurnS.get(), 0.0, 0.0);
-            }, kTurnS);
+                azimuthFF = new SimpleMotorFeedforward(turnS.get(), 0.0, 0.0);
+            }, turnS);
     }
 
     /* Runs characterization of by setting motor drive voltage and rotates the module forward */

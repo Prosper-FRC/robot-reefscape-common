@@ -11,25 +11,25 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class HeadingController {
-    public static final LoggedTunableNumber kSnapP =
+    public static final LoggedTunableNumber snapP =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kP", 4.0);
-    public static final LoggedTunableNumber kSnapI =
+    public static final LoggedTunableNumber snapI =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kI", 0.0);
-    public static final LoggedTunableNumber kSnapD =
+    public static final LoggedTunableNumber snapD =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kD", 0.0);
-    public static final LoggedTunableNumber kSnapMaxVDPS =
+    public static final LoggedTunableNumber snapMaxVDPS =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kMaxV", 1000.0);
-    public static final LoggedTunableNumber kSnapMaxADPSS =
+    public static final LoggedTunableNumber snapMaxADPSS =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kMaxA", 1000.0);
 
-    public static final LoggedTunableNumber kStablizingP =
+    public static final LoggedTunableNumber stablizingP =
         new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kP", 2.5);
-    public static final LoggedTunableNumber kStablizingI =
+    public static final LoggedTunableNumber stablizingI =
         new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kI", 0.0);
-    public static final LoggedTunableNumber kStablizingD =
+    public static final LoggedTunableNumber stablizingD =
         new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kD", 0.0);
 
-    public static final LoggedTunableNumber kToleranceDegrees =
+    public static final LoggedTunableNumber toleranceDegrees =
         new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kD", 0.75);
 
     private ProfiledPIDController snapController;
@@ -43,17 +43,17 @@ public class HeadingController {
 
     public HeadingController() {
         snapController = new ProfiledPIDController(
-            kSnapP.get(),
-            kSnapI.get(),
-            kSnapD.get(),
-            new TrapezoidProfile.Constraints(kSnapMaxVDPS.get(), kSnapMaxADPSS.get()));
+            snapP.get(),
+            snapI.get(),
+            snapD.get(),
+            new TrapezoidProfile.Constraints(snapMaxVDPS.get(), snapMaxADPSS.get()));
 
         // invert = (RobotBase.isReal()) ? -1.0 : 1.0;
         snapController.enableContinuousInput(0, 360);
         snapController.setTolerance(1.0);
 
         stabilizingController =
-            new PIDController(kStablizingP.get(), kStablizingI.get(), kStablizingD.get());
+            new PIDController(stablizingP.get(), stablizingI.get(), stablizingD.get());
         stabilizingController.enableContinuousInput(0, 360);
         stabilizingController.setTolerance(0.0);
     }
@@ -83,7 +83,7 @@ public class HeadingController {
         Logger.recordOutput("Drive/HeadingController/setpointErrorDegrees", setpointErrorDegrees);
         Logger.recordOutput("Drive/HeadingController/goalErrorDegrees", goalErrorDegrees);
 
-        if(Math.abs(goalErrorDegrees) < kToleranceDegrees.get()) output *= 0.0;
+        if(Math.abs(goalErrorDegrees) < toleranceDegrees.get()) output *= 0.0;
         Logger.recordOutput("Drive/HeadingController/adjustedOutput", output);
 
         return output;
@@ -98,12 +98,12 @@ public class HeadingController {
 
     public void updateHeadingController() {
         LoggedTunableNumber.ifChanged(hashCode(), () -> {
-            snapController.setPID(kSnapP.get(), kSnapI.get(), kSnapD.get());
-            snapController.setConstraints(new Constraints(kSnapMaxVDPS.get(), kSnapMaxADPSS.get()));
-        }, kSnapP, kSnapI, kSnapD, kSnapMaxVDPS, kSnapMaxADPSS);
+            snapController.setPID(snapP.get(), snapI.get(), snapD.get());
+            snapController.setConstraints(new Constraints(snapMaxVDPS.get(), snapMaxADPSS.get()));
+        }, snapP, snapI, snapD, snapMaxVDPS, snapMaxADPSS);
 
         LoggedTunableNumber.ifChanged(hashCode(), () -> {
-            stabilizingController.setPID(kStablizingP.get(), kStablizingI.get(), kStablizingD.get());
-        }, kStablizingP, kStablizingI, kStablizingD);
+            stabilizingController.setPID(stablizingP.get(), stablizingI.get(), stablizingD.get());
+        }, stablizingP, stablizingI, stablizingD);
     }
 }
