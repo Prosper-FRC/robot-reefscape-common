@@ -12,7 +12,6 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
-import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -127,6 +126,5 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-
     }
 }

@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -37,7 +38,7 @@ public class Elevator extends SubsystemBase {
       this.goalMeters = goalMeters;
     }
 
-    private double getGoalMeters() {
+    public double getGoalMeters() {
       return this.goalMeters.getAsDouble();
     }
   }
@@ -78,6 +79,9 @@ public class Elevator extends SubsystemBase {
   private final ElevatorVisualizer kVisualizer;
 
   private final LinearFilter kHomingFilterAmps = LinearFilter.movingAverage(5);
+
+  private LoggedNetworkBoolean simulatedHomingSensorActivator = 
+    new LoggedNetworkBoolean("Elevator/hasHomed", false);
 
   private boolean isHoming = false;
   private boolean hasHomed = false;
@@ -143,11 +147,22 @@ public class Elevator extends SubsystemBase {
           isHoming = true;
         }
       } else {
-        // If we're in sim, do not simulate homing, just cancel
-        hasHomed = true;
-        isHoming = false;
+        // If we're in sim, simulate via button that can be toggled on dashboard
+        if (simulatedHomingSensorActivator.get()) {
+          resetPosition();
+          stop();
+          hasHomed = true;
+          isHoming = false;
+        } else {
+          kHardware.setVoltage(-2.0);
+          hasHomed = false;
+          isHoming = true;
+        }
       }
     }
+
+    Logger.recordOutput("Elevator/isHoming", isHoming);
+    Logger.recordOutput("Elevator/hasHomed", hasHomed);
 
     // This says that if the value is changed in the advantageScope tool,
     // Then we change the values in the code. Saves deploy time.
