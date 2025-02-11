@@ -171,21 +171,21 @@ public class HolonomicController {
     /* Uses 3 PID controllers to set the chassis speeds */
     public ChassisSpeeds calculate(Pose2d goalPose, ChassisSpeeds goalSpeed, Pose2d currentPose) {
         return ChassisSpeeds.fromFieldRelativeSpeeds(
-            -(xController.calculate( 
+            (xController.calculate( 
                 currentPose.getX(), 
                 new TrapezoidProfile.State(
                     goalPose.getX(),
                     goalSpeed.vxMetersPerSecond) )
             + xFeedforward.calculate(xController.getSetpoint().velocity)),
 
-            -(yController.calculate( 
+            (yController.calculate( 
                 currentPose.getY(), 
                 new TrapezoidProfile.State(
                     goalPose.getY(),
                     goalSpeed.vyMetersPerSecond) )
             + yFeedforward.calculate(yController.getSetpoint().velocity)),
 
-            -(Math.toRadians (omegaController.calculate( 
+            (Math.toRadians (omegaController.calculate( 
                 currentPose.getRotation().getDegrees(), 
                 new TrapezoidProfile.State(
                     goalPose.getRotation().getDegrees(),
