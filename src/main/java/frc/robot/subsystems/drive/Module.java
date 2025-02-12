@@ -103,6 +103,23 @@ public class Module {
             }, turnS);
     }
 
+    /* Sets the desired setpoint of the module without FF */
+    public SwerveModuleState setDesiredState(SwerveModuleState state) {
+        setDesiredAmperage(null);
+        setDesiredVelocity(state.speedMetersPerSecond);
+        setDesiredRotation(state.angle);
+        return getDesiredState();
+    }
+
+    /* Sets the desired setpoint of the module with FF */
+    public SwerveModuleState setDesiredStateWithAmperage(SwerveModuleState state, Double desiredAmperage) {
+        // kDriveA ACTS AS A FUDGE FACTOR, NOT ACTUAL CONSTANT FOR AMPERAGE TUNING
+        setDesiredAmperage(desiredAmperage);
+        setDesiredVelocity(state.speedMetersPerSecond);
+        setDesiredRotation(state.angle);
+        return getDesiredState();
+    }
+
     /* Runs characterization of by setting motor drive voltage and rotates the module forward */
     public void runCharacterization(double inputVolts) {
         runCharacterization(inputVolts, new Rotation2d());
@@ -115,67 +132,63 @@ public class Module {
         setDriveVoltage(inputVolts);
     }
 
-    public SwerveModuleState setDesiredState(SwerveModuleState state) {
-        setDesiredAmperage(null);
-        setDesiredVelocity(state.speedMetersPerSecond);
-        setDesiredRotation(state.angle);
-        return getDesiredState();
-    }
-
-    public SwerveModuleState setDesiredStateWithAmperage(SwerveModuleState state, Double desiredAmperage) {
-        // kDriveA ACTS AS A FUDGE FACTOR, NOT ACTUAL CONSTANT FOR AMPERAGE TUNING
-        setDesiredAmperage(desiredAmperage);
-        setDesiredVelocity(state.speedMetersPerSecond);
-        setDesiredRotation(state.angle);
-        return getDesiredState();
-    }
-
+    /* Sets the velocity of the module */
     public void setDesiredVelocity(Double velocitySetpoint) {
         velocitySetpointMPS = velocitySetpoint;
     }
 
-    /* Nulls the acceleration, and sets the amperage(FOC) feedforward */
+    /* Sets the amperage(FOC) feedforward */
     public void setDesiredAmperage(Double amperage) {
         this.amperageSetpoint = amperage;
     }
 
+    /* Sets azimuth rotation goal */
     public void setDesiredRotation(Rotation2d angleSetpoint) {
         azimuthSetpointAngle = angleSetpoint;
     }
 
+    /* Sets drive voltage */
     public void setDriveVoltage(double driveVolts) {
         io.setDriveVolts(driveVolts);
     }
 
+    /* Sets drive amperage using FOC */
     public void setDriveAmp(double amps) {
         io.setDriveAmperage(amps);
     }
 
+    /* Set azimuth voltage */
     public void setAzimuthVoltage(double azimuthVolts) {
         io.setAzimuthVolts(azimuthVolts);
     }
 
+    /* Stops modules by setting voltage to zero */
+    public void stop() {
+        setDriveVoltage(0.0);
+        setAzimuthVoltage(0.0);
+    }
+
+    /* Gets the setpoint state of the module(speed and rotation) */
     public SwerveModuleState getDesiredState() {
         return new SwerveModuleState(velocitySetpointMPS, azimuthSetpointAngle);
     }
 
+    /* Gets the physical state of the module(speed and rotation) */
     public SwerveModuleState getCurrentState() {
         return currentState;
     }
 
+    /* Gets the physical position of the module(position and rotation) */
     public SwerveModulePosition getCurrentPosition() {
         return currentPosition;
     }
 
+    /* All logged hardware data in the module */
     public ModuleInputsAutoLogged getInputs() {
         return inputs;
     }
 
-    public void stop() {
-        io.setDriveVolts(0.0);
-        io.setAzimuthVolts(0.0);
-    }
-
+    /* Resets azimuth encoder from CANCoder */
     public void resetAzimuthEncoder() {
         io.resetAzimuthEncoder();
     }
