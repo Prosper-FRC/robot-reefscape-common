@@ -34,7 +34,6 @@ public class Module {
 
     /* Drive Control */
     private Double velocitySetpointMPS = null;
-    private Double accelerationSetpointMPSS = null;
     // kDriveA ACTS AS A FUDGE FACTOR, NOT ACTUAL CONSTANT FOR AMPERAGE TUNING
     private Double amperageSetpoint = null;
     private SimpleMotorFeedforward driveFF = DriveConstants.kModuleControllerConfigs.driveFF();
@@ -59,17 +58,16 @@ public class Module {
         currentPosition = new SwerveModulePosition(inputs.drivePositionM, inputs.azimuthPosition);
 
         // Runs drive PID
-        // if Amperage and acceleration are null at the same time no feedforward is used
-        // Amperage is the FOC feedforward, and acceleration is the voltage feedforward. TODO: Remove Accel
+        // if Amperage is null no feedforward is used
+        // Amperage is the FOC feedforward
         if (velocitySetpointMPS != null) {
             Logger.recordOutput("Drive/"+kLogKey+"/velocitySepointMPS", velocitySetpointMPS);
             if(amperageSetpoint != null) {
                 double ffOutput = driveFF.calculate(velocitySetpointMPS, amperageSetpoint);
-                io.setDriveVelocity(velocitySetpointMPS, ffOutput);
+
                 Logger.recordOutput("Drive/"+kLogKey+"/AmperageFeedforward", amperageSetpoint);
-            } else if(accelerationSetpointMPSS != null) {
-                double ffOutput = driveFF.calculate(velocitySetpointMPS, accelerationSetpointMPSS);
-                Logger.recordOutput("Drive/"+kLogKey+"/SimpleFeedforward", ffOutput);
+                Logger.recordOutput("Drive/"+kLogKey+"/ffOutput", ffOutput);
+
                 io.setDriveVelocity(velocitySetpointMPS, ffOutput);
             } else {
                 io.setDriveVelocity(velocitySetpointMPS, 0.0);
@@ -83,7 +81,7 @@ public class Module {
             io.setAzimuthPosition(azimuthSetpointAngle, ffOutput);
         }
 
-        // Updates PID
+        // Updates PID values for drive and azimuth
         LoggedTunableNumber.ifChanged(
             hashCode(), () -> {
                 io.setDrivePID(driveP.get(), 0.0, driveD.get());
@@ -118,7 +116,6 @@ public class Module {
     }
 
     public SwerveModuleState setDesiredState(SwerveModuleState state) {
-        setDesiredAcceleration(null);
         setDesiredAmperage(null);
         setDesiredVelocity(state.speedMetersPerSecond);
         setDesiredRotation(state.angle);
@@ -133,27 +130,13 @@ public class Module {
         return getDesiredState();
     }
 
-    public SwerveModuleState setDesiredStateWithAccel(SwerveModuleState state, Double accelMPSS) {
-        setDesiredAcceleration(accelMPSS);
-        setDesiredVelocity(state.speedMetersPerSecond);
-        setDesiredRotation(state.angle);
-        return getDesiredState();
-    }
-
     public void setDesiredVelocity(Double velocitySetpoint) {
         velocitySetpointMPS = velocitySetpoint;
     }
 
     /* Nulls the acceleration, and sets the amperage(FOC) feedforward */
     public void setDesiredAmperage(Double amperage) {
-        this.accelerationSetpointMPSS = null;
         this.amperageSetpoint = amperage;
-    }
-
-    /* Nulls the amperage, and sets the acceleration(Voltage) feedforward */
-    public void setDesiredAcceleration(Double accelerationMPSS) {
-        this.amperageSetpoint = null;
-        this.accelerationSetpointMPSS = accelerationMPSS;
     }
 
     public void setDesiredRotation(Rotation2d angleSetpoint) {
