@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -458,7 +459,7 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Odometry/PoseEstimate")
     public Pose2d getPoseEstimate() {
-        return poseEstimator.getEstimatedPosition();
+        return (RobotBase.isReal()) ? poseEstimator.getEstimatedPosition() : getOdometryPose();
     }
 
     @AutoLogOutput(key = "Drive/Odometry/OdometryPose")

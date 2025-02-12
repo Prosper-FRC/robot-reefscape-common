@@ -86,6 +86,8 @@ public class Vision {
 
                 double xyScalar = Math.pow(avgDistMeters, 2) / (numberOfTargets);
 
+                Logger.recordOutput("Vision/xyScalar", xyScalar);
+
                 // Cases where we shouldn't add vision measurements
                 if(numberOfTargets == 0 || (numberOfTargets == 1 && avgDistMeters > 3.5)) {
                     observations[i] = new VisionObservation(
