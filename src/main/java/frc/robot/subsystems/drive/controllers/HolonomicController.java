@@ -144,26 +144,6 @@ public class HolonomicController {
                 Math.toDegrees(robotChassisSpeeds.omegaRadiansPerSecond) ) );
     }
 
-    /* Sets the goals of the controllers. Is not needed for current code */
-    public void setGoal(Pose2d goalPose) {
-        setGoal(goalPose, new ChassisSpeeds());
-    }
-
-    public void setGoal(Pose2d goalPose, ChassisSpeeds goalSpeed) {
-        xController.setGoal( 
-            new TrapezoidProfile.State(
-                goalPose.getX(), 
-                goalSpeed.vxMetersPerSecond) );
-        yController.setGoal( 
-            new TrapezoidProfile.State(
-                goalPose.getY(),
-                goalSpeed.vyMetersPerSecond) );
-        omegaController.setGoal( 
-            new TrapezoidProfile.State(
-                goalPose.getRotation().getRadians(),
-                goalSpeed.omegaRadiansPerSecond) );
-    }
-
     public ChassisSpeeds calculate(Pose2d goalPose, Pose2d currentPose) {
         return calculate(goalPose, new ChassisSpeeds(), currentPose);
     }
