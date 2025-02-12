@@ -61,7 +61,7 @@ public class DriveConstants {
     public static final ModuleControlConfig kModuleControllerConfigs = RobotBase.isReal() ? 
         new ModuleControlConfig(
             new PIDController(100.0, 0.0, 0.0), new SimpleMotorFeedforward(0, 0.0, 0.0),
-            new PIDController(20.0, 0.0, 0.1), new SimpleMotorFeedforward(0.0, 0.0, 0.0)) :
+            new PIDController(20.0, 0.0, 0.5), new SimpleMotorFeedforward(0.0, 0.0, 0.0)) :
         new ModuleControlConfig(
             new PIDController(0.1, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 2.36, 0.005), 
             new PIDController(4.5, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 0.0));
