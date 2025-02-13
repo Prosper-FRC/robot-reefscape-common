@@ -6,6 +6,7 @@ package frc.robot.subsystems.climb;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.subsystems.climb.ClimbConstants.ClimbGains;
@@ -65,5 +66,20 @@ public class ClimbIOSim implements ClimbIO {
 
     kFeedforward = 
       new ElevatorFeedforward(gains.s(), gains.g(), gains.v(), gains.a());
+  }
+
+  @Override
+  public void updateInputs(ClimbIOInputs inputs) {
+    kPivot.update(kLoopPeriodSec);
+
+    inputs.isMotorConnected = true;
+
+    inputs.position = Rotation2d.fromRadians(kPivot.getAngleRads());
+    inputs.velocityUnitsPerSec = Rotation2d.fromRadians(kPivot.getVelocityRadPerSec());
+    inputs.appliedVoltage = appliedVoltage;
+    // These are 0 cause we don't care able these in simulation
+    inputs.supplyCurrentAmps = 0.0;
+    inputs.statorCurrentAmps = 0.0;
+    inputs.temperatureCelsius = 0.0;
   }
 }
