@@ -58,7 +58,7 @@ public class ClimbConstants {
 
   public static final double kGearing = 125.0 / 1.0;
 
-  public static final double kStatussSignalUpdateFrequency = 20.0;
+  public static final double kStatusSignalUpdateFrequency = 20.0;
 
   public static final ClimbHardware kLeadMotorHardware = new ClimbHardware(
     0, // CAN ID
