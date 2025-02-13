@@ -35,10 +35,10 @@ public interface ClimbIO {
   public default void setVoltage(double volts) {}
 
   /**
-   * @param positionMeters The desired angular position for the pivot to be 
-   *                       set to. Runs using internal MotionMagic
+   * @param goalPosition The desired angular position for the pivot to be 
+   *                     set to. Runs using internal MotionMagic
    */
-  public default void setPosition(double positionMeters) {}
+  public default void setPosition(Rotation2d goalPosition) {}
 
   /** 
    * Commands the hardware to stop. When using TalonFX, this commands the

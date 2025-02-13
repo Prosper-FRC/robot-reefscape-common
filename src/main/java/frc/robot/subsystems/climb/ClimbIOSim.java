@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.climb;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -81,5 +83,58 @@ public class ClimbIOSim implements ClimbIO {
     inputs.supplyCurrentAmps = 0.0;
     inputs.statorCurrentAmps = 0.0;
     inputs.temperatureCelsius = 0.0;
+  }
+
+  @Override
+  public void setPosition(Rotation2d goalPosition) {
+    // Check if we weren't in closed loop, if we weren't reset the motion 
+    // profile. Recall that the profile should be reset before each major 
+    // movement of the mechanism. We don't need this logic in the real IO 
+    // since it's handled by the controller
+    if (!closedLoopControl) {
+      feedbackNeedsReset = true;
+      closedLoopControl = true;
+    }
+    if (feedbackNeedsReset) {
+      kFeedback.reset();
+      setpoint = new TrapezoidProfile.State(kPivot.getAngleRads(), 0.0);
+      feedbackNeedsReset = false;
+    }
+    goal = new TrapezoidProfile.State(goalPosition.getRadians(), 0.0);
+
+    setpoint = kProfile.calculate(kLoopPeriodSec, setpoint, goal);
+
+    double feedforwardEffort = kFeedforward.calculate(setpoint.velocity);
+    double feedbackEffort = kFeedback.calculate(kPivot.getAngleRads(), setpoint.position);
+
+    // In the unlikely event that there are multiple classes created, we need a unique
+    // name to distinguish between them on network tables
+    String rootLogKey = getClass().getName() + "@" + Integer.toHexString(hashCode());
+
+    Logger.recordOutput(rootLogKey + "/Feedback/FBEffort", feedbackEffort);
+    Logger.recordOutput(rootLogKey + "/Feedback/FFEffort", feedforwardEffort);
+    setVoltage(feedbackEffort + feedforwardEffort);
+  }
+
+  @Override
+  public void stop() {
+    setVoltage(0.0);
+  }
+
+  @Override
+  public void setGains(double p, double i, double d, double s, double g, double v, double a)  {
+    kFeedback.setPID(p, i, d);
+    kFeedforward = new ElevatorFeedforward(s, g, v, a);
+  }
+
+  @Override
+  public void setMotionMagicConstraints(double maxVelocity, double maxAcceleration) {
+    kProfile = new TrapezoidProfile(
+      new TrapezoidProfile.Constraints(maxVelocity, maxAcceleration));
+  }
+
+  @Override
+  public void resetPosition() {
+    kPivot.setState(0.0, 0.0);
   }
 }

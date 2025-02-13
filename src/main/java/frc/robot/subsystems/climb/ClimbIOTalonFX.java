@@ -158,9 +158,9 @@ public class ClimbIOTalonFX implements ClimbIO {
   }
 
   @Override
-  public void setPosition(double positionMeters) {
+  public void setPosition(Rotation2d goalPositionDegrees) {
     kMotor.setControl(
-      kPositionControl.withPosition(positionMeters).withSlot(0));
+      kPositionControl.withPosition(goalPositionDegrees.getDegrees()).withSlot(0));
   }
 
   @Override
