@@ -46,6 +46,7 @@ public class ClimbConstants {
 
   public record ClimbSimulationConfiguration(
     DCMotor motorType,
+    double momentOfInertiaJKgMetersSquared,
     double ligamentLengthMeters,
     Rotation2d minPosition,
     Rotation2d maxPosition,
@@ -125,6 +126,7 @@ public class ClimbConstants {
 
   public static final ClimbSimulationConfiguration kSimulationConfiguration = new ClimbSimulationConfiguration(
     DCMotor.getKrakenX60(2), // Motor type and count
+    0.1, // Moment of inertia
     Units.inchesToMeters(12.0), // Ligament length meters
     kMinPosition, // Min position
     kMaxPosition, // Max position
