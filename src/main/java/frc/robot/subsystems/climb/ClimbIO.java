@@ -15,7 +15,7 @@ public interface ClimbIO {
     public boolean isMotorConnected = false;
 
     public Rotation2d position = new Rotation2d();
-    public Rotation2d velocityRotationsPerSec = new Rotation2d();
+    public Rotation2d velocityUnitsPerSec = new Rotation2d();
     public double appliedVoltage = 0.0;
     public double supplyCurrentAmps = 0.0;
     public double statorCurrentAmps = 0.0;
@@ -35,7 +35,7 @@ public interface ClimbIO {
   public default void setVoltage(double volts) {}
 
   /**
-   * @param positionMeters The desired linear position for the elevator to be 
+   * @param positionMeters The desired angular position for the pivot to be 
    *                       set to. Runs using internal MotionMagic
    */
   public default void setPosition(double positionMeters) {}

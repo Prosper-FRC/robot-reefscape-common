@@ -6,14 +6,19 @@ package frc.robot.subsystems.climb;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -126,5 +131,76 @@ public class ClimbIOTalonFX implements ClimbIO {
 
     this(canbus, hardware, configuration, gains, statusSignalUpdateFrequency);
     kMotor.setControl(new Follower(leadMotorId, opposeLeadMotorDirection));
+  }
+
+  @Override
+  public void updateInputs(ClimbIOInputs inputs) {
+    inputs.isMotorConnected = BaseStatusSignal.refreshAll(
+      positionRotations,
+      velocityRotationsPerSec,
+      appliedVolts,
+      supplyCurrentAmps,
+      supplyCurrentAmps,
+      statorCurrentAmps,
+      temperatureCelsius).isOK();
+
+    inputs.position =  Rotation2d.fromRotations(positionRotations.getValueAsDouble());
+    inputs.velocityUnitsPerSec = Rotation2d.fromRotations(velocityRotationsPerSec.getValueAsDouble());
+    inputs.appliedVoltage = appliedVolts.getValueAsDouble();
+    inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
+    inputs.statorCurrentAmps = statorCurrentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
+  }
+
+  @Override
+  public void setVoltage(double volts) {
+    kMotor.setControl(kVoltageControl.withOutput(volts));
+  }
+
+  @Override
+  public void setPosition(double positionMeters) {
+    kMotor.setControl(
+      kPositionControl.withPosition(positionMeters).withSlot(0));
+  }
+
+  @Override
+  public void stop() {
+    kMotor.setControl(new NeutralOut());
+  }
+
+  @Override
+  public void resetPosition() {
+    kMotor.setPosition(0.0);
+  }
+
+  @Override
+  public void setGains(double p, double i, double d, double s, double g, double v, double a) {
+    var slotConfiguration = new Slot0Configs();
+
+    slotConfiguration.kP = p;
+    slotConfiguration.kI = i;
+    slotConfiguration.kD = d;
+    slotConfiguration.kS = s;
+    slotConfiguration.kG = g;
+    slotConfiguration.kV = v;
+    slotConfiguration.kA = a;
+
+    kMotor.getConfigurator().apply((slotConfiguration));
+  }
+
+  @Override
+  public void setMotionMagicConstraints(double maxVelocity, double maxAcceleration) {
+    var motionMagicConfiguration = new MotionMagicConfigs();
+
+    motionMagicConfiguration.MotionMagicCruiseVelocity = maxVelocity;
+    motionMagicConfiguration.MotionMagicAcceleration = maxAcceleration;
+    motionMagicConfiguration.MotionMagicJerk = 10.0 * maxAcceleration;
+
+    kMotor.getConfigurator().apply(motionMagicConfiguration);
+  }
+
+  @Override
+  public void setBrakeMode(boolean enableBrake) {
+    kMotor.setNeutralMode(enableBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 }
