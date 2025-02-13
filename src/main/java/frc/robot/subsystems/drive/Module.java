@@ -30,7 +30,7 @@ public class Module {
     private ModuleIO io;
     private ModuleInputsAutoLogged inputs = new ModuleInputsAutoLogged();
 
-    private final String kLogKey;
+    private final String kModuleName;
 
     /* Drive Control */
     private Double velocitySetpointMPS = null;
@@ -47,12 +47,12 @@ public class Module {
 
     public Module(String key, ModuleIO io) {
         this.io = io;
-        kLogKey = "Module/" + key;
+        kModuleName = "Module/" + key;
     }
 
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Drive/"+kLogKey, inputs);
+        Logger.processInputs("Drive/"+kModuleName, inputs);
 
         currentState = new SwerveModuleState(inputs.driveVelocityMPS, inputs.azimuthPosition);
         currentPosition = new SwerveModulePosition(inputs.drivePositionM, inputs.azimuthPosition);
@@ -61,12 +61,12 @@ public class Module {
         // if Amperage is null no feedforward is used
         // Amperage is the FOC feedforward
         if (velocitySetpointMPS != null) {
-            Logger.recordOutput("Drive/"+kLogKey+"/velocitySepointMPS", velocitySetpointMPS);
+            Logger.recordOutput("Drive/"+kModuleName+"/velocitySepointMPS", velocitySetpointMPS);
             if(amperageSetpoint != null) {
                 double ffOutput = driveFF.calculate(velocitySetpointMPS, amperageSetpoint);
 
-                Logger.recordOutput("Drive/"+kLogKey+"/AmperageFeedforward", amperageSetpoint);
-                Logger.recordOutput("Drive/"+kLogKey+"/ffOutput", ffOutput);
+                Logger.recordOutput("Drive/"+kModuleName+"/AmperageFeedforward", amperageSetpoint);
+                Logger.recordOutput("Drive/"+kModuleName+"/ffOutput", ffOutput);
 
                 io.setDriveVelocity(velocitySetpointMPS, ffOutput);
             } else {
@@ -77,7 +77,7 @@ public class Module {
         // Runs azimuth PID
         if (azimuthSetpointAngle != null) {
             double ffOutput = azimuthFF.getKs() * Math.signum(inputs.azimuthVelocity.getDegrees());
-            Logger.recordOutput("Drive/"+kLogKey+"/SimpleFeedforward", ffOutput);
+            Logger.recordOutput("Drive/"+kModuleName+"/SimpleFeedforward", ffOutput);
             io.setAzimuthPosition(azimuthSetpointAngle, ffOutput);
         }
 
