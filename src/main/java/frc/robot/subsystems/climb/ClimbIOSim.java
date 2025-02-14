@@ -58,6 +58,7 @@ public class ClimbIOSim implements ClimbIO {
       configuration.maxPosition().getRadians(), 
       configuration.simulateGravity(), 
       configuration.initialPosition().getRadians(), 
+      configuration.meadurementStdDevs(),
       configuration.meadurementStdDevs());
 
     kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
