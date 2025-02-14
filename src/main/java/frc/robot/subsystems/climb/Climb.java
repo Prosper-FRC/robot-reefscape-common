@@ -7,7 +7,9 @@ package frc.robot.subsystems.climb;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 
@@ -49,6 +51,19 @@ public class Climb extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    for (int i = 0; i < kHardware.length; i++) {
+      kHardware[i].updateInputs(kInputs[i]);
+      Logger.processInputs("Climb/Inputs" + i, kInputs[i]);
+    }
+
+    if (!DriverStation.isEnabled()) {
+      // stop
+    }
+
+    if (voltageGoal != null) {
+      // set voltage
+    }
+
+    // Add position checking here 
   }
 }
