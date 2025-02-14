@@ -7,8 +7,19 @@ package frc.robot.subsystems.climb;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climb extends SubsystemBase {
+  private final ClimbIO[] kHardware;
+  private final ClimbIOInputsAutoLogged[] kInputs;
+
   /** Creates a new Climb. */
-  public Climb() {}
+  public Climb(ClimbIO... io) {
+    kHardware = new ClimbIO[io.length];
+    kInputs = new ClimbIOInputsAutoLogged[io.length];
+
+    for (int i = 0; i < kHardware.length; i++) {
+      kHardware[i] = io[i];
+      kInputs[i] = new ClimbIOInputsAutoLogged();
+    }
+  }
 
   @Override
   public void periodic() {
