@@ -6,6 +6,7 @@ package frc.robot.subsystems.climb;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -84,6 +85,14 @@ public class ClimbIOSim implements ClimbIO {
     inputs.supplyCurrentAmps = 0.0;
     inputs.statorCurrentAmps = 0.0;
     inputs.temperatureCelsius = 0.0;
+  }
+
+  @Override
+  public void setVoltage(double volts) {
+    closedLoopControl = false;
+    appliedVoltage = MathUtil.clamp(volts, -12.0, 12.0);
+
+    kPivot.setInputVoltage(appliedVoltage);
   }
 
   @Override
