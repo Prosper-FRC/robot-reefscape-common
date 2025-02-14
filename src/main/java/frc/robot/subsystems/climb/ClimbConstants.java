@@ -54,6 +54,13 @@ public class ClimbConstants {
     Rotation2d initialPosition,
     double meadurementStdDevs) {}
 
+  public record DutyCycleConfiguration(
+    int encoderChannel,
+    int connectedFrequencyThresholdHz,
+    double minimumDutyCyclerange,
+    double maximumDutyCycleRange
+  ) {}
+
   public static final Rotation2d kMinPosition = Rotation2d.fromDegrees(0.0);
   public static final Rotation2d kMaxPosition = Rotation2d.fromDegrees(0.0);
 
@@ -133,4 +140,10 @@ public class ClimbConstants {
     true, // Simulate gravity
     new Rotation2d(), // Initial position
     0.002); // Std devs
+
+  public static final DutyCycleConfiguration kDutyCycleConfiguration = new DutyCycleConfiguration(
+    0,
+    0,
+    0.0,
+    1.0);
 }
