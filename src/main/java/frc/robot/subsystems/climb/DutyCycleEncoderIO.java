@@ -4,5 +4,23 @@
 
 package frc.robot.subsystems.climb;
 
-/** Add your docs here. */
-public class DutyCycleEncoderIO {}
+import org.littletonrobotics.junction.AutoLog;
+
+/** Sensor interface for a DutyCycle encoder */
+public interface DutyCycleEncoderIO {
+  @AutoLog
+  public static class DutyCycleEncoderIOInputs {
+    public boolean isConnected = false;
+
+    /** The duty cycle's signal frequency */
+    public int frequencyHz = 0;
+    public double dutyCycleReading = 0.0;
+  }
+
+  /**
+   * Write data from the hardware to the inputs object
+   * 
+   * @param inputs The inputs object
+   */
+  public default void updateInputs(DutyCycleEncoderIOInputs inputs) {}
+}
