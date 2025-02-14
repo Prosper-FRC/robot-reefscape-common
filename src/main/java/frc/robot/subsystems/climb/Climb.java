@@ -40,11 +40,16 @@ public class Climb extends SubsystemBase {
   private final ClimbIO[] kHardware;
   private final ClimbIOInputsAutoLogged[] kInputs;
 
+  private final DutyCycleEncoderIO kAbsoluteEncoder;
+  private final DutyCycleEncoderIOInputsAutoLogged kAbsoluteEncoderInputs = new DutyCycleEncoderIOInputsAutoLogged();
+
+  private boolean isAbsoluteEncoderConnected = false;
+
   /** 
    * Creates a new Climb. Note that the first argument is considered 
    * the lead motor 
    */
-  public Climb(ClimbIO... io) {
+  public Climb(DutyCycleEncoderIO encoderIO, ClimbIO... io) {
     kHardware = new ClimbIO[io.length];
     kInputs = new ClimbIOInputsAutoLogged[io.length];
 
@@ -52,6 +57,8 @@ public class Climb extends SubsystemBase {
       kHardware[i] = io[i];
       kInputs[i] = new ClimbIOInputsAutoLogged();
     }
+
+    kAbsoluteEncoder = encoderIO;
   }
 
   @Override
@@ -60,6 +67,11 @@ public class Climb extends SubsystemBase {
       kHardware[i].updateInputs(kInputs[i]);
       Logger.processInputs("Climb/Inputs" + i, kInputs[i]);
     }
+
+    kAbsoluteEncoder.updateInputs(kAbsoluteEncoderInputs);
+    Logger.processInputs("Climb/AbsoluteEncoder/Inputs", kAbsoluteEncoderInputs);
+
+    isAbsoluteEncoderConnected = kAbsoluteEncoderInputs.isConnected;
 
     if (!DriverStation.isEnabled()) {
       stop();
@@ -141,7 +153,12 @@ public class Climb extends SubsystemBase {
    * @return The position of the mechanism
    */
   public Rotation2d getPosition() {
-    // Only need to return one position since the motors are mechaically linked
-    return kInputs[0].position;
+    if (isAbsoluteEncoderConnected) {
+      return Rotation2d.fromRotations(
+        kAbsoluteEncoderInputs.dutyCycleReading * ClimbConstants.kGearing);
+    } else {
+      // Only need to return one position since the motors are mechaically linked
+      return kInputs[0].position;
+    }
   }
 }

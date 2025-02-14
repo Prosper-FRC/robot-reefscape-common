@@ -13,6 +13,8 @@ import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
 import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
+import frc.robot.subsystems.climb.DutyCycleEncoderIO;
+import frc.robot.subsystems.climb.DutyCycleEncoderIORev;
 import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -42,6 +44,8 @@ public class RobotContainer {
             case REAL:
                 // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
                 climb = new Climb(
+                    new DutyCycleEncoderIORev(
+                        ClimbConstants.kDutyCycleConfiguration),
                     new ClimbIOTalonFX(
                         ClimbConstants.kLeadMotorHardware, 
                         ClimbConstants.kLeadMotorConfiguration, 
@@ -55,15 +59,19 @@ public class RobotContainer {
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
-                climb = new Climb(new ClimbIOSim(
-                    0.02,
-                    ClimbConstants.kLeadMotorHardware,
-                    ClimbConstants.kSimulationConfiguration,
-                    ClimbConstants.kMotorGains));
+                climb = new Climb(
+                    new DutyCycleEncoderIO(){},
+                    new ClimbIOSim(
+                        0.02,
+                        ClimbConstants.kLeadMotorHardware,
+                        ClimbConstants.kSimulationConfiguration,
+                        ClimbConstants.kMotorGains));
                 break;
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
-                climb = new Climb(new ClimbIO[]{new ClimbIO(){}});
+                climb = new Climb(
+                    new DutyCycleEncoderIO(){}, 
+                    new ClimbIO[]{new ClimbIO(){}});
                 break;
         }
 
