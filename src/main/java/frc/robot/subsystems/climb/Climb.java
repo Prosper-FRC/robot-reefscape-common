@@ -84,6 +84,15 @@ public class Climb extends SubsystemBase {
   }
 
   /**
+   * Sets the position goal of the mechanism, logic runs in subsystem periodic method
+   * 
+   * @param desiredGoal The desired position goal
+   */
+  public void setGoalVoltage(ClimbVoltageGoal desiredGoal) {
+    voltageGoal = desiredGoal;
+  }
+
+  /**
    * Sets the voltage of the motor. Assumes that positive voltage moves the 
    * motor closer to the maximum possible physical position the mechanism can 
    * be in, while negative voltage moves the motor closer to the minimum 

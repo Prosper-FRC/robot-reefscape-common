@@ -5,12 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbConstants;
+import frc.robot.subsystems.climb.ClimbIO;
+import frc.robot.subsystems.climb.ClimbIOSim;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
+import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
+    private final Climb climb;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -32,12 +41,29 @@ public class RobotContainer {
         switch (Constants.kCurrentMode) {
             case REAL:
                 // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
+                climb = new Climb(
+                    new ClimbIOTalonFX(
+                        ClimbConstants.kLeadMotorHardware, 
+                        ClimbConstants.kLeadMotorConfiguration, 
+                        ClimbConstants.kMotorGains, 
+                        ClimbConstants.kStatusSignalUpdateFrequency),
+                    new ClimbIOTalonFX(
+                        ClimbConstants.kFollowerMotorHardware, 
+                        ClimbConstants.kFollowMotorConfiguration, 
+                        ClimbConstants.kMotorGains, 
+                        ClimbConstants.kStatusSignalUpdateFrequency));
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
+                climb = new Climb(new ClimbIOSim(
+                    0.02,
+                    ClimbConstants.kLeadMotorHardware,
+                    ClimbConstants.kSimulationConfiguration,
+                    ClimbConstants.kMotorGains));
                 break;
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
+                climb = new Climb(new ClimbIO[]{new ClimbIO(){}});
                 break;
         }
 
@@ -85,6 +111,16 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        operatorController.a()
+            .whileTrue(
+                Commands.run(() -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab), climb))
+            .whileFalse(
+                Commands.runOnce(climb::stop, climb));
 
+        operatorController.b()
+            .whileTrue(
+                Commands.run(() -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease), climb))
+            .whileFalse(
+                Commands.runOnce(climb::stop, climb));
     }
 }
