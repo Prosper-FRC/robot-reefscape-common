@@ -39,11 +39,43 @@ public class AutonCommands {
 
         tryToAddPathToChooser(
             "FirstAlgaeTest", 
-            scoreFirstAlgaePath("FirstTest", 
+            intakeFirstAlgaePath("FirstTest", 
             intakeAlgaePath("SecondTest",
             scoreAlgaePath("ThirdTest", 
             null
         ))));
+
+        tryToAddPathToChooser(
+            "RightCoral", 
+            scoreFirstCoralPath("S_SR_EL_C", 
+            intakeCoralPath("I_EL_IR_C", 
+            scoreCoralPath("S_IR_FR_C", 
+            intakeCoralPath("I_FR_IR_C", 
+            scoreCoralPath("S_IR_FL_C", 
+            intakeCoralPath("I_FL_IR_C", 
+            scoreCoralPath("S_IR_AR_C", 
+            intakeCoralPath("I_AR_IR_C", 
+            null)))))))));
+
+        tryToAddPathToChooser(
+            "LeftCoral", 
+            scoreFirstCoralPath("S_SL_CR_C", 
+            intakeCoralPath("I_CR_IL_C", 
+            scoreCoralPath("S_IL_BL_C", 
+            intakeCoralPath("I_BL_IL_C", 
+            scoreCoralPath("S_IL_BR_C", 
+            intakeCoralPath("I_BR_IL_C", 
+            scoreCoralPath("S_IL_AL_C", 
+            intakeCoralPath("I_AL_IL_C", 
+            null)))))))));
+
+        tryToAddPathToChooser(
+            "Algae", 
+            intakeFirstAlgaePath("I_SM_DM_A",
+            scoreAlgaePath("S_DM_P_A", 
+            intakeAlgaePath("I_P_EM_A", 
+            scoreAlgaePath("S_EM_P_A", 
+            null)))));
 
         autoChooser.setDefaultOption("Mobility", backUpAuton());
     }
@@ -91,7 +123,7 @@ public class AutonCommands {
      * The first path of the robot, sets pose and rotation of robot 
      * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
     */
-    public PathPlannerAuto scoreFirstAlgaePath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
+    public PathPlannerAuto intakeFirstAlgaePath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
         return firstPath(name, startingRotation, () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
     }
 
@@ -99,7 +131,7 @@ public class AutonCommands {
      * The first path of the robot, sets pose and rotation of robot 
      * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
     */
-    public PathPlannerAuto scoreFirstAlgaePath(String name, PathPlannerAuto nextAuto) {
+    public PathPlannerAuto intakeFirstAlgaePath(String name, PathPlannerAuto nextAuto) {
         return firstPath(name, new Rotation2d(), () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
     }
 
