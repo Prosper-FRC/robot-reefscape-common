@@ -19,7 +19,8 @@ public class Climb extends SubsystemBase {
   public enum ClimbVoltageGoal {
     kGrab(() -> 8.0),
     kRelease(() -> -4.0),
-    /** Custom setpoint that can be modified over network tables; Useful for debugging */
+    /** Custom setpoint that can be modified over network tables; 
+     * Useful for debugging */
     custom(new LoggedTunableNumber("Climb/customVoltageGoal", 0.0));
 
     private DoubleSupplier goalVoltage;
@@ -39,7 +40,10 @@ public class Climb extends SubsystemBase {
   private final ClimbIO[] kHardware;
   private final ClimbIOInputsAutoLogged[] kInputs;
 
-  /** Creates a new Climb. Note that the first argument is considered the lead motor */
+  /** 
+   * Creates a new Climb. Note that the first argument is considered 
+   * the lead motor 
+   */
   public Climb(ClimbIO... io) {
     kHardware = new ClimbIO[io.length];
     kInputs = new ClimbIOInputsAutoLogged[io.length];
@@ -65,20 +69,32 @@ public class Climb extends SubsystemBase {
       setVoltage(voltageGoal.getGoalVoltage());
     }
 
-    // Add position checking here 
+    // Continuously check if climb has moved beyond its limitations, note
+    // that we only need to compare the left voltage as that is the lead
+    // motor
+    if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+        && kInputs[0].appliedVoltage > 0.0) {
+      stop();
+    } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
+        && kInputs[0].appliedVoltage < 0.0) {
+      stop();
+    } else {
+      // Do nothing if limits are not reached
+    }
   }
 
   /**
-   * Sets the voltage of the motor. Assumes that positive voltage moves the motor closer to the
-   * maximum possible physical position the mechanism can be in, while negative voltage moves 
-   * the motor closer to the minimum possible physical position the mechanism can be in
+   * Sets the voltage of the motor. Assumes that positive voltage moves the 
+   * motor closer to the maximum possible physical position the mechanism can 
+   * be in, while negative voltage moves the motor closer to the minimum 
+   * possible physical position the mechanism can be in
    * 
    * @param voltage
    */
   public void setVoltage(double voltage) {
-    // Notice how we are not checking if position control is running, it is up to the caller
-    // to check for this before calling this method (I recommend calling this subsystem's stop() 
-    // method after completing any action)
+    // Notice how we are not checking if position control is running, it is up 
+    // to the caller to check for this before calling this method (I recommend 
+    // calling this subsystem's stop() method after completing any action)
     if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
         && voltage > 0) {
       return;
