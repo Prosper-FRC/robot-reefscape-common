@@ -190,7 +190,7 @@ public class Drive extends SubsystemBase {
         } else {
             robotRotation = Rotation2d.fromRadians(
                 (poseEstimator.getEstimatedPosition().getRotation().getRadians()
-                /* D =vt. Uses modules and IK to estimate turn */
+                /* D=vt. Uses modules and IK to estimate turn */
                     + getRobotChassisSpeeds().omegaRadiansPerSecond * 0.02) 
                     /* Scopes result between 0 and 360 */
                     % 360.0);

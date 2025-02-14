@@ -53,10 +53,10 @@ public class DriveConstants {
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
     /* GENERAL SWERVE MODULE CONSTANTS */
     public static final boolean kTurnMotorInvert = true;
-    public static final double kAzimuthGearing = 150.0 / 7.0;
-    public static final double kDriveGearing = 6.12 / 1.0;
-    public static final double kRadiusMeters = 5.08 / 100.0;
-    public static final double kCircumferenceMeters = 2 * Math.PI * kRadiusMeters;
+    public static final double kAzimuthMotorGearing = 150.0 / 7.0;
+    public static final double kDriveMotorGearing = 6.12 / 1.0;
+    public static final double kWheelRadiusMeters = 5.08 / 100.0;
+    public static final double kWheelCircumferenceMeters = 2 * Math.PI * kWheelRadiusMeters;
 
     public static final ModuleControlConfig kModuleControllerConfigs = RobotBase.isReal() ? 
         new ModuleControlConfig(
@@ -67,6 +67,7 @@ public class DriveConstants {
             new PIDController(4.5, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 0.0));
 
     /* MODULE SPECIFIC CONSTANTS */
+    /* If 180 was added, the person who got the offset had the bevel gears on the wrong side when he did it */
     public static final ModuleHardwareConfig kFrontLeftHardware =
         new ModuleHardwareConfig(
             11, 

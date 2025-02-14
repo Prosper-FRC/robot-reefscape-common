@@ -43,6 +43,7 @@ public class RobotContainer {
 
     private LoggedDashboardChooser<Command> autoChooser;
 
+    /* TODO: Set to true before competition please */
     private final boolean useCompetitionBindings = false;
 
     public RobotContainer() {

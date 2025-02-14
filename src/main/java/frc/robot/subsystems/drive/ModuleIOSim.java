@@ -12,11 +12,11 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 public class ModuleIOSim implements ModuleIO {
     private DCMotorSim driveMotor = 
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, kDriveGearing), 
+            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.004, kDriveMotorGearing), 
             DCMotor.getKrakenX60Foc(1), 0.0, 0.0);
     private DCMotorSim azimuthMotor = 
         new DCMotorSim(
-            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.025, kAzimuthGearing), 
+            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.025, kAzimuthMotorGearing), 
             DCMotor.getKrakenX60Foc(1), 0.0, 0.0);
 
     private double driveAppliedVolts = 0.0;
@@ -35,8 +35,8 @@ public class ModuleIOSim implements ModuleIO {
         driveMotor.update(0.02);
         azimuthMotor.update(0.02);
 
-        inputs.drivePositionM = driveMotor.getAngularPositionRotations() * kCircumferenceMeters;
-        inputs.driveVelocityMPS = (driveMotor.getAngularVelocityRPM() * kCircumferenceMeters) / 60.0;
+        inputs.drivePositionM = driveMotor.getAngularPositionRotations() * kWheelCircumferenceMeters;
+        inputs.driveVelocityMPS = (driveMotor.getAngularVelocityRPM() * kWheelCircumferenceMeters) / 60.0;
         inputs.driveAppliedVolts = driveAppliedVolts;
         inputs.driveStatorCurrentAmps = new double[] {Math.abs(driveMotor.getCurrentDrawAmps())};
         inputs.driveTemperatureCelsius = new double[] {0.0};
@@ -63,7 +63,7 @@ public class ModuleIOSim implements ModuleIO {
     public void setDriveVelocity(double velocityMPS, double feedforward) {
         setDriveVolts(
             drivePID.calculate(
-                driveMotor.getAngularVelocityRPM() * kCircumferenceMeters / 60, 
+                driveMotor.getAngularVelocityRPM() * kWheelCircumferenceMeters / 60, 
                 velocityMPS) 
             + feedforward);
     }

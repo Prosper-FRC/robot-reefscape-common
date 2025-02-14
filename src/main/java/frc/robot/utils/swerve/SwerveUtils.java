@@ -1,8 +1,8 @@
 package frc.robot.utils.swerve;
 
-import static frc.robot.subsystems.drive.DriveConstants.kDriveGearing;
+import static frc.robot.subsystems.drive.DriveConstants.kDriveMotorGearing;
 import static frc.robot.subsystems.drive.DriveConstants.kMaxLinearSpeedMPS;
-import static frc.robot.subsystems.drive.DriveConstants.kRadiusMeters;
+import static frc.robot.subsystems.drive.DriveConstants.kWheelRadiusMeters;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -65,7 +65,7 @@ public class SwerveUtils {
             ff.robotRelativeForcesYNewtons()[i]);
 
         // NEWTONS -> GEARBOX TORQUE -> MOTOR TORQUE
-        double driveMotorTorque = choreoLinearForceNewtons / (kRadiusMeters * kDriveGearing);
+        double driveMotorTorque = choreoLinearForceNewtons / (kWheelRadiusMeters * kDriveMotorGearing);
         double driveMotorAmperage = kKrakenFOCModel.getCurrent(driveMotorTorque);
 
         return driveMotorAmperage;
