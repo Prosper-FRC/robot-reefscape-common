@@ -57,7 +57,7 @@ public class ClimbConstants {
   public record DutyCycleConfiguration(
     int encoderChannel,
     int connectedFrequencyThresholdHz,
-    double minimumDutyCyclerange,
+    double minimumDutyCycleRange,
     double maximumDutyCycleRange
   ) {}
 
