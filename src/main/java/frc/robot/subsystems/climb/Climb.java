@@ -4,9 +4,35 @@
 
 package frc.robot.subsystems.climb;
 
+import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 
 public class Climb extends SubsystemBase {
+  /** List of voltage setpoints for the climb in volts */
+  public enum ClimbVoltageGoal {
+    kGrab(() -> 8.0),
+    kRelease(() -> -4.0),
+    /** Custom setpoint that can be modified over network tables; Useful for debugging */
+    custom(new LoggedTunableNumber("Climb/customVoltageGoal", 0.0));
+
+    private DoubleSupplier goalVoltage;
+
+    ClimbVoltageGoal(DoubleSupplier goalVoltage) {
+      this.goalVoltage = goalVoltage;
+    }
+
+    public double getGoalVoltage() {
+      return this.goalVoltage.getAsDouble();
+    }
+  }
+
+  @AutoLogOutput(key = "Climb/Goal")
+  private ClimbVoltageGoal voltageGoal = null;
+
   private final ClimbIO[] kHardware;
   private final ClimbIOInputsAutoLogged[] kInputs;
 
