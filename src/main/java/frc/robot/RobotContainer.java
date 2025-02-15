@@ -305,7 +305,7 @@ public class RobotContainer {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
     
             driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIFT_TEST))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that

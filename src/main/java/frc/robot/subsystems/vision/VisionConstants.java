@@ -21,8 +21,8 @@ public class VisionConstants {
         // Accounts for cameras being on back
         new Rotation3d(0.0, Math.toRadians(8.317), Math.toRadians(-25.0))
     );
-
-    public static final String kRightCamName = "9105_BACKUP";
+  
+    public static final String kRightCamName = "5411_RIGHT";
     public static final Orientation kRightCamOrientation = Orientation.BACK;
     public static final Transform3d kRightCamTransform = new Transform3d(
         new Translation3d(0.3, -0.3, 0.0),
