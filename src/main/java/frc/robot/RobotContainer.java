@@ -10,6 +10,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbConstants;
+import frc.robot.subsystems.climb.ClimbIO;
+import frc.robot.subsystems.climb.ClimbIOSim;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
+import frc.robot.subsystems.climb.DutyCycleEncoderIO;
+import frc.robot.subsystems.climb.DutyCycleEncoderIORev;
+import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
+
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -26,10 +36,12 @@ import frc.robot.subsystems.drive.Drive.DriveState;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
+    private final Climb climb;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -61,6 +73,20 @@ public class RobotContainer {
                     new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
                     new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
                 }));
+            
+                climb = new Climb(
+                    new DutyCycleEncoderIORev(
+                        ClimbConstants.kDutyCycleConfiguration),
+                    new ClimbIOTalonFX(
+                        ClimbConstants.kLeadMotorHardware, 
+                        ClimbConstants.kLeadMotorConfiguration, 
+                        ClimbConstants.kMotorGains, 
+                        ClimbConstants.kStatusSignalUpdateFrequency),
+                    new ClimbIOTalonFX(
+                        ClimbConstants.kFollowerMotorHardware, 
+                        ClimbConstants.kFollowMotorConfiguration, 
+                        ClimbConstants.kMotorGains, 
+                        ClimbConstants.kStatusSignalUpdateFrequency));
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
@@ -73,6 +99,14 @@ public class RobotContainer {
                     new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
                     new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
                 }));
+            
+                climb = new Climb(
+                    new DutyCycleEncoderIO(){},
+                    new ClimbIOSim(
+                        0.02,
+                        ClimbConstants.kLeadMotorHardware,
+                        ClimbConstants.kSimulationConfiguration,
+                        ClimbConstants.kMotorGains));
                 break;
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
@@ -84,7 +118,10 @@ public class RobotContainer {
                 }, new GyroIO() {}, new Vision(new CameraIO[] {
                     new CameraIO() {}, new CameraIO() {}
                 }));
-                break;
+            
+                climb = new Climb(
+                    new DutyCycleEncoderIO(){}, 
+                    new ClimbIO[]{new ClimbIO(){}});
         }
 
         // Instantiate subsystems that don't care about mode, or are non-AdvantageKit enabled.
