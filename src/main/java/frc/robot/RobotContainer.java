@@ -91,6 +91,25 @@ public class RobotContainer {
                     new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
                     new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
                 }));
+
+                elevator = new Elevator(
+                    new ElevatorIOTalonFX(
+                        Constants.kCanbusName, 
+                        ElevatorConstants.kRoboElevatorHardware, 
+                        ElevatorConstants.kMotorConfiguration, 
+                        ElevatorConstants.kElevatorGains),
+                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+            
+                intake = new Intake(
+                    new IntakeIOTalonFX(
+                        IntakeConstants.kIntakeHardware,
+                        IntakeConstants.kIntakeMotorConfiguration), 
+                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+                    new PivotIOTalonFX(
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotMotorConfiguration,
+                        IntakeConstants.kPivotGains,
+                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
             
                 climb = new Climb(
                     new DutyCycleEncoderIORev(
@@ -105,30 +124,6 @@ public class RobotContainer {
                         ClimbConstants.kFollowMotorConfiguration, 
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
-  
-                elevator = new Elevator(
-                    new ElevatorIOTalonFX(
-                        Constants.kCanbusName, 
-                        ElevatorConstants.kRoboElevatorHardware, 
-                        ElevatorConstants.kMotorConfiguration, 
-                        ElevatorConstants.kElevatorGains),
-                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
-            
-                // intake = new Intake(
-                //     new IntakeIOTalonFX(
-                //         IntakeConstants.kRoboIntakeHardware, 
-                //         IntakeConstants.kMotorConfiguration), 
-                //     new SensorIORange());
-                intake = new Intake(
-                    new IntakeIOTalonFX(
-                        IntakeConstants.kIntakeHardware,
-                        IntakeConstants.kIntakeMotorConfiguration), 
-                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
-                    new PivotIOTalonFX(
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotMotorConfiguration,
-                        IntakeConstants.kPivotGains,
-                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
                 break;
             case SIM:
                robotDrive = new Drive( new Module[] {
@@ -141,6 +136,27 @@ public class RobotContainer {
                     new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
                 }));
             
+                elevator = new Elevator(
+                    new ElevatorIOSim(ElevatorConstants.kRoboElevatorHardware,
+                    ElevatorConstants.kSimulationConfiguration,
+                    ElevatorConstants.kElevatorGains,
+                    ElevatorConstants.kMinPositionMeters,
+                    ElevatorConstants.kMaxPositionMeters,
+                    0.02),
+                    new MagneticSensorIO(){});
+                    
+                intake = new Intake(
+                    new IntakeIOSim(
+                        IntakeConstants.kIntakeHardware, 
+                        IntakeConstants.kIntakeSimulationConfiguration, 
+                        0.02), 
+                        new SensorIO(){},
+                        new PivotIOSim(
+                            0.02,
+                            IntakeConstants.kPivotMotorHardware,
+                            IntakeConstants.kPivotSimulationConfiguration,
+                            IntakeConstants.kPivotGains));
+
                 climb = new Climb(
                     new DutyCycleEncoderIO(){},
                     new ClimbIOSim(
@@ -148,27 +164,6 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
-            
-                elevator = new Elevator(
-                    new ElevatorIOSim(ElevatorConstants.kRoboElevatorHardware,
-                        ElevatorConstants.kSimulationConfiguration,
-                        ElevatorConstants.kElevatorGains,
-                        ElevatorConstants.kMinPositionMeters,
-                        ElevatorConstants.kMaxPositionMeters,
-                        0.02),
-                    new MagneticSensorIO(){});
-            
-                intake = new Intake(
-                    new IntakeIOSim(
-                        IntakeConstants.kIntakeHardware, 
-                        IntakeConstants.kIntakeSimulationConfiguration, 
-                        0.02), 
-                    new SensorIO(){},
-                    new PivotIOSim(
-                        0.02,
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotSimulationConfiguration,
-                        IntakeConstants.kPivotGains));
                 break;
             default:
                robotDrive = new Drive( new Module[] {
@@ -179,14 +174,14 @@ public class RobotContainer {
                 }, new GyroIO() {}, new Vision(new CameraIO[] {
                     new CameraIO() {}, new CameraIO() {}
                 }));
+
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
+            
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
-            
-                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
-            
-                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
                 break;
         }
 
@@ -194,7 +189,7 @@ public class RobotContainer {
         // ex: LEDs = new LEDSubsystem();
 
         // Instantiate your TeleopCommands and AutonCommands classes
-        telopCommands = new TeleopCommands(/* pass subsystems here */);
+        telopCommands = new TeleopCommands(elevator, intake, climb);
         autonCommands = new AutonCommands(robotDrive);
         try {
             autoChooser = new LoggedDashboardChooser<>("Auton Program", autonCommands.getAutoChooser());
@@ -218,7 +213,6 @@ public class RobotContainer {
         // Create any Dashboard choosers (LoggedDashboardChooser, etc)
 
         // Configure controls (drivebase suppliers, DriverStation triggers, Button and other Controller bindings)
-
         configureStateTriggers();
         configureButtonBindings();
     }
@@ -248,7 +242,9 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        if(useCompetitionBindings) {} 
+        if (useCompetitionBindings) {
+            
+        } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
     
@@ -271,5 +267,4 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
         }
     }
-
 }
