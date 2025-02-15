@@ -11,6 +11,22 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.MagneticSensorIO;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.PivotIO;
+import frc.robot.subsystems.intake.PivotIOSim;
+import frc.robot.subsystems.intake.PivotIOTalonFX;
+import frc.robot.subsystems.intake.SensorIO;
+import frc.robot.subsystems.intake.SensorIOLaserCAN;
+import frc.robot.subsystems.intake.Intake.PivotGoal;
+
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -41,6 +57,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
+    private final Elevator elevator;
+    private final Intake intake;
     private final Climb climb;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -63,8 +81,7 @@ public class RobotContainer {
         // If using AdvantageKit, perform mode-specific instantiation of subsystems.
         switch (Constants.kCurrentMode) {
             case REAL:
-                // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
-                robotDrive = new Drive( new Module[] {
+               robotDrive = new Drive( new Module[] {
                     new Module("FL", new ModuleIOKraken(kFrontLeftHardware )),
                     new Module("FR", new ModuleIOKraken(kFrontRightHardware)),
                     new Module("BL", new ModuleIOKraken(kBackLeftHardware  )),
@@ -87,10 +104,32 @@ public class RobotContainer {
                         ClimbConstants.kFollowMotorConfiguration, 
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
+  
+                // elevator = new Elevator(
+                //     new ElevatorIOTalonFX(
+                //         Constants.kCanbusName, 
+                //         ElevatorConstants.kRoboElevatorHardware, 
+                //         ElevatorConstants.kMotorConfiguration, 
+                //         ElevatorConstants.kElevatorGains),
+                //     new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO() {});
+            
+                // intake = new Intake(
+                //     new IntakeIOTalonFX(
+                //         IntakeConstants.kRoboIntakeHardware, 
+                //         IntakeConstants.kMotorConfiguration), 
+                //     new SensorIORange());
+                intake = new Intake(
+                    new IntakeIO(){}, 
+                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+                    new PivotIOTalonFX(
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotMotorConfiguration,
+                        IntakeConstants.kPivotGains,
+                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
                 break;
             case SIM:
-                // Instantiate subsystems that simulate actual hardware (IOSim modules)
-                robotDrive = new Drive( new Module[] {
+               robotDrive = new Drive( new Module[] {
                     new Module("FL", new ModuleIOSim()),
                     new Module("FR", new ModuleIOSim()),
                     new Module("BL", new ModuleIOSim()),
@@ -107,10 +146,30 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
+            
+                elevator = new Elevator(
+                    new ElevatorIOSim(ElevatorConstants.kRoboElevatorHardware,
+                        ElevatorConstants.kSimulationConfiguration,
+                        ElevatorConstants.kElevatorGains,
+                        ElevatorConstants.kMinPositionMeters,
+                        ElevatorConstants.kMaxPositionMeters,
+                        0.02),
+                    new MagneticSensorIO(){});
+            
+                intake = new Intake(
+                    new IntakeIOSim(
+                        IntakeConstants.kIntakeHardware, 
+                        IntakeConstants.kIntakeSimulationConfiguration, 
+                        0.02), 
+                    new SensorIO(){},
+                    new PivotIOSim(
+                        0.02,
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotSimulationConfiguration,
+                        IntakeConstants.kPivotGains));
                 break;
             default:
-                // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
-                robotDrive = new Drive( new Module[] {
+               robotDrive = new Drive( new Module[] {
                     new Module("FL", new ModuleIO() {}),
                     new Module("FR", new ModuleIO() {}),
                     new Module("BL", new ModuleIO() {}),
@@ -122,6 +181,11 @@ public class RobotContainer {
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
+            
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
+            
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
+                break;
         }
 
         // Instantiate subsystems that don't care about mode, or are non-AdvantageKit enabled.

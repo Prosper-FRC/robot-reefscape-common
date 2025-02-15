@@ -12,9 +12,12 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 
+import au.grapplerobotics.CanBridge;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
+
 
 public class Robot extends LoggedRobot {
     private Command mAutonomousCommand;
@@ -26,6 +29,8 @@ public class Robot extends LoggedRobot {
     // ==================== Robot Power On ====================
     @Override
     public void robotInit() {
+        CanBridge.runTCP();
+      
         /* Metadata can be set before data receiving is set-up */
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
