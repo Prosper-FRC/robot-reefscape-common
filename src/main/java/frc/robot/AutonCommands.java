@@ -9,7 +9,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -17,16 +16,14 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Drive.DriveState;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.math.AllianceFlipUtil;
 
 public class AutonCommands {
-    public static final double kCoralIntakeTriggerDistanceMeters = 0.5; 
-    public static final double kAlgaeIntakeTriggerDistanceMeters = 0.5; 
-    public static final Pose2d kIntakeLeftPlacedHolder = new Pose2d();
-    public static final Pose2d kIntakeRightPlacedHolder = new Pose2d();
-
-    public static final Pose2d kAlgaeD = new Pose2d();
-    public static final Pose2d kAlgaeE = new Pose2d();
+    public static final LoggedTunableNumber kCoralIntakeTriggerDistanceMeters = 
+        new LoggedTunableNumber("Auto/CoralMeterTrigger", 0.5); 
+    public static final LoggedTunableNumber kAlgaeIntakeTriggerDistanceMeters = 
+        new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
     private SendableChooser<Command> autoChooser;
 
@@ -133,7 +130,12 @@ public class AutonCommands {
      * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
     */
     public PathPlannerAuto intakeFirstAlgaePath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
-        return firstPath(name, startingRotation, () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
+        PathPlannerAuto auto = firstPath(name, startingRotation, getHasPiece(), intakeCoralCommand(), nextAuto);
+        auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get()).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get())
+        ).whileTrue(
+            intakeCoralCommand() );
+        return auto;
     }
 
     /* 
@@ -158,8 +160,8 @@ public class AutonCommands {
     */
     public PathPlannerAuto intakeCoralPath(String name, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
-        auto.nearFieldPosition(AllianceFlipUtil.apply(kAlgaeD).getTranslation(), kCoralIntakeTriggerDistanceMeters).or(
-            auto.nearFieldPosition(AllianceFlipUtil.apply(kAlgaeE).getTranslation(), kCoralIntakeTriggerDistanceMeters)
+        auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IL).getTranslation(), kCoralIntakeTriggerDistanceMeters.get()).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IR).getTranslation(), kCoralIntakeTriggerDistanceMeters.get())
         ).whileTrue(
             intakeAlgaeCommand() );
         return auto;
@@ -179,8 +181,8 @@ public class AutonCommands {
     */
     public PathPlannerAuto intakeAlgaePath(String name, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
-        auto.nearFieldPosition(AllianceFlipUtil.apply(kIntakeLeftPlacedHolder).getTranslation(), kAlgaeIntakeTriggerDistanceMeters).or(
-            auto.nearFieldPosition(AllianceFlipUtil.apply(kIntakeRightPlacedHolder).getTranslation(), kAlgaeIntakeTriggerDistanceMeters)
+        auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get()).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get())
         ).whileTrue(
             intakeCoralCommand() );
         return auto;
