@@ -165,10 +165,10 @@ public class Climb extends SubsystemBase {
   public Rotation2d getPosition() {
     if (isAbsoluteEncoderConnected) {
       return Rotation2d.fromRotations(
-        kAbsoluteEncoderInputs.dutyCycleReading * ClimbConstants.kGearing);
+        kAbsoluteEncoderInputs.dutyCycleReading);
     } else {
       // Only need to return one position since the motors are mechaically linked
-      return kInputs[0].position;
+      return Rotation2d.fromRotations(kInputs[0].position.getRotations() * ClimbConstants.kGearing);
     }
   }
 }
