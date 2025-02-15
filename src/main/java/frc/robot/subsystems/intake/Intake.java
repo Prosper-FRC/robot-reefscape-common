@@ -8,7 +8,6 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,7 +15,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
-  public enum IntakeGoal {
+  public enum RollerGoal {
     kIntake(() -> 4.0),
     kOuttake(() -> -4.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
@@ -24,7 +23,7 @@ public class Intake extends SubsystemBase {
 
     private DoubleSupplier goalVoltage;
 
-    IntakeGoal(DoubleSupplier goalVoltage) {
+    RollerGoal(DoubleSupplier goalVoltage) {
       this.goalVoltage = goalVoltage;
     }
 
@@ -53,7 +52,7 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  private final IntakeIO kHardware;
+  private final IntakeIO kRollerHardware;
   private final IntakeIOInputsAutoLogged kInputs = new IntakeIOInputsAutoLogged();
 
   private final SensorIO kSensor;
@@ -90,19 +89,19 @@ public class Intake extends SubsystemBase {
     IntakeConstants.kLinearFilterSampleCount);
 
   @AutoLogOutput(key = "Intake/RollerGoal")
-  private IntakeGoal rollerGoal = null;
+  private RollerGoal rollerGoal = null;
   @AutoLogOutput(key = "Intake/PivotGoal")
   private PivotGoal pivotGoal = null;
 
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
-    kHardware = hardwareIO;
+    kRollerHardware = hardwareIO;
     kSensor = sensorIO;
     kPivotHardware = pivotHardwareIO;
   }
 
   @Override
   public void periodic() {
-    kHardware.updateInputs(kInputs);
+    kRollerHardware.updateInputs(kInputs);
     Logger.processInputs("Intake/Inputs/Rollers", kInputs);
     kSensor.updateInputs(kSensorInputs);
     Logger.processInputs("Intake/Inputs/Sensor", kSensorInputs);
@@ -165,7 +164,7 @@ public class Intake extends SubsystemBase {
    * 
    * @param desiredGoal The desired voltage goal
    */
-  public void setRollerGoal(IntakeGoal desiredGoal) {
+  public void setRollerGoal(RollerGoal desiredGoal) {
     rollerGoal = desiredGoal;
   }
 
@@ -182,7 +181,7 @@ public class Intake extends SubsystemBase {
   public void stop(boolean stopRollers, boolean stopPivot) {
     if (stopRollers) {
       rollerGoal = null;
-      kHardware.stop();
+      kRollerHardware.stop();
     }
     if (stopPivot) {
       pivotGoal = null;
@@ -196,7 +195,7 @@ public class Intake extends SubsystemBase {
    * @param voltage
    */
   public void setRollerVoltage(double voltage) {
-    kHardware.setVoltage(voltage);
+    kRollerHardware.setVoltage(voltage);
   }
 
   /**
