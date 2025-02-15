@@ -2,10 +2,12 @@
 package frc.robot.subsystems.intake;
 
 import frc.robot.Constants;
+import frc.robot.utils.visualizers.PivotVisualizer.PivotVisualizerConfiguration;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -69,7 +71,7 @@ public class IntakeConstants {
     Rotation2d maxPosition,
     boolean simulateGravity,
     Rotation2d initialPosition,
-    double meadurementStdDevs) {}
+    double measurementStdDevs) {}
 
   /**
    * See this comment and documentation about the units if x, y, w, h 
@@ -168,16 +170,16 @@ public class IntakeConstants {
         0.0, 
         0.0); 
       case SIM -> new PivotGains(
+        550.0,
         0.0,
         0.0,
-        0.0,
-        0.0,
-        0.0,
+        10.0,
+        4.0,
         0.0,
         0.0,
         0.17,
         0.06, 
-        1.74); 
+        0.01); 
       default -> new PivotGains(
         0.0,
         0.0,
@@ -212,4 +214,12 @@ public class IntakeConstants {
     true, // Simulate gravity
     new Rotation2d(), // Initial position
     0.002); // Std devs
+
+  public static final PivotVisualizerConfiguration kPivotVisualizerConfiguration = new PivotVisualizerConfiguration(
+    new Pair<Double,Double>(1.0, 3.0),
+    "boxPivotRoot",
+    new Pair<Double,Double>(0.4, 2.0),
+    "boxPivotLigament",
+    Units.inchesToMeters(20.0),
+    new Rotation2d());
 }

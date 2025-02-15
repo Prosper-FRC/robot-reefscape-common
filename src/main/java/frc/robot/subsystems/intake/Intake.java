@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
+import frc.robot.utils.visualizers.PivotVisualizer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -110,10 +111,15 @@ public class Intake extends SubsystemBase {
   @AutoLogOutput(key ="Intake/Gamepiece")
   private Gamepiece selectedGamepiece = Gamepiece.kCoral;
 
+  // Object used to visualize the mechanism over network tables, useful in simulation
+  private final PivotVisualizer kPivotVisualizer;
+
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
     kPivotHardware = pivotHardwareIO;
+
+    kPivotVisualizer = new PivotVisualizer(IntakeConstants.kPivotVisualizerConfiguration);
   }
 
   @Override
@@ -192,6 +198,9 @@ public class Intake extends SubsystemBase {
         },
         kMaxVelocity,
         kMaxAcceleration);
+
+    // The visualizer needs to be periodically fed the current position of the mechanism
+    kPivotVisualizer.updatePosition(getPivotPosition());
   }
 
   /**
@@ -276,7 +285,7 @@ public class Intake extends SubsystemBase {
    */
   @AutoLogOutput(key = "Pivot/Feedback/ErrorDegrees")
   public double getPivotErrorDegrees() {
-    if (pivotGoal != null || getPivotPosition() != null) {
+    if (pivotGoal != null && getPivotPosition() != null) {
       return pivotGoal.getGoalPosition().getDegrees() - getPivotPosition().getDegrees();
     } else {
       return 0.0;

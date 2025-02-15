@@ -59,8 +59,8 @@ public class PivotIOSim implements PivotIO {
       configuration.maxPosition().getRadians(), 
       configuration.simulateGravity(), 
       configuration.initialPosition().getRadians(), 
-      configuration.meadurementStdDevs(),
-      configuration.meadurementStdDevs());
+      configuration.measurementStdDevs(),
+      configuration.measurementStdDevs());
 
     kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
       gains.maxVelocityMetersPerSecond(), 
