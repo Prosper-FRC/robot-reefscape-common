@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -280,22 +281,25 @@ public class RobotContainer {
         Command startRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.3));
         Command stopRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.0));
 
+        Command runCoralRollersUntilHasGamepieceCommand = new FunctionalCommand(
+            () -> {},
+            () -> {
+                intake.setRollerGoal(RollerGoal.kIntakeCoral);
+            },
+            (interrupted) -> {
+                intake.stop(true, false);
+            },
+            () -> hasGamepieceTrigger.getAsBoolean(),
+            intake);
+
         if (useCompetitionBindings) {
             /* Coral bindings */
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
-                    Commands.run(
-                        () -> intake.setRollerGoal(RollerGoal.kIntakeCoral), 
-                        intake)
-                    .until(hasGamepieceTrigger)
+                    runCoralRollersUntilHasGamepieceCommand
                     .andThen(startRumbleCommand)
                 )
-                .whileFalse(
-                    Commands.runOnce(
-                        () -> intake.stop(true, false), 
-                        intake)
-                    .andThen(stopRumbleCommand)
-                );
+                .whileFalse(stopRumbleCommand);
 
             operatorController.y().and(coralSelectTrigger)
                 .whileTrue(
