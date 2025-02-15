@@ -91,10 +91,9 @@ public class WheelRadiusCharacterization extends Command {
         if (accumGyroYawRads <= Math.PI * 2.0) {
             System.out.println("Not enough data for characterization");
         } else {
-            System.out.println(
-                "Effective Wheel Radius: "
-                    + Units.metersToInches(currentEffectiveWheelRadius)
-                    + " inches");
+            Logger.recordOutput(
+                "Effective Wheel Radius: ",
+                    currentEffectiveWheelRadius);
         }
     }
 
