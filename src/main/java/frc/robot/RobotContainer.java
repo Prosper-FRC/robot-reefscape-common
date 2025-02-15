@@ -267,10 +267,17 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        Command startRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.75));
+        Command stopRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.0));
+
         Trigger autoSelectCoral = operatorController.rightTrigger(0.5, teleopLoop)
             .onTrue(Commands.runOnce(() -> intake.selectGamepiece(Gamepiece.kCoral)));
         Trigger autoSelectAlgae = operatorController.leftTrigger(0.5, teleopLoop)
             .onTrue(Commands.runOnce(() -> intake.selectGamepiece(Gamepiece.kAlgae)));
+        Trigger autoRumble = new Trigger(teleopLoop, intake::detectedGamepiece).debounce(0.4)
+            .and(operatorController.leftBumper())
+            .whileTrue(startRumbleCommand)
+            .whileFalse(stopRumbleCommand);
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece).debounce(0.4);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
@@ -278,28 +285,16 @@ public class RobotContainer {
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
 
-        Command startRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.3));
-        Command stopRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.0));
-
-        Command runCoralRollersUntilHasGamepieceCommand = new FunctionalCommand(
-            () -> {},
-            () -> {
-                intake.setRollerGoal(RollerGoal.kIntakeCoral);
-            },
-            (interrupted) -> {
-                intake.stop(true, false);
-            },
-            () -> hasGamepieceTrigger.getAsBoolean(),
-            intake);
-
         if (useCompetitionBindings) {
             /* Coral bindings */
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
-                    runCoralRollersUntilHasGamepieceCommand
-                    .andThen(startRumbleCommand)
-                )
-                .whileFalse(stopRumbleCommand);
+                    Commands.run(() -> {
+                        intake.setRollerGoal(RollerGoal.kIntakeCoral);
+                    }, 
+                    intake)
+                    .until(hasGamepieceTrigger)
+                );
 
             operatorController.y().and(coralSelectTrigger)
                 .whileTrue(
@@ -308,7 +303,6 @@ public class RobotContainer {
                         () -> elevator.setPosition(elevator.getPositionMeters()),
                         elevator)
                     .until(elevatorAtGoalTrigger)
-                    .andThen(startRumbleCommand)
                     .andThen(
                         Commands.run(() -> {
                             if (confirmScoreTrigger.getAsBoolean()) {
@@ -329,7 +323,6 @@ public class RobotContainer {
                             () -> intake.stop(true, false), 
                             intake)
                     )
-                    .alongWith(stopRumbleCommand)
                 );
         } 
         else {
