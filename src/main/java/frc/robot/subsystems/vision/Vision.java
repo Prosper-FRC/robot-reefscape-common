@@ -18,7 +18,7 @@ import static frc.robot.subsystems.vision.VisionConstants.kAmbiguityThreshold;;
 
 public class Vision {
     private CameraIO[] cameras;
-    private VisionIOInputsAutoLogged[] camerasData;
+    private CameraIOInputsAutoLogged[] camerasData;
 
     private static final LoggedTunableNumber kSingleXYStdev = new LoggedTunableNumber(
         "Vision/kSingleXYStdev", kSingleStdDevs.get(0));
@@ -30,9 +30,9 @@ public class Vision {
     public Vision(CameraIO[] cameras) {
         Logger.recordOutput("Vision/UseSingleTagTransform", KUseSingleTagTransform);
         this.cameras = cameras;
-        camerasData = new VisionIOInputsAutoLogged[cameras.length];
+        camerasData = new CameraIOInputsAutoLogged[cameras.length];
         for(int i = 0; i < cameras.length; i++) {
-            camerasData[i] = new VisionIOInputsAutoLogged();
+            camerasData[i] = new CameraIOInputsAutoLogged();
         }
     }
 
@@ -53,7 +53,7 @@ public class Vision {
         VisionObservation[] observations = new VisionObservation[cameras.length];
         int i = 0;
         // STANDARD DEVIATION CALCULATIONS \\
-        for(VisionIOInputsAutoLogged camData : camerasData) {
+        for(CameraIOInputsAutoLogged camData : camerasData) {
             // No point in adding vision data if it doesn't exist
             if(camData.hasTarget && camData.hasBeenUpdated) {
                 // Average distance from tag, and the number of tags to determine estimate stability
