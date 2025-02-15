@@ -95,7 +95,11 @@ public class IntakeConstants {
   /** The intake subsystem will periodically compare the motors current amperage to this 
    * value, if it is exceeding this value over a certain interval of time, it likely has 
    * a gamepiece as intaking a gamepiece spikes the amperage of the motor */
-  public static final int kAmpFilterThreshold = 15;
+  public static final int kCoralAmpFilterThreshold = 15; // TODO Tune this
+  /** The intake subsystem will periodically compare the motors current amperage to this 
+   * value, if it is exceeding this value over a certain interval of time, it likely has 
+   * a gamepiece as intaking a gamepiece spikes the amperage of the motor */
+  public static final int kAlgaeAmpFilterThreshold = 20; // TODO Tune this
 
   /** The number of motor current reading samples the gamepeice detection filter averages 
    * over, this number cannot be 0 */

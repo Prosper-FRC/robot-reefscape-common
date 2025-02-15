@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
   public enum RollerGoal {
-    kIntake(() -> 4.0),
-    kOuttake(() -> -4.0),
+    kIntakeCoral(() -> 4.0),
+    kIntakeAlgae(() -> 5.0),
+    kScoreCoral(() -> -4.0),
+    kScoreAlgae(() -> -5.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Intake/Feedback/RollerSetpointVolts", 0.0));
 
@@ -52,8 +54,18 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  /*
+   * TODO At some point this can be moved out in favor of using some form of higher level 
+   * robot state control
+   */
+  /** Specify which gamepiece the mechanism is attempting to manipulate */
+  public enum Gamepiece {
+    kCoral,
+    kAlgae
+  }
+
   private final IntakeIO kRollerHardware;
-  private final IntakeIOInputsAutoLogged kInputs = new IntakeIOInputsAutoLogged();
+  private final IntakeIOInputsAutoLogged kRollerInputs = new IntakeIOInputsAutoLogged();
 
   private final SensorIO kSensor;
   private final SensorIOInputsAutoLogged kSensorInputs = new SensorIOInputsAutoLogged();
@@ -93,6 +105,11 @@ public class Intake extends SubsystemBase {
   @AutoLogOutput(key = "Intake/PivotGoal")
   private PivotGoal pivotGoal = null;
 
+  // The default gamepiece is coral, this is because we will start preloaded with coral and will
+  // assume throughout the rest of the code the robot will always default to scoring coral
+  @AutoLogOutput(key ="Intake/Gamepiece")
+  private Gamepiece selectedGamepiece = Gamepiece.kCoral;
+
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
@@ -101,8 +118,8 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    kRollerHardware.updateInputs(kInputs);
-    Logger.processInputs("Intake/Inputs/Rollers", kInputs);
+    kRollerHardware.updateInputs(kRollerInputs);
+    Logger.processInputs("Intake/Inputs/Rollers", kRollerInputs);
     kSensor.updateInputs(kSensorInputs);
     Logger.processInputs("Intake/Inputs/Sensor", kSensorInputs);
     kPivotHardware.updateInputs(kPivotInputs);
@@ -114,18 +131,25 @@ public class Intake extends SubsystemBase {
       stop(true, true);
     }
 
-    // If the CANrange disconnects we can use motor current to detect when we have a coral
-    // TODO Test this fallback to see if it actually works
-    if (kSensorInputs.isConnected) {
-      detectedGamepiece = kSensorInputs.detectsObject;
-    } else {
+    if (selectedGamepiece == Gamepiece.kCoral) {
+      // If the CANrange disconnects we can use motor current to detect when we have a coral
+      // TODO Test this fallback to see if it actually works
+      if (kSensorInputs.isConnected) {
+        detectedGamepiece = kSensorInputs.detectsObject;
+      } else {
+        // Checks for spike in amperage, and if greater than the value then
+        // the intake motor probbaly has the coral
+        detectedGamepiece = ampFilter.calculate(
+          kRollerInputs.statorCurrentAmps) > IntakeConstants.kCoralAmpFilterThreshold;
+      }
+    } else if (selectedGamepiece == Gamepiece.kAlgae) {
       // Checks for spike in amperage, and if greater than the value then
-      // the intake motor probbaly has the note
+      // the intake motor probbaly has the algae
       detectedGamepiece = ampFilter.calculate(
-        kInputs.statorCurrentAmps) > IntakeConstants.kAmpFilterThreshold;
+        kRollerInputs.statorCurrentAmps) > IntakeConstants.kAlgaeAmpFilterThreshold;
+    } else {
+      System.out.println("INTAKE: selectedGamepiece is invalid");
     }
-
-    Logger.recordOutput("Intake/Goal", rollerGoal);
 
     if (rollerGoal != null) {
       setRollerVoltage(rollerGoal.getGoalVolts());
@@ -175,6 +199,21 @@ public class Intake extends SubsystemBase {
    */
   public void setPivotGoal(PivotGoal desiredGoal) {
     pivotGoal = desiredGoal;
+  }
+
+  /**
+   * Sets the desired gamepiece of the subsystem, used when checking for if the robot has a
+   * gamepiece or not
+   * 
+   * @param desiredGamepiece The gamepiece type
+   */
+  public void selectGamepiece(Gamepiece desiredGamepiece) {
+    if (desiredGamepiece != null) {
+      selectedGamepiece = desiredGamepiece;
+    } else {
+      System.out.println("INTAKE: Invalid gamepiece selected");
+      selectedGamepiece= Gamepiece.kCoral;
+    }
   }
 
   /** Stops the motor */
