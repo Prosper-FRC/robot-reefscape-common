@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
+import frc.robot.utils.visualizers.PivotVisualizer;
 
 public class Climb extends SubsystemBase {
   /** List of voltage setpoints for the climb in volts */
@@ -45,6 +46,8 @@ public class Climb extends SubsystemBase {
 
   private boolean isAbsoluteEncoderConnected = false;
 
+  private final PivotVisualizer kClimbVisualizer;
+
   /** 
    * Creates a new Climb. Note that the first argument is considered 
    * the lead motor 
@@ -59,6 +62,8 @@ public class Climb extends SubsystemBase {
     }
 
     kAbsoluteEncoder = encoderIO;
+
+    kClimbVisualizer = new PivotVisualizer(ClimbConstants.kPivotVisualizerConfiguration);
   }
 
   @Override
@@ -93,6 +98,9 @@ public class Climb extends SubsystemBase {
     } else {
       // Do nothing if limits are not reached
     }
+
+    // The visualizer needs to be periodically fed the current position of the mechanism
+    kClimbVisualizer.updatePosition(getPosition());
   }
 
   /**

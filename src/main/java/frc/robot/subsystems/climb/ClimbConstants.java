@@ -5,9 +5,11 @@
 package frc.robot.subsystems.climb;
 
 import frc.robot.Constants;
+import frc.robot.utils.visualizers.PivotVisualizer.PivotVisualizerConfiguration;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -146,4 +148,12 @@ public class ClimbConstants {
     0,
     0.0,
     1.0);
+  
+  public static final PivotVisualizerConfiguration kPivotVisualizerConfiguration = new PivotVisualizerConfiguration(
+    new Pair<Double,Double>(1.0, 3.0),
+    "climbPivotRoot",
+    new Pair<Double,Double>(0.1, 0.2),
+    "climbPivotLigament",
+    Units.inchesToMeters(10.0),
+    new Rotation2d());
 }
