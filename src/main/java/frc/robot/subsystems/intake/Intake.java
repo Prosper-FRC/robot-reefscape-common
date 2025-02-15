@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
@@ -112,6 +113,9 @@ public class Intake extends SubsystemBase {
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final PivotVisualizer kPivotVisualizer;
 
+  private final LoggedNetworkBoolean kOverrideDetectGamepiece = 
+    new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", false);
+
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
@@ -138,19 +142,27 @@ public class Intake extends SubsystemBase {
     if (selectedGamepiece == Gamepiece.kCoral) {
       // If the CANrange disconnects we can use motor current to detect when we have a coral
       // TODO Test this fallback to see if it actually works
-      if (kSensorInputs.isConnected) {
-        detectedGamepiece = kSensorInputs.detectsObject;
+      if (!kOverrideDetectGamepiece.get()) {
+        if (kSensorInputs.isConnected) {
+          detectedGamepiece = kSensorInputs.detectsObject;
+        } else {
+          // Checks for spike in amperage, and if greater than the value then
+          // the intake motor probbaly has the coral
+          detectedGamepiece = ampFilter.calculate(
+            kRollerInputs.statorCurrentAmps) > IntakeConstants.kCoralAmpFilterThreshold;
+        }
       } else {
-        // Checks for spike in amperage, and if greater than the value then
-        // the intake motor probbaly has the coral
-        detectedGamepiece = ampFilter.calculate(
-          kRollerInputs.statorCurrentAmps) > IntakeConstants.kCoralAmpFilterThreshold;
+        detectedGamepiece = true;
       }
     } else if (selectedGamepiece == Gamepiece.kAlgae) {
-      // Checks for spike in amperage, and if greater than the value then
-      // the intake motor probbaly has the algae
-      detectedGamepiece = ampFilter.calculate(
-        kRollerInputs.statorCurrentAmps) > IntakeConstants.kAlgaeAmpFilterThreshold;
+      if (!kOverrideDetectGamepiece.get()) {
+        // Checks for spike in amperage, and if greater than the value then
+        // the intake motor probbaly has the algae
+        detectedGamepiece = ampFilter.calculate(
+          kRollerInputs.statorCurrentAmps) > IntakeConstants.kAlgaeAmpFilterThreshold;
+      } else {
+        detectedGamepiece = true;
+      }
     } else {
       System.out.println("INTAKE: selectedGamepiece is invalid");
     }
