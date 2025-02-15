@@ -101,9 +101,7 @@ public class Intake extends SubsystemBase {
   private LinearFilter ampFilter = LinearFilter.movingAverage(
     IntakeConstants.kLinearFilterSampleCount);
 
-  @AutoLogOutput(key = "Intake/RollerGoal")
   private RollerGoal rollerGoal = null;
-  @AutoLogOutput(key = "Intake/PivotGoal")
   private PivotGoal pivotGoal = null;
 
   // The default gamepiece is coral, this is because we will start preloaded with coral and will
@@ -159,9 +157,15 @@ public class Intake extends SubsystemBase {
 
     if (rollerGoal != null) {
       setRollerVoltage(rollerGoal.getGoalVolts());
+      Logger.recordOutput("Intake/RollerGoal", rollerGoal);
+    } else {
+      Logger.recordOutput("Intake/RollerGoal", "NONE");
     }
     if (pivotGoal != null) {
       kPivotHardware.setPosition(pivotGoal.getGoalPosition());
+      Logger.recordOutput("Intake/PivotGoal", pivotGoal);
+    } else {
+      Logger.recordOutput("Intake/PivotGoal", "NONE");
     }
 
     // Check if pivot is attempting to move beyond its limitations

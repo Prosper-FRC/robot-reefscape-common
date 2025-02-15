@@ -35,7 +35,6 @@ public class Climb extends SubsystemBase {
     }
   }
 
-  @AutoLogOutput(key = "Climb/Goal")
   private ClimbVoltageGoal voltageGoal = null;
 
   private final ClimbIO[] kHardware;
@@ -84,6 +83,9 @@ public class Climb extends SubsystemBase {
 
     if (voltageGoal != null) {
       setVoltage(voltageGoal.getGoalVoltage());
+      Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
+    } else {
+      Logger.recordOutput("Climb/VoltageGoal", "NONE");
     }
 
     // Continuously check if climb has moved beyond its limitations, note
