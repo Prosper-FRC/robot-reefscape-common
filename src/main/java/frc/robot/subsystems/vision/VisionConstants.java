@@ -1,6 +1,5 @@
-package frc.robot.subsystems.vision;
 
-import java.util.prefs.BackingStoreException;
+package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -14,7 +13,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 
 public class VisionConstants {
     // From CAD and decided by you in configuration
-    public static final String kLeftCamName = "9105-Left";
+    public static final String kLeftCamName = "5411_LEFT";
     public static final Orientation kLeftCamOrientation = Orientation.BACK;
     public static final Transform3d kLeftCamTransform = new Transform3d(
         new Translation3d(0.3, 0.3, 0.0),
