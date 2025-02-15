@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -19,6 +20,14 @@ import frc.robot.subsystems.drive.Drive.DriveState;
 import frc.robot.utils.math.AllianceFlipUtil;
 
 public class AutonCommands {
+    public static final double kCoralIntakeTriggerDistanceMeters = 0.5; 
+    public static final double kAlgaeIntakeTriggerDistanceMeters = 0.5; 
+    public static final Pose2d kIntakeLeftPlacedHolder = new Pose2d();
+    public static final Pose2d kIntakeRightPlacedHolder = new Pose2d();
+
+    public static final Pose2d kAlgaeD = new Pose2d();
+    public static final Pose2d kAlgaeE = new Pose2d();
+
     private SendableChooser<Command> autoChooser;
 
     private Drive robotDrive;
@@ -148,7 +157,12 @@ public class AutonCommands {
      * and upon finishing then the nextAuto is scheduled
     */
     public PathPlannerAuto intakeCoralPath(String name, PathPlannerAuto nextAuto) {
-        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeCoralCommand(), nextAuto);
+        PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
+        auto.nearFieldPosition(AllianceFlipUtil.apply(kAlgaeD).getTranslation(), kCoralIntakeTriggerDistanceMeters).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(kAlgaeE).getTranslation(), kCoralIntakeTriggerDistanceMeters)
+        ).whileTrue(
+            intakeAlgaeCommand() );
+        return auto;
     }
 
     /* 
@@ -164,7 +178,12 @@ public class AutonCommands {
      * and upon finishing then the nextAuto is scheduled
     */
     public PathPlannerAuto intakeAlgaePath(String name, PathPlannerAuto nextAuto) {
-        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeAlgaeCommand(), nextAuto);
+        PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
+        auto.nearFieldPosition(AllianceFlipUtil.apply(kIntakeLeftPlacedHolder).getTranslation(), kAlgaeIntakeTriggerDistanceMeters).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(kIntakeRightPlacedHolder).getTranslation(), kAlgaeIntakeTriggerDistanceMeters)
+        ).whileTrue(
+            intakeCoralCommand() );
+        return auto;
     }
 
     ///////////////// PATH CHAINING LOGIC \\\\\\\\\\\\\\\\\\\\\\
