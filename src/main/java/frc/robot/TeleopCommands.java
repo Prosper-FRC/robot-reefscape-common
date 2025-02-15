@@ -1,51 +1,63 @@
+
 package frc.robot;
 
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.RollerGoal;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.climb.Climb;
+
 public class TeleopCommands {
+    private final Elevator kElevator;
+    private final Intake kIntake;
+    private final Climb kClimb;
 
-    // Define local storage of subsystems
-    // ex: private Drive robotDrive;
+    private boolean stopRollers;
+    private boolean stopPivot;
 
-    public TeleopCommands(/* pass subsystems */) {
-        // store subsystems
-        // ex: this.robotDrive = robotDrive;
+    public TeleopCommands(Elevator elevator, Intake intake, Climb climb) {
+        kElevator = elevator;
+        kIntake = intake;
+        kClimb = climb;
     }
 
-    // Define methods that return commands that will assist the driver and operator
-    //  during tele-op mode.  This allows orchestrating movement among the various subsystems
-    //  through a combination of ParallelCommandGroup, SequentialCommandGroup, ParallelDeadlineGroup, etc.
-    //  These commands will be bound to triggers on the controllers.
-
-    /* Examples:
-    public Command aimAmp() {
-        return new ParallelCommandGroup(
-            new SequentialCommandGroup(
-                robotFlywheels.setGoalCommand(FlywheelSetpoint.STOP),
-                Commands.waitSeconds(0.4),
-                robotFlywheels.setGoalCommand(FlywheelSetpoint.AMP)),
-            robotArm.setGoalCommand(ArmGoal.AMP)
-        );
+    public Command scoreCoralReefCommand(ElevatorGoal level) {
+        return runElevatorCommand(level)
+            .andThen(
+                runRollersCommand(RollerGoal.kScoreCoral));
     }
 
-    public Command aimFeed() {
-        return new ParallelCommandGroup(
-            robotArm.setGoalCommand(ArmGoal.SPEAKER),
-            robotFlywheels.setGoalCommand(FlywheelSetpoint.FEED_SHOOT)
-        );
+    public Command intakeCoralCommand() {
+        return runElevatorCommand(ElevatorGoal.kIntake)
+            .andThen(
+                runRollersCommand(RollerGoal.kIntakeCoral));
     }
 
-    public Command manualArmUp() {
-        return robotArm.setGoalCommand(ArmGoal.MANUAL_UP);
+    public Command runElevatorCommand(ElevatorGoal goal) {
+        return Commands.runOnce(() -> kElevator.setGoal(goal), kElevator);
     }
 
-    public Command manualArmDown() {
-        return robotArm.setGoalCommand(ArmGoal.MANUAL_DOWN);
+    public Command runRollersCommand(RollerGoal goal) {
+        return Commands.runOnce(() -> kIntake.setRollerGoal(goal), kIntake);
     }
 
-    public Command backToIdle() {
-        return new ParallelCommandGroup(
-            robotIntake.setGoalCommand(IndexerIntakeVoltageGoal.STOP),
-            robotArm.setGoalCommand(ArmGoal.IDLE),
-            robotFlywheels.setGoalCommand(FlywheelSetpoint.IDLE));
+    public Command stopRollersCommand() {
+        stopRollers = true;
+        return Commands.runOnce(() -> kIntake.stop(true, false), kIntake);
     }
-    */
+
+    public Command stopElevatorCommand() {
+        return Commands.runOnce(() -> kElevator.stop(), kElevator);
+    }
+
+    /*
+    return new FunctionalCommand(
+        () -> {},
+        () -> {},
+        (interrupted) -> {},
+        () -> false,
+        elevator);
+     */
 }

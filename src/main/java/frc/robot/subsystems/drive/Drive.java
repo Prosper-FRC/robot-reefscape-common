@@ -342,7 +342,7 @@ public class Drive extends SubsystemBase {
                  * when azimuth angle changes
                  */
                 setpointStates[i].cosineScale(modules[i].getCurrentState().angle);
-                optimizedSetpointStates[i] = modules[i].setDesiredStateWithAmperage(setpointStates[i], driveAmps);
+                optimizedSetpointStates[i] = modules[i].setDesiredStateWithAmpFF(setpointStates[i], driveAmps);
             } else {
                 setpointStates[i] = new SwerveModuleState(
                     setpointStates[i].speedMetersPerSecond,
@@ -419,7 +419,7 @@ public class Drive extends SubsystemBase {
     public void setForwardAmperagesForAllModules(double amps) {
         for(int i = 0; i < 4; i++) {
             modules[i].setDesiredVelocity(null);
-            modules[i].setDriveAmp(amps);
+            modules[i].setDriveAmperage(amps);
             modules[i].setDesiredRotation(Rotation2d.fromDegrees(0.0));
         }
     }
