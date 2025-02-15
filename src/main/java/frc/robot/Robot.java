@@ -124,6 +124,8 @@ public class Robot extends LoggedRobot {
         if (mTeleopCommand != null) {
             mTeleopCommand.schedule();
         }
+
+        mRobotContainer.getTeleopEventLoop().poll();
     }
 
     @Override

@@ -6,6 +6,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -56,6 +58,7 @@ import frc.robot.subsystems.drive.Drive.DriveState;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.common.hardware.VisionLEDMode;
@@ -80,6 +83,9 @@ public class RobotContainer {
 
     /* TODO: Set to true before competition please */
     private final boolean useCompetitionBindings = true;
+
+    // Anshul said to use this because he loves event loops
+    private final EventLoop teleopLoop = new EventLoop();
 
     public RobotContainer() {
 
@@ -258,32 +264,42 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        Trigger hasGamepieceTrigger = new Trigger(intake::detectedGamepiece);
-        Trigger elevatorAtGoalTrigger = new Trigger(elevator::atGoal);
-        Trigger coralSelectTrigger = operatorController.rightTrigger();
-        Trigger algaeSelectTrigger = operatorController.leftTrigger();
-        Trigger confirmScoreTrigger = operatorController.rightBumper();
+        Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
+        Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
+        Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
+        Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
+        Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
 
         if (useCompetitionBindings) {
             /* Coral bindings */
-            operatorController.leftBumper().and(coralSelectTrigger)
-                .whileTrue(telopCommands.runRollersCommand(RollerGoal.kIntakeCoral)
-                    .until(hasGamepieceTrigger)
-                        .andThen(telopCommands.stopRollersCommand()));
-
-            // operatorController.rightBumper().and(coralSelectTrigger)
-            //     .whileTrue(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
-            //         .repeatedly()
-            //             .until(hasGamepieceTrigger.negate())
-            //                 .andThen(telopCommands.stopRollersCommand()));
-
             operatorController.y().and(coralSelectTrigger)
-                .whileTrue(telopCommands.runElevatorCommand(ElevatorGoal.kL4Coral)
+                .whileTrue(
+                    Commands.runEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL4Coral),
+                        () -> elevator.setPosition(elevator.getPositionMeters()),
+                        elevator)
                     .until(elevatorAtGoalTrigger)
-                        .andThen(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
-                            .onlyIf(confirmScoreTrigger.negate()))
-                        .andThen(telopCommands.stopElevatorCommand())
-                            .alongWith(telopCommands.stopRollersCommand()));
+                    .andThen(
+                        Commands.run(() -> {
+                            if (confirmScoreTrigger.getAsBoolean()) {
+                                intake.setRollerGoal(RollerGoal.kScoreCoral);
+                            } else {
+                                intake.stop(true, false);
+                            }
+                        }, 
+                        intake)
+                    )
+                )
+                .whileFalse(
+                    Commands.runOnce(
+                        () -> elevator.stop(), 
+                        elevator)
+                    .alongWith(
+                        Commands.runOnce(
+                            () -> intake.stop(true, false), 
+                            intake)
+                    )
+                );
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
@@ -306,5 +322,9 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_POSE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
         }
+    }
+
+    public EventLoop getTeleopEventLoop() {
+        return teleopLoop;
     }
 }
