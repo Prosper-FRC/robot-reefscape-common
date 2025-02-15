@@ -270,6 +270,28 @@ public class Intake extends SubsystemBase {
   }
 
   /**
+   * Compute the error based off of our current position and current goal
+   * 
+   * @return The computed error in degrees
+   */
+  @AutoLogOutput(key = "Pivot/Feedback/ErrorDegrees")
+  public double getPivotErrorDegrees() {
+    if (pivotGoal != null || getPivotPosition() != null) {
+      return pivotGoal.getGoalPosition().getDegrees() - getPivotPosition().getDegrees();
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * @return If the pivot is at its desired goal yet
+   */
+  @AutoLogOutput(key = "Pivot/Feedback/AtGoal")
+  public boolean pivotAtGoal() {
+    return Math.abs(getPivotErrorDegrees()) < IntakeConstants.kPivotPositionTolerance.getDegrees();
+  }
+
+  /**
    * @return The position of the pivot
    */
   public Rotation2d getPivotPosition() {

@@ -145,6 +145,8 @@ public class IntakeConstants {
   
   public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(0.0);
   public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(90.0);
+
+  public static final Rotation2d kPivotPositionTolerance = Rotation2d.fromDegrees(1.0);
   
   public static final double kPivotGearing = 9.0 / 1.0;
 
