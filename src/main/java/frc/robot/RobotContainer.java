@@ -71,8 +71,8 @@ public class RobotContainer {
                     new MagneticSensorIO(){});
                 intake = new Intake(
                     new IntakeIOSim(
-                        IntakeConstants.kRoboIntakeHardware, 
-                        IntakeConstants.kSimulationConfiguration, 
+                        IntakeConstants.kIntakeHardware, 
+                        IntakeConstants.kIntakeSimulationConfiguration, 
                         0.02), 
                     new SensorIO(){});
                 break;
