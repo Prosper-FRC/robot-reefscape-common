@@ -7,7 +7,7 @@ package frc.robot.subsystems.climb;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -29,7 +29,7 @@ public class ClimbIOSim implements ClimbIO {
 
   // Feedforward still a constant, but we have to reinstantiate the model in 
   // order to change the gains
-  private ElevatorFeedforward kFeedforward;
+  private ArmFeedforward kFeedforward;
 
   // Final goal of the mechanism
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
@@ -69,7 +69,7 @@ public class ClimbIOSim implements ClimbIO {
     kFeedback = new PIDController(gains.p(), gains.i(), gains.d());
 
     kFeedforward = 
-      new ElevatorFeedforward(gains.s(), gains.g(), gains.v(), gains.a());
+      new ArmFeedforward(gains.s(), gains.g(), gains.v(), gains.a());
   }
 
   @Override
@@ -114,7 +114,7 @@ public class ClimbIOSim implements ClimbIO {
 
     setpoint = kProfile.calculate(kLoopPeriodSec, setpoint, goal);
 
-    double feedforwardEffort = kFeedforward.calculate(setpoint.velocity);
+    double feedforwardEffort = kFeedforward.calculate(setpoint.position, setpoint.velocity);
     double feedbackEffort = kFeedback.calculate(kPivot.getAngleRads(), setpoint.position);
 
     // In the unlikely event that there are multiple classes created, we need a unique
@@ -134,7 +134,7 @@ public class ClimbIOSim implements ClimbIO {
   @Override
   public void setGains(double p, double i, double d, double s, double g, double v, double a)  {
     kFeedback.setPID(p, i, d);
-    kFeedforward = new ElevatorFeedforward(s, g, v, a);
+    kFeedforward = new ArmFeedforward(s, g, v, a);
   }
 
   @Override
