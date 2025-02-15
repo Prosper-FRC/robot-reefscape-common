@@ -56,6 +56,7 @@ import frc.robot.subsystems.drive.Drive.DriveState;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -252,24 +253,34 @@ public class RobotContainer {
 
         if (useCompetitionBindings) {
             /* Coral bindings */
-            operatorController.leftBumper().and(coralSelectTrigger)
-                .whileTrue(telopCommands.runRollersCommand(RollerGoal.kIntakeCoral)
-                    .until(hasGamepieceTrigger)
-                        .andThen(telopCommands.stopRollersCommand()));
-
-            // operatorController.rightBumper().and(coralSelectTrigger)
-            //     .whileTrue(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
-            //         .repeatedly()
-            //             .until(hasGamepieceTrigger.negate())
-            //                 .andThen(telopCommands.stopRollersCommand()));
-
             operatorController.y().and(coralSelectTrigger)
-                .whileTrue(telopCommands.runElevatorCommand(ElevatorGoal.kL4Coral)
+                .whileTrue(
+                    Commands.runEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL4Coral),
+                        () -> elevator.setPosition(elevator.getPositionMeters()),
+                        elevator)
                     .until(elevatorAtGoalTrigger)
-                        .andThen(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
-                            .onlyIf(confirmScoreTrigger.negate()))
-                        .andThen(telopCommands.stopElevatorCommand())
-                            .alongWith(telopCommands.stopRollersCommand()));
+                    .andThen(
+                        Commands.run(() -> {
+                            if (confirmScoreTrigger.getAsBoolean()) {
+                                intake.setRollerGoal(RollerGoal.kScoreCoral);
+                            } else {
+                                intake.stop(true, false);
+                            }
+                        }, 
+                        intake)
+                    )
+                )
+                .whileFalse(
+                    Commands.runOnce(
+                        () -> elevator.stop(), 
+                        elevator)
+                    .alongWith(
+                        Commands.runOnce(
+                            () -> intake.stop(true, false), 
+                            intake)
+                    )
+                );
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
