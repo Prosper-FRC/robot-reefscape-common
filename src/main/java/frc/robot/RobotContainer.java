@@ -15,18 +15,20 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
+import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.PivotIO;
 import frc.robot.subsystems.intake.PivotIOSim;
 import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
-
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -57,21 +59,20 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
+    // Define subsystems
+    private final Drive robotDrive;
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
-
-    private final CommandXboxController driverController = new CommandXboxController(0);
-    private final CommandXboxController operatorController = new CommandXboxController(1);
-
-    // Define subsystems
-    private final Drive robotDrive;
-
+    
     // Define other utility classes
     private final AutonCommands autonCommands;
     private final TeleopCommands telopCommands;
-
+    
     private LoggedDashboardChooser<Command> autoChooser;
+    
+    private final CommandXboxController driverController = new CommandXboxController(0);
+    private final CommandXboxController operatorController = new CommandXboxController(1);
 
     /* TODO: Set to true before competition please */
     private final boolean useCompetitionBindings = false;
@@ -105,14 +106,13 @@ public class RobotContainer {
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
   
-                // elevator = new Elevator(
-                //     new ElevatorIOTalonFX(
-                //         Constants.kCanbusName, 
-                //         ElevatorConstants.kRoboElevatorHardware, 
-                //         ElevatorConstants.kMotorConfiguration, 
-                //         ElevatorConstants.kElevatorGains),
-                //     new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
-                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO() {});
+                elevator = new Elevator(
+                    new ElevatorIOTalonFX(
+                        Constants.kCanbusName, 
+                        ElevatorConstants.kRoboElevatorHardware, 
+                        ElevatorConstants.kMotorConfiguration, 
+                        ElevatorConstants.kElevatorGains),
+                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
             
                 // intake = new Intake(
                 //     new IntakeIOTalonFX(
@@ -120,7 +120,9 @@ public class RobotContainer {
                 //         IntakeConstants.kMotorConfiguration), 
                 //     new SensorIORange());
                 intake = new Intake(
-                    new IntakeIO(){}, 
+                    new IntakeIOTalonFX(
+                        IntakeConstants.kIntakeHardware,
+                        IntakeConstants.kIntakeMotorConfiguration), 
                     new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
                     new PivotIOTalonFX(
                         IntakeConstants.kPivotMotorHardware,
