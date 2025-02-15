@@ -36,6 +36,9 @@ public class Intake extends SubsystemBase {
   private final SensorIO kSensor;
   private final SensorIOInputsAutoLogged kSensorInputs = new SensorIOInputsAutoLogged();
 
+  private final PivotIO kPivotHardware;
+  private final PivotIOInputsAutoLogged kivotInputs = new PivotIOInputsAutoLogged();
+
   private boolean detectedGamepiece = false;
   private LinearFilter ampFilter = LinearFilter.movingAverage(
     IntakeConstants.kLinearFilterSampleCount);
@@ -43,9 +46,10 @@ public class Intake extends SubsystemBase {
   @AutoLogOutput(key = "Intake/Goal")
   private IntakeGoal goal = null;
 
-  public Intake(IntakeIO hardwareIO, SensorIO sensorIO) {
+  public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kHardware = hardwareIO;
     kSensor = sensorIO;
+    kPivotHardware = pivotHardwareIO;
   }
 
   @Override

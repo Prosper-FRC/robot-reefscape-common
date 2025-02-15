@@ -148,7 +148,7 @@ public class IntakeConstants {
     58, // CAN ID
     kPivotGearing); // Gear ratio
 
-  public static final PivotGains kMotorGains =  
+  public static final PivotGains kPivotGains =  
     switch (Constants.kCurrentMode) {
       case REAL -> new PivotGains(
         0.0,
@@ -185,7 +185,7 @@ public class IntakeConstants {
         0.0);
     };
 
-  public static final PivotTalonFXConfiguration kLeadMotorConfiguration = new PivotTalonFXConfiguration(
+  public static final PivotTalonFXConfiguration kPivotMotorConfiguration = new PivotTalonFXConfiguration(
     true, // Invert
     true, // Enable stator current limiting
     true, // Enable supply current limiting

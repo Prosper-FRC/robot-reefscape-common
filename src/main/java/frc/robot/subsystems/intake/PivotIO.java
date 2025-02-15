@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 /** The algae picker (intake) subsystem's hardware interface */
 public interface PivotIO {
   @AutoLog
-  public static class ClimbIOInputs {
+  public static class PivotIOInputs {
     public boolean isMotorConnected = false;
 
     public Rotation2d position = new Rotation2d();
@@ -27,7 +27,7 @@ public interface PivotIO {
    * 
    * @param inputs The inputs object
    */
-  public default void updateInputs(ClimbIOInputs inputs) {}
+  public default void updateInputs(PivotIOInputs inputs) {}
 
   /**
    * @param volts The voltage that should be applied to the motor from -12 to 12

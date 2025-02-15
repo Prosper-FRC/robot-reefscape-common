@@ -8,7 +8,6 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -74,7 +73,7 @@ public class PivotIOSim implements PivotIO {
   }
 
   @Override
-  public void updateInputs(ClimbIOInputs inputs) {
+  public void updateInputs(PivotIOInputs inputs) {
     kPivot.update(kLoopPeriodSec);
 
     inputs.isMotorConnected = true;

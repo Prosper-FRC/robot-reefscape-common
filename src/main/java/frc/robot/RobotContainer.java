@@ -16,6 +16,9 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.PivotIO;
+import frc.robot.subsystems.intake.PivotIOSim;
+import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 
@@ -58,7 +61,14 @@ public class RobotContainer {
                 //         IntakeConstants.kRoboIntakeHardware, 
                 //         IntakeConstants.kMotorConfiguration), 
                 //     new SensorIORange());
-                intake = new Intake(new IntakeIO(){}, new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration));
+                intake = new Intake(
+                    new IntakeIO(){}, 
+                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+                    new PivotIOTalonFX(
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotMotorConfiguration,
+                        IntakeConstants.kPivotGains,
+                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
                 break;
             case SIM:
                 elevator = new Elevator(
@@ -74,11 +84,16 @@ public class RobotContainer {
                         IntakeConstants.kIntakeHardware, 
                         IntakeConstants.kIntakeSimulationConfiguration, 
                         0.02), 
-                    new SensorIO(){});
+                    new SensorIO(){},
+                    new PivotIOSim(
+                        0.02,
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotSimulationConfiguration,
+                        IntakeConstants.kPivotGains));
                 break;
             default:
                 elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
-                intake = new Intake(new IntakeIO(){}, new SensorIO(){});
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
                 break;
         }
 

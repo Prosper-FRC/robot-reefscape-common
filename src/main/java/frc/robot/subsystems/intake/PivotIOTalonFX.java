@@ -134,7 +134,7 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   @Override
-  public void updateInputs(ClimbIOInputs inputs) {
+  public void updateInputs(PivotIOInputs inputs) {
     inputs.isMotorConnected = BaseStatusSignal.refreshAll(
       positionRotations,
       velocityRotationsPerSec,
