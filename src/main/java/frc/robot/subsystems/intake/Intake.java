@@ -2,6 +2,7 @@
 package frc.robot.subsystems.intake;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -9,6 +10,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class Intake extends SubsystemBase {
@@ -17,16 +19,36 @@ public class Intake extends SubsystemBase {
     kIntake(() -> 4.0),
     kOuttake(() -> -4.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
-    custom(new LoggedTunableNumber("Intake/Feedback/Setpoint", 0.0));
+    custom(new LoggedTunableNumber("Intake/Feedback/RollerSetpointVolts", 0.0));
 
-    private DoubleSupplier intakeVolts;
+    private DoubleSupplier goalVoltage;
 
-    IntakeGoal(DoubleSupplier intakeVolts) {
-      this.intakeVolts = intakeVolts;
+    IntakeGoal(DoubleSupplier goalVoltage) {
+      this.goalVoltage = goalVoltage;
     }
 
     public double getGoalVolts() {
-      return this.intakeVolts.getAsDouble();
+      return this.goalVoltage.getAsDouble();
+    }
+  }
+
+  /** List of position setpoints for the pivot */
+  public enum PivotGoal {
+    kStow(() -> Rotation2d.fromDegrees(0.0)),
+    kIntake(() -> Rotation2d.fromDegrees(0.0)),
+    kScore(() -> Rotation2d.fromDegrees(0.0)),
+    /** Custom setpoint that can be modified over network tables; Useful for debugging */
+    custom(() -> Rotation2d.fromDegrees(
+      new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
+
+    private Supplier<Rotation2d> goalPosition;
+
+    PivotGoal(Supplier<Rotation2d> goalPosition) {
+      this.goalPosition = goalPosition;
+    }
+
+    public Rotation2d getGoalPosition() {
+      return this.goalPosition.get();
     }
   }
 
@@ -37,14 +59,15 @@ public class Intake extends SubsystemBase {
   private final SensorIOInputsAutoLogged kSensorInputs = new SensorIOInputsAutoLogged();
 
   private final PivotIO kPivotHardware;
-  private final PivotIOInputsAutoLogged kivotInputs = new PivotIOInputsAutoLogged();
+  private final PivotIOInputsAutoLogged kPivotInputs = new PivotIOInputsAutoLogged();
 
   private boolean detectedGamepiece = false;
   private LinearFilter ampFilter = LinearFilter.movingAverage(
     IntakeConstants.kLinearFilterSampleCount);
 
-  @AutoLogOutput(key = "Intake/Goal")
+  @AutoLogOutput(key = "Intake/RollerGoal")
   private IntakeGoal goal = null;
+  // @AutoLogOutput(key = "Intake/PivotGoal")
 
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kHardware = hardwareIO;
@@ -55,9 +78,11 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     kHardware.updateInputs(kInputs);
-    Logger.processInputs("Intake/Inputs", kInputs);
+    Logger.processInputs("Intake/Inputs/Rollers", kInputs);
     kSensor.updateInputs(kSensorInputs);
     Logger.processInputs("Intake/Inputs/Sensor", kSensorInputs);
+    kPivotHardware.updateInputs(kPivotInputs);
+    Logger.processInputs("Intake/Inputs/Pivot", kPivotInputs);
 
     // Stop and clear goal if disabled. Used if copilot is still pressing button to command
     // intake when the disabled key is pressed
