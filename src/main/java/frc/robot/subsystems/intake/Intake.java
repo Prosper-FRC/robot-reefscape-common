@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -61,6 +62,29 @@ public class Intake extends SubsystemBase {
   private final PivotIO kPivotHardware;
   private final PivotIOInputsAutoLogged kPivotInputs = new PivotIOInputsAutoLogged();
 
+  private final LoggedTunableNumber kP =
+      new LoggedTunableNumber("Intake/Gains/kP", IntakeConstants.kPivotGains.p());
+  private final LoggedTunableNumber kI =
+      new LoggedTunableNumber("Intake/Gains/kI", IntakeConstants.kPivotGains.i());
+  private final LoggedTunableNumber kD =
+      new LoggedTunableNumber("Intake/Gains/kD", IntakeConstants.kPivotGains.d());
+  private final LoggedTunableNumber kS =
+      new LoggedTunableNumber("Intake/Gains/kS", IntakeConstants.kPivotGains.s());
+  private final LoggedTunableNumber kV =
+      new LoggedTunableNumber("Intake/Gains/kV", IntakeConstants.kPivotGains.v());
+  private final LoggedTunableNumber kA =
+      new LoggedTunableNumber("Intake/Gains/kA", IntakeConstants.kPivotGains.a());
+  private final LoggedTunableNumber kG =
+      new LoggedTunableNumber("Intake/Gains/kG", IntakeConstants.kPivotGains.g());
+  private final LoggedTunableNumber kMaxVelocity =
+      new LoggedTunableNumber(
+          "Intake/MotionMagic/kMaxVelocity", 
+          IntakeConstants.kPivotGains.maxVelocityMetersPerSecond());
+  private final LoggedTunableNumber kMaxAcceleration =
+      new LoggedTunableNumber(
+          "Intake/MotionMagic/kMaxAcceleration", 
+          IntakeConstants.kPivotGains.maxAccelerationMetersPerSecondSquared());
+
   private boolean detectedGamepiece = false;
   private LinearFilter ampFilter = LinearFilter.movingAverage(
     IntakeConstants.kLinearFilterSampleCount);
@@ -110,6 +134,30 @@ public class Intake extends SubsystemBase {
     if (pivotGoal != null) {
       kPivotHardware.setPosition(pivotGoal.getGoalPosition());
     }
+
+    // This says that if the value is changed in the advantageScope tool,
+    // Then we change the values in the code. Saves deploy time.
+    // More found in prerequisites slide
+    LoggedTunableNumber.ifChanged(
+      hashCode(),
+      () -> {
+        kPivotHardware.setGains(
+            kP.get(), kI.get(), kD.get(), kS.get(), kG.get(), kV.get(), kA.get());
+      },
+      kP,
+      kI,
+      kD,
+      kS,
+      kV,
+      kA,
+      kG);
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        () -> {
+          kPivotHardware.setMotionMagicConstraints(kMaxVelocity.get(), kMaxAcceleration.get());
+        },
+        kMaxVelocity,
+        kMaxAcceleration);
   }
 
   /**
