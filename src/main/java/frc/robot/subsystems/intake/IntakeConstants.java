@@ -144,7 +144,7 @@ public class IntakeConstants {
   /* Pivot constants */
   
   public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(0.0);
-  public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(180.0);
+  public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(90.0);
   
   public static final double kPivotGearing = 9.0 / 1.0;
 
@@ -173,9 +173,9 @@ public class IntakeConstants {
         0.0,
         0.0,
         0.0,
-        0.0,
-        0.0, 
-        0.0); 
+        0.17,
+        0.06, 
+        1.74); 
       default -> new PivotGains(
         0.0,
         0.0,
@@ -199,10 +199,12 @@ public class IntakeConstants {
     -12.0, // Peak reverse voltage
     NeutralModeValue.Brake); // Idle mode
 
+  // Pivot mass: 2.6553 kg
+  // Distance from COM: ~14in
   public static final PivotSimulationConfiguration kPivotSimulationConfiguration = new PivotSimulationConfiguration(
     DCMotor.getKrakenX60(1), // Motor type and count
-    0.1, // Moment of inertia
-    Units.inchesToMeters(12.0), // Ligament length meters
+    0.009261, // Moment of inertia (calculated from latest CAD)
+    Units.inchesToMeters(20.0), // Ligament length meters
     kMinPivotPosition, // Min position
     kMaxPivotPosition, // Max position
     true, // Simulate gravity
