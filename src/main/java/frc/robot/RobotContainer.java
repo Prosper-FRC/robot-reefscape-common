@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
+import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.PivotIO;
 import frc.robot.subsystems.intake.PivotIOSim;
 import frc.robot.subsystems.intake.PivotIOTalonFX;
@@ -264,14 +266,37 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
-        Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
+        Trigger autoSelectCoral = operatorController.rightTrigger(0.5, teleopLoop)
+            .onTrue(Commands.runOnce(() -> intake.selectGamepiece(Gamepiece.kCoral)));
+        Trigger autoSelectAlgae = operatorController.leftTrigger(0.5, teleopLoop)
+            .onTrue(Commands.runOnce(() -> intake.selectGamepiece(Gamepiece.kAlgae)));
+
+        Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece).debounce(0.4);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
 
+        Command startRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.3));
+        Command stopRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.0));
+
         if (useCompetitionBindings) {
             /* Coral bindings */
+            operatorController.leftBumper().and(coralSelectTrigger)
+                .whileTrue(
+                    Commands.run(
+                        () -> intake.setRollerGoal(RollerGoal.kIntakeCoral), 
+                        intake)
+                    .until(hasGamepieceTrigger)
+                    .andThen(startRumbleCommand)
+                )
+                .whileFalse(
+                    Commands.runOnce(
+                        () -> intake.stop(true, false), 
+                        intake)
+                    .andThen(stopRumbleCommand)
+                );
+
             operatorController.y().and(coralSelectTrigger)
                 .whileTrue(
                     Commands.runEnd(
@@ -279,6 +304,7 @@ public class RobotContainer {
                         () -> elevator.setPosition(elevator.getPositionMeters()),
                         elevator)
                     .until(elevatorAtGoalTrigger)
+                    .andThen(startRumbleCommand)
                     .andThen(
                         Commands.run(() -> {
                             if (confirmScoreTrigger.getAsBoolean()) {
@@ -299,6 +325,7 @@ public class RobotContainer {
                             () -> intake.stop(true, false), 
                             intake)
                     )
+                    .alongWith(stopRumbleCommand)
                 );
         } 
         else {
