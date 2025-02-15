@@ -26,6 +26,7 @@ public class Robot extends LoggedRobot {
     // ==================== Robot Power On ====================
     @Override
     public void robotInit() {
+        /* Metadata can be set before data receiving is set-up */
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
         Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);

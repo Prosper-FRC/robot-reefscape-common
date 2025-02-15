@@ -44,7 +44,7 @@ public class ModuleIOKraken implements ModuleIO {
     private StatusSignal<AngularAcceleration> driveAccelerationMPSS;
 
     private TalonFX azimuthMotor;
-    private PositionDutyCycle azimuthControl = new PositionDutyCycle(0.0);
+    private PositionDutyCycle azimuthPositionControl = new PositionDutyCycle(0.0);
     private VoltageOut azimuthVoltageControl = new VoltageOut(0.0);
     private double azimuthAppliedVolts = 0.0;
 
@@ -66,21 +66,21 @@ public class ModuleIOKraken implements ModuleIO {
         var driveConfig = new TalonFXConfiguration();
         
         driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        driveConfig.CurrentLimits.StatorCurrentLimit = 80;
+        driveConfig.CurrentLimits.StatorCurrentLimit = kDriveStatorAmpLimit;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        driveConfig.CurrentLimits.SupplyCurrentLimit = 60;
+        driveConfig.CurrentLimits.SupplyCurrentLimit = kDriveSupplyAmpLimit;
 
         // foc
         driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80.0;
         driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -80.0;
         driveConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.02;
 
-        driveConfig.Voltage.PeakForwardVoltage = 12.0;
-        driveConfig.Voltage.PeakReverseVoltage = -12.0;
+        driveConfig.Voltage.PeakForwardVoltage = kPeakVoltage;
+        driveConfig.Voltage.PeakReverseVoltage = -kPeakVoltage;
         driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        driveConfig.Feedback.SensorToMechanismRatio = kDriveGearing / kCircumferenceMeters;
+        driveConfig.Feedback.SensorToMechanismRatio = kDriveMotorGearing / kWheelCircumferenceMeters;
 
         driveConfig.Slot0.kP = kModuleControllerConfigs.driveController().getP();
         driveConfig.Slot0.kI = kModuleControllerConfigs.driveController().getI();
@@ -112,23 +112,23 @@ public class ModuleIOKraken implements ModuleIO {
         azimuthMotor.getConfigurator().apply(turnConfig);
 
         turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        turnConfig.CurrentLimits.StatorCurrentLimit = 40;
+        turnConfig.CurrentLimits.StatorCurrentLimit = kAzimuthStatorAmpLimit;
 
-        turnConfig.Voltage.PeakForwardVoltage = 12.0;
-        turnConfig.Voltage.PeakReverseVoltage = -12.0;
+        turnConfig.Voltage.PeakForwardVoltage = kPeakVoltage;
+        turnConfig.Voltage.PeakReverseVoltage = -kPeakVoltage;
         turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         turnConfig.MotorOutput.Inverted = kTurnMotorInvert ? 
             InvertedValue.Clockwise_Positive : 
             InvertedValue.CounterClockwise_Positive;
         turnConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        turnConfig.Feedback.SensorToMechanismRatio = kAzimuthGearing;
+        turnConfig.Feedback.SensorToMechanismRatio = kAzimuthMotorGearing;
         turnConfig.Slot0.kP = kModuleControllerConfigs.azimuthController().getP();
         turnConfig.Slot0.kD = kModuleControllerConfigs.azimuthController().getD();
         turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
         /* Configured but FOC not used on azimuth, just drive motors */
-        turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = 30.0;
-        turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = -30.0;
+        turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = kAzimuthFOCAmpLimit;
+        turnConfig.TorqueCurrent.PeakReverseTorqueCurrent = -kAzimuthFOCAmpLimit;
 
         azimuthMotor.getConfigurator().apply(turnConfig);
 
@@ -186,21 +186,25 @@ public class ModuleIOKraken implements ModuleIO {
     /////////// DRIVE MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setDriveVolts(double volts) {
+        /* Sets drive voltage inbetween kPeakVoltage and -kPeakVoltage */
         driveMotor.setControl(driveVoltageControl.withOutput(volts));
     }
 
     @Override
     public void setDriveAmperage(double amps) {
+        /* Sets drive amperage inbetween kDriveFOCAmpLimit and -kDriveFOCAmpLimit */
         driveMotor.setControl(new TorqueCurrentFOC(amps));
     }
 
     @Override
     public void setDriveVelocity(double velocityMPS, double feedforward) {
+        /* Uses FOC PID with a arbitrary FF on the with Slot 0 gains */
         driveMotor.setControl(driveControl
             .withVelocity(velocityMPS)
             .withFeedForward(feedforward));
     }
 
+    /* Sets azimuth PID values on slot 0, used for tunable numbers */
     @Override
     public void setDrivePID(double kP, double kI, double kD) {
         var slotConfig = new Slot0Configs();
@@ -213,6 +217,7 @@ public class ModuleIOKraken implements ModuleIO {
     /////////// CANCODER METHODS \\\\\\\\\\\
     @Override
     public void resetAzimuthEncoder() {
+        /* Sets azimuth encoder rotation using CANCoder */
         azimuthMotor.setPosition(Rotation2d.fromRotations(
             absoluteEncoder.getAbsolutePosition().getValueAsDouble())
             .minus(absoluteEncoderOffset).getRotations());
@@ -221,14 +226,20 @@ public class ModuleIOKraken implements ModuleIO {
     /////////// AZIMUTH MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setAzimuthVolts(double volts) {
+        /* Sets azimuth voltage inbetween kPeakVoltage and -kPeakVoltage */
         driveMotor.setControl(azimuthVoltageControl.withOutput(volts));
     }
 
     @Override
     public void setAzimuthPosition(Rotation2d rotation, double feedforward) {   
-        azimuthMotor.setControl(azimuthControl.withPosition(rotation.getRotations()));
+        /* Uses voltage PID with a arbitrary FF on the with Slot 0 gains */
+        azimuthMotor.setControl(azimuthPositionControl
+            .withPosition(rotation.getRotations())
+            .withFeedForward(feedforward)
+            .withSlot(0));
     }
 
+    /* Sets azimuth PID values on slot 0, used for tunable numbers */
     @Override
     public void setAzimuthPID(double kP, double kI, double kD) {
         var slotConfig = new Slot0Configs();

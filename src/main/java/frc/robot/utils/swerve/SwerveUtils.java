@@ -1,8 +1,8 @@
 package frc.robot.utils.swerve;
 
-import static frc.robot.subsystems.drive.DriveConstants.kDriveGearing;
+import static frc.robot.subsystems.drive.DriveConstants.kDriveMotorGearing;
 import static frc.robot.subsystems.drive.DriveConstants.kMaxLinearSpeedMPS;
-import static frc.robot.subsystems.drive.DriveConstants.kRadiusMeters;
+import static frc.robot.subsystems.drive.DriveConstants.kWheelRadiusMeters;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -65,7 +65,7 @@ public class SwerveUtils {
             ff.robotRelativeForcesYNewtons()[i]);
 
         // NEWTONS -> GEARBOX TORQUE -> MOTOR TORQUE
-        double driveMotorTorque = choreoLinearForceNewtons / (kRadiusMeters * kDriveGearing);
+        double driveMotorTorque = choreoLinearForceNewtons / (kWheelRadiusMeters * kDriveMotorGearing);
         double driveMotorAmperage = kKrakenFOCModel.getCurrent(driveMotorTorque);
 
         return driveMotorAmperage;
@@ -103,15 +103,15 @@ public class SwerveUtils {
             Logger.recordOutput("Drive/Swerve/saturatedPreOptimizedSetpoints", unOptimizedSetpointStates);
             Logger.recordOutput("Drive/Odometry/preOptimizedChassisSpeeds", DriveConstants.kKinematics.toChassisSpeeds(unOptimizedSetpointStates));
 
-            /* Redux setpoints */
+            /* Non-generated swerve setpoints */
             SwerveModuleState[] swerveModuleStates = DriveConstants.kKinematics.toSwerveModuleStates(desiredSpeeds);
 
-            Logger.recordOutput("Drive/Swerve/ReduxSetpoints", swerveModuleStates);
+            Logger.recordOutput("Drive/Swerve/RegularSetpoints", swerveModuleStates);
 
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxLinearSpeedMPS);
 
-            Logger.recordOutput("Drive/Swerve/SaturatedReduxSetpoints", swerveModuleStates);
-            Logger.recordOutput("Drive/Odometry/FieldReduxChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(
+            Logger.recordOutput("Drive/Swerve/SaturatedRegularSetpoints", swerveModuleStates);
+            Logger.recordOutput("Drive/Odometry/FieldRegularChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(
                 DriveConstants.kKinematics.toChassisSpeeds(swerveModuleStates), robotRotation));
         }
     }

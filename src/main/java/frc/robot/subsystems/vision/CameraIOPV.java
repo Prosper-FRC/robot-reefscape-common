@@ -3,12 +3,13 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+
+import static frc.robot.subsystems.vision.VisionConstants.kCameraFOV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,18 +25,18 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-public class VisionIOPV implements VisionIO {
+public class CameraIOPV implements CameraIO {
     private String camName;
-    private PhotonCamera limelightCam;
+    private PhotonCamera photonCam;
     private PhotonPoseEstimator poseEstimator;
     private Transform3d cameraTransform;
 
     private PhotonCameraSim limelightSim;
     private VisionSystemSim visionSim;
 
-    public VisionIOPV(String name, Transform3d cameraTransform) {
+    public CameraIOPV(String name, Transform3d cameraTransform) {
         camName = name;
-        limelightCam = new PhotonCamera(camName);
+        photonCam = new PhotonCamera(camName);
         this.cameraTransform = cameraTransform;
         // Don't worry about it
         PhotonCamera.setVersionCheckEnabled(false);
@@ -52,21 +53,21 @@ public class VisionIOPV implements VisionIO {
             visionSim.addAprilTags(AprilTagFields.k2025Reefscape.loadAprilTagLayoutField());
             // Create simulated camera properties. These can be set to mimic your actual camera.
             var cameraProp = new SimCameraProperties();
-            cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(75));
+            cameraProp.setCalibration(960, 720, kCameraFOV);
             cameraProp.setCalibError(0.3, 0.20);
             cameraProp.setFPS(60);
             cameraProp.setAvgLatencyMs(5);
             cameraProp.setLatencyStdDevMs(15);
             // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
             // targets.
-            limelightSim = new PhotonCameraSim(limelightCam, cameraProp);
+            limelightSim = new PhotonCameraSim(photonCam, cameraProp);
             // Add the simulated camera to view the targets on this simulated field.
             visionSim.addCamera(limelightSim, cameraTransform);
         }
     }
 
     @Override
-    public void updateInputs(VisionIOInputs inputs, Pose2d lastRobotPose, Pose2d simOdomPose) {
+    public void updateInputs(CameraIOInputs inputs, Pose2d lastRobotPose, Pose2d simOdomPose) {
         inputs.camName = camName;
         inputs.cameraToRobot= cameraTransform;
         // To stop the dangerous case where the camera disconnects, and causes the code to crash
@@ -77,7 +78,7 @@ public class VisionIOPV implements VisionIO {
             }
             
             // Gets the camera data
-            List<PhotonPipelineResult> unreadResults = limelightCam.getAllUnreadResults();
+            List<PhotonPipelineResult> unreadResults = photonCam.getAllUnreadResults();
             poseEstimator.setLastPose(lastRobotPose);
             inputs.hasBeenUpdated = !unreadResults.isEmpty();
             if(!unreadResults.isEmpty()) {
@@ -85,14 +86,14 @@ public class VisionIOPV implements VisionIO {
                 Optional<EstimatedRobotPose> latestEstimatedRobotPose = poseEstimator.update(result);
 
                 // Adds it to data streaming
-                inputs.isConnected = limelightCam.isConnected();
+                inputs.isConnected = photonCam.isConnected();
 
                 inputs.hasTarget = result.hasTargets();
                 if (result.hasTargets()) {
                     PhotonTrackedTarget target = result.getBestTarget();
                     inputs.cameraToApriltag = target.getBestCameraToTarget();
                     inputs.robotToApriltag = target.getBestCameraToTarget().plus(cameraTransform);
-                    inputs.aprilTagID = target.getFiducialId();
+                    inputs.singleTagAprilTagID = target.getFiducialId();
                     inputs.poseAmbiguity = target.getPoseAmbiguity();
                     inputs.yaw = target.getYaw();
                     inputs.pitch = target.getPitch();
@@ -135,7 +136,7 @@ public class VisionIOPV implements VisionIO {
         
             inputs.cameraToApriltag = new Transform3d();
             inputs.poseAmbiguity = 0.0;
-            inputs.aprilTagID = 0;
+            inputs.singleTagAprilTagID = 0;
             inputs.robotToApriltag = new Transform3d();
             inputs.latestTimestamp = 0.0;
             inputs.latestEstimatedRobotPose = new Pose3d();

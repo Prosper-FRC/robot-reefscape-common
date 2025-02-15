@@ -53,10 +53,19 @@ public class DriveConstants {
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
     /* GENERAL SWERVE MODULE CONSTANTS */
     public static final boolean kTurnMotorInvert = true;
-    public static final double kAzimuthGearing = 150.0 / 7.0;
-    public static final double kDriveGearing = 6.12 / 1.0;
-    public static final double kRadiusMeters = 5.08 / 100.0;
-    public static final double kCircumferenceMeters = 2 * Math.PI * kRadiusMeters;
+    public static final double kAzimuthMotorGearing = 150.0 / 7.0;
+    public static final double kDriveMotorGearing = 6.12 / 1.0;
+    public static final double kWheelRadiusMeters = 5.08 / 100.0;
+    public static final double kWheelCircumferenceMeters = 2 * Math.PI * kWheelRadiusMeters;
+
+    public static final double kPeakVoltage = 12.0;
+
+    public static final double kDriveStatorAmpLimit = 80.0;
+    public static final double kDriveFOCAmpLimit = 80.0;
+    public static final double kDriveSupplyAmpLimit = 60.0;
+
+    public static final double kAzimuthStatorAmpLimit = 40.0;
+    public static final double kAzimuthFOCAmpLimit = -30.0;
 
     public static final ModuleControlConfig kModuleControllerConfigs = RobotBase.isReal() ? 
         new ModuleControlConfig(
@@ -67,6 +76,7 @@ public class DriveConstants {
             new PIDController(4.5, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 0.0));
 
     /* MODULE SPECIFIC CONSTANTS */
+    /* If 180 was added, the person who got the offset had the bevel gears on the wrong side when he did it */
     public static final ModuleHardwareConfig kFrontLeftHardware =
         new ModuleHardwareConfig(
             11, 
@@ -91,7 +101,7 @@ public class DriveConstants {
     public static final ModuleHardwareConfig kBackRightHardware =
         new ModuleHardwareConfig(
             14, 
-            24,
+            24, 
             34,
             Rotation2d.fromRotations(-0.093262).plus(Rotation2d.k180deg));
 
