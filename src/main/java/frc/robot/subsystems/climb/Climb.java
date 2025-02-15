@@ -18,8 +18,8 @@ import frc.robot.utils.visualizers.PivotVisualizer;
 public class Climb extends SubsystemBase {
   /** List of voltage setpoints for the climb in volts */
   public enum ClimbVoltageGoal {
-    kGrab(() -> 8.0),
-    kRelease(() -> -4.0),
+    kGrab(() -> 6.0),
+    kRelease(() -> -6.0),
     /** Custom setpoint that can be modified over network tables; 
      * Useful for debugging */
     custom(new LoggedTunableNumber("Climb/customVoltageGoal", 0.0));
@@ -137,6 +137,7 @@ public class Climb extends SubsystemBase {
         io.setVoltage(voltage);
       }
     }
+    
   }
 
   /** Stops the mechanism */
@@ -162,13 +163,14 @@ public class Climb extends SubsystemBase {
    * 
    * @return The position of the mechanism
    */
+  @AutoLogOutput(key = "Climb/Position")
   public Rotation2d getPosition() {
     if (isAbsoluteEncoderConnected) {
       return Rotation2d.fromRotations(
-        kAbsoluteEncoderInputs.dutyCycleReading);
+        kAbsoluteEncoderInputs.dutyCycleReading).minus(ClimbConstants.kPositionOffset);
     } else {
       // Only need to return one position since the motors are mechaically linked
-      return Rotation2d.fromRotations(kInputs[0].position.getRotations() * ClimbConstants.kGearing);
+      return new Rotation2d();
     }
   }
 }

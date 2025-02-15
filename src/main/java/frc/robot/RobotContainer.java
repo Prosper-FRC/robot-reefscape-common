@@ -85,7 +85,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     /* TODO: Set to true before competition please */
-    private final boolean useCompetitionBindings = true;
+    private final boolean useCompetitionBindings = false;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -111,24 +111,37 @@ public class RobotContainer {
                         VisionConstants.kLeftCamOrientation)
                 }));
 
-                elevator = new Elevator(
-                    new ElevatorIOTalonFX(
-                        Constants.kCanbusName, 
-                        ElevatorConstants.kRoboElevatorHardware, 
-                        ElevatorConstants.kMotorConfiguration, 
-                        ElevatorConstants.kElevatorGains),
-                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+            //     elevator = new Elevator(
+            //         new ElevatorIOTalonFX(
+            //             Constants.kCanbusName, 
+            //             ElevatorConstants.kRoboElevatorHardware, 
+            //             ElevatorConstants.kMotorConfiguration, 
+            //             ElevatorConstants.kElevatorGains),
+            //         new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
             
-                intake = new Intake(
-                    new IntakeIOTalonFX(
-                        IntakeConstants.kIntakeHardware,
-                        IntakeConstants.kIntakeMotorConfiguration), 
-                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
-                    new PivotIOTalonFX(
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotMotorConfiguration,
-                        IntakeConstants.kPivotGains,
-                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
+            //     intake = new Intake(
+            //         new IntakeIOTalonFX(
+            //             IntakeConstants.kIntakeHardware,
+            //             IntakeConstants.kIntakeMotorConfiguration), 
+            //         new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+            //         new PivotIOTalonFX(
+            //             IntakeConstants.kPivotMotorHardware,
+            //             IntakeConstants.kPivotMotorConfiguration,
+            //             IntakeConstants.kPivotGains,
+            //             IntakeConstants.kStatusSignalUpdateFrequencyHz));
+
+                // robotDrive = new Drive( new Module[] {
+                //     new Module("FL", new ModuleIO() {}),
+                //     new Module("FR", new ModuleIO() {}),
+                //     new Module("BL", new ModuleIO() {}),
+                //     new Module("BR", new ModuleIO() {})
+                // }, new GyroIO() {}, new Vision(new CameraIO[] {
+                //     new CameraIO() {}, new CameraIO() {}
+                // }));
+
+                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
+            
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIORev(
@@ -136,11 +149,6 @@ public class RobotContainer {
                     new ClimbIOTalonFX(
                         ClimbConstants.kLeadMotorHardware, 
                         ClimbConstants.kLeadMotorConfiguration, 
-                        ClimbConstants.kMotorGains, 
-                        ClimbConstants.kStatusSignalUpdateFrequency),
-                    new ClimbIOTalonFX(
-                        ClimbConstants.kFollowerMotorHardware, 
-                        ClimbConstants.kFollowMotorConfiguration, 
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
                 break;
@@ -293,12 +301,12 @@ public class RobotContainer {
                         intake.setRollerGoal(RollerGoal.kIntakeCoral);
                     }, 
                     intake)
-                    .until(hasGamepieceTrigger)
+                    .until(hasGamepieceTrigger).alongWith(startRumbleCommand)
                 )
                 .whileFalse(
                     Commands.runOnce(
                         () -> intake.stop(true, false), 
-                        intake)
+                        intake).alongWith(stopRumbleCommand)
                 );
 
             operatorController.y().and(coralSelectTrigger)
@@ -362,6 +370,13 @@ public class RobotContainer {
                 .whileTrue(
                     Commands.startEnd(
                         () -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease), 
+                        () -> climb.stop(), 
+                        climb));
+
+            operatorController.a()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> climb.setGoalVoltage(ClimbVoltageGoal.custom), 
                         () -> climb.stop(), 
                         climb));
 

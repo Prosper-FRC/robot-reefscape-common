@@ -64,7 +64,9 @@ public class ClimbConstants {
   ) {}
 
   public static final Rotation2d kMinPosition = Rotation2d.fromDegrees(0.0);
-  public static final Rotation2d kMaxPosition = Rotation2d.fromDegrees(180.0);
+  public static final Rotation2d kMaxPosition = Rotation2d.fromDegrees(100.0);
+
+  public static final Rotation2d kPositionOffset = Rotation2d.fromDegrees(83.0);
 
   public static final double kGearing = 125.0 / 1.0;
 
@@ -115,7 +117,7 @@ public class ClimbConstants {
     };
 
   public static final ClimbTalonFXConfiguration kLeadMotorConfiguration = new ClimbTalonFXConfiguration(
-    true, // Invert
+    false, // Invert
     true, // Enable stator current limiting
     true, // Enable supply current limiting
     60.0, // Stator limit
