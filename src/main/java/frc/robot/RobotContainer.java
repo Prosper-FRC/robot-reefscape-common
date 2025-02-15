@@ -294,6 +294,11 @@ public class RobotContainer {
                     }, 
                     intake)
                     .until(hasGamepieceTrigger)
+                )
+                .whileFalse(
+                    Commands.runOnce(
+                        () -> intake.stop(true, false), 
+                        intake)
                 );
 
             operatorController.y().and(coralSelectTrigger)
@@ -345,6 +350,41 @@ public class RobotContainer {
             driverController.a()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_POSE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            operatorController.povLeft()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab), 
+                        () -> climb.stop(), 
+                        climb));
+
+            operatorController.povRight()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease), 
+                        () -> climb.stop(), 
+                        climb));
+
+            operatorController.povUp()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setVoltage(3.0), 
+                        () -> elevator.stop(), 
+                        elevator));
+
+            operatorController.povDown()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setVoltage(-3.0), 
+                        () -> elevator.stop(), 
+                        elevator));
+
+            operatorController.y()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL4Coral), 
+                        () -> elevator.stop(), 
+                        elevator));       
         }
     }
 
