@@ -127,4 +127,19 @@ public class GeomUtil {
     return new Twist2d(
         speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond);
   }
+
+  public static Rotation2d getSmallestChangeInRotation(Rotation2d rotation1, Rotation2d rotation2) {
+    return Rotation2d.fromRadians(
+        Math.min(
+            Math.min(
+                Math.abs(rotation2
+                    .minus(rotation1).getRadians()),
+                Math.abs(
+                    rotation2.minus(Rotation2d.fromDegrees(2 * Math.PI))
+                        .minus(rotation1).getRadians())),
+            Math.abs(
+                rotation2.minus(rotation1
+                    .minus(Rotation2d.fromDegrees(2 * Math.PI))).getRadians())
+        ));
+  }
 }

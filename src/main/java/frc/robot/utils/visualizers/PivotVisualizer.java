@@ -96,3 +96,4 @@ public class PivotVisualizer {
     Logger.recordOutput(kLogKey, visualField);
   }
 }
+
