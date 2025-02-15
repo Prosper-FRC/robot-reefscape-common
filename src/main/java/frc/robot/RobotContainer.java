@@ -77,7 +77,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     /* TODO: Set to true before competition please */
-    private final boolean useCompetitionBindings = false;
+    private final boolean useCompetitionBindings = true;
 
     public RobotContainer() {
 
@@ -254,21 +254,22 @@ public class RobotContainer {
             /* Coral bindings */
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(telopCommands.runRollersCommand(RollerGoal.kIntakeCoral)
-                    .until(hasGamepieceTrigger))
-                .whileFalse(telopCommands.stopRollersCommand());
+                    .until(hasGamepieceTrigger)
+                        .andThen(telopCommands.stopRollersCommand()));
 
-            operatorController.rightBumper().and(coralSelectTrigger)
-                .whileTrue(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
-                    .until(hasGamepieceTrigger.negate()))
-                .whileFalse(telopCommands.stopRollersCommand());
+            // operatorController.rightBumper().and(coralSelectTrigger)
+            //     .whileTrue(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
+            //         .repeatedly()
+            //             .until(hasGamepieceTrigger.negate())
+            //                 .andThen(telopCommands.stopRollersCommand()));
 
             operatorController.y().and(coralSelectTrigger)
                 .whileTrue(telopCommands.runElevatorCommand(ElevatorGoal.kL4Coral)
                     .until(elevatorAtGoalTrigger)
                         .andThen(telopCommands.runRollersCommand(RollerGoal.kScoreCoral)
-                            .onlyIf(confirmScoreTrigger.negate())))
-                .whileFalse(telopCommands.stopElevatorCommand()
-                    .andThen(telopCommands.stopRollersCommand()));
+                            .onlyIf(confirmScoreTrigger.negate()))
+                        .andThen(telopCommands.stopElevatorCommand())
+                            .alongWith(telopCommands.stopRollersCommand()));
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
