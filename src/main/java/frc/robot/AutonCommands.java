@@ -9,7 +9,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -158,8 +157,8 @@ public class AutonCommands {
     */
     public PathPlannerAuto intakeCoralPath(String name, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
-        auto.nearFieldPosition(AllianceFlipUtil.apply(kAlgaeD).getTranslation(), kCoralIntakeTriggerDistanceMeters).or(
-            auto.nearFieldPosition(AllianceFlipUtil.apply(kAlgaeE).getTranslation(), kCoralIntakeTriggerDistanceMeters)
+        auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IL).getTranslation(), kCoralIntakeTriggerDistanceMeters).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IR).getTranslation(), kCoralIntakeTriggerDistanceMeters)
         ).whileTrue(
             intakeAlgaeCommand() );
         return auto;
@@ -179,8 +178,8 @@ public class AutonCommands {
     */
     public PathPlannerAuto intakeAlgaePath(String name, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
-        auto.nearFieldPosition(AllianceFlipUtil.apply(kIntakeLeftPlacedHolder).getTranslation(), kAlgaeIntakeTriggerDistanceMeters).or(
-            auto.nearFieldPosition(AllianceFlipUtil.apply(kIntakeRightPlacedHolder).getTranslation(), kAlgaeIntakeTriggerDistanceMeters)
+        auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters).or(
+            auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters)
         ).whileTrue(
             intakeCoralCommand() );
         return auto;
