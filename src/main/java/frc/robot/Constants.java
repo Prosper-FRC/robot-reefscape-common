@@ -18,8 +18,10 @@ public final class Constants {
     // ROBOT SEPCIFIC
     public static final String kCanbusName = "drivebase";
 
-    public static final double kFieldLength = 17.54;
-    public static final double kFieldWidth = 8.05;
+    public static final double kFieldLengthMeters = 17.54;
+    public static final double kFieldWidthMeters = 8.05;
+
+    public static final int kAprilTagCount = 22;
 
     public static final double kLoopPeriod = 0.02;
 }

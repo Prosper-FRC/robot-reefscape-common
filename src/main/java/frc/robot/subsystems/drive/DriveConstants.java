@@ -58,6 +58,15 @@ public class DriveConstants {
     public static final double kWheelRadiusMeters = 5.08 / 100.0;
     public static final double kWheelCircumferenceMeters = 2 * Math.PI * kWheelRadiusMeters;
 
+    public static final double kPeakVoltage = 12.0;
+
+    public static final double kDriveStatorAmpLimit = 80.0;
+    public static final double kDriveFOCAmpLimit = 80.0;
+    public static final double kDriveSupplyAmpLimit = 60.0;
+
+    public static final double kAzimuthStatorAmpLimit = 40.0;
+    public static final double kAzimuthFOCAmpLimit = -30.0;
+
     public static final ModuleControlConfig kModuleControllerConfigs = RobotBase.isReal() ? 
         new ModuleControlConfig(
             new PIDController(100.0, 0.0, 0.0), new SimpleMotorFeedforward(0, 0.0, 0.0),

@@ -66,17 +66,17 @@ public class ModuleIOKraken implements ModuleIO {
         var driveConfig = new TalonFXConfiguration();
         
         driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        driveConfig.CurrentLimits.StatorCurrentLimit = 80;
+        driveConfig.CurrentLimits.StatorCurrentLimit = kDriveStatorAmpLimit;
         driveConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        driveConfig.CurrentLimits.SupplyCurrentLimit = 60;
+        driveConfig.CurrentLimits.SupplyCurrentLimit = kDriveSupplyAmpLimit;
 
         // foc
         driveConfig.TorqueCurrent.PeakForwardTorqueCurrent = 80.0;
         driveConfig.TorqueCurrent.PeakReverseTorqueCurrent = -80.0;
         driveConfig.ClosedLoopRamps.TorqueClosedLoopRampPeriod = 0.02;
 
-        driveConfig.Voltage.PeakForwardVoltage = 12.0;
-        driveConfig.Voltage.PeakReverseVoltage = -12.0;
+        driveConfig.Voltage.PeakForwardVoltage = kPeakVoltage;
+        driveConfig.Voltage.PeakReverseVoltage = -kPeakVoltage;
         driveConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         driveConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         driveConfig.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
@@ -112,10 +112,10 @@ public class ModuleIOKraken implements ModuleIO {
         azimuthMotor.getConfigurator().apply(turnConfig);
 
         turnConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-        turnConfig.CurrentLimits.StatorCurrentLimit = 40;
+        turnConfig.CurrentLimits.StatorCurrentLimit = kAzimuthStatorAmpLimit;
 
-        turnConfig.Voltage.PeakForwardVoltage = 12.0;
-        turnConfig.Voltage.PeakReverseVoltage = -12.0;
+        turnConfig.Voltage.PeakForwardVoltage = kPeakVoltage;
+        turnConfig.Voltage.PeakReverseVoltage = -kPeakVoltage;
         turnConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
         turnConfig.MotorOutput.Inverted = kTurnMotorInvert ? 
             InvertedValue.Clockwise_Positive : 
@@ -127,8 +127,8 @@ public class ModuleIOKraken implements ModuleIO {
         turnConfig.ClosedLoopGeneral.ContinuousWrap = true;
 
         /* Configured but FOC not used on azimuth, just drive motors */
-        turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = 30.0;
-        turnConfig.TorqueCurrent.PeakReverseTorqueCurrent = -30.0;
+        turnConfig.TorqueCurrent.PeakForwardTorqueCurrent = kAzimuthFOCAmpLimit;
+        turnConfig.TorqueCurrent.PeakReverseTorqueCurrent = -kAzimuthFOCAmpLimit;
 
         azimuthMotor.getConfigurator().apply(turnConfig);
 
@@ -186,11 +186,13 @@ public class ModuleIOKraken implements ModuleIO {
     /////////// DRIVE MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setDriveVolts(double volts) {
+        /* Sets drive voltage inbetween kPeakVoltage and -kPeakVoltage */
         driveMotor.setControl(driveVoltageControl.withOutput(volts));
     }
 
     @Override
     public void setDriveAmperage(double amps) {
+        /* Sets drive amperage inbetween kDriveFOCAmpLimit and -kDriveFOCAmpLimit */
         driveMotor.setControl(new TorqueCurrentFOC(amps));
     }
 
@@ -224,6 +226,7 @@ public class ModuleIOKraken implements ModuleIO {
     /////////// AZIMUTH MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setAzimuthVolts(double volts) {
+        /* Sets azimuth voltage inbetween kPeakVoltage and -kPeakVoltage */
         driveMotor.setControl(azimuthVoltageControl.withOutput(volts));
     }
 

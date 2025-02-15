@@ -19,6 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/* WE COPY-PASTAED THIS FROM PATHPLANNER 
+ * https://pathplanner.dev/api/java/com/pathplanner/lib/util/swerve/SwerveSetpointGenerator.html 
+ * We removed the internal discretization as it doesn't allow us to use a compensation scale factor
+ * for rotation drift
+ */
+
 /**
  * Swerve setpoint generator based on a version created by FRC team 254.
  *

@@ -55,12 +55,14 @@ public class ModuleIOSim implements ModuleIO {
     /////////// DRIVE MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setDriveVolts(double volts) {
-        driveAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
+        /* sets drive voltage between -kPeakVoltage and kPeakVoltage */
+        driveAppliedVolts = MathUtil.clamp(volts, -kPeakVoltage, kPeakVoltage);
         driveMotor.setInputVoltage(driveAppliedVolts);
     }
 
     @Override
     public void setDriveVelocity(double velocityMPS, double feedforward) {
+        /* Sets drive velocity using PID */
         setDriveVolts(
             drivePID.calculate(
                 driveMotor.getAngularVelocityRPM() * kWheelCircumferenceMeters / 60, 
@@ -70,23 +72,32 @@ public class ModuleIOSim implements ModuleIO {
 
     @Override
     public void setDrivePID(double kP, double kI, double kD) {
+        /* Sets drive velocity PID */
         drivePID.setPID(kP, kI, kD);
+    }
+
+    @Override
+    public void resetAzimuthEncoder() {
+        
     }
 
     /////////// AZIMUTH MOTOR METHODS \\\\\\\\\\\
     @Override
     public void setAzimuthVolts(double volts) {
+        /* sets azimuth voltage between -kPeakVoltage and kPeakVoltage */
         azimuthAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0);
         azimuthMotor.setInputVoltage(azimuthAppliedVolts);
     }
 
     @Override
     public void setAzimuthPosition(Rotation2d position, double feedforward) {
+        /* Sets azimuth position using PID */
         setAzimuthVolts(azimuthPID.calculate(azimuthMotor.getAngularPositionRad(), position.getRadians()) + feedforward);
     }
 
     @Override
     public void setAzimuthPID(double kP, double kI, double kD) {
+        /* Sets azimuth position PID */
         azimuthPID.setPID(kP, kI, kD);
     }
 }

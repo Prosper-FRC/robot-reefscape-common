@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -25,8 +26,10 @@ public class VisionConstants {
         new Rotation3d(0.0, Math.toRadians(8.317), Math.toRadians(25.0))
     );
 
-    // TODO: SET TO FALSE UNLESS YOU ACTUALLY KNOW WHAT THIS DOES
-    // This turns on a implementation of Rembrandts single tag vision algorithm
+    /* TODO: SET TO FALSE UNLESS YOU ACTUALLY KNOW WHAT THIS DOES
+     * This turns on a implementation of single tag vision algorithm that may be more accurate
+     * https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2025-build-thread/477314/85
+     */
     public static final boolean KUseSingleTagTransform = false;
 
     // Tuned by using AdvantageScope data analysis tool(Normal distribution)
@@ -36,4 +39,6 @@ public class VisionConstants {
         VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
 
     public static final double kAmbiguityThreshold = (RobotBase.isReal()) ? 0.2 : 1.0;
+
+    public static final Rotation2d kCameraFOV = Rotation2d.fromDegrees(95.0);
 }

@@ -103,15 +103,15 @@ public class SwerveUtils {
             Logger.recordOutput("Drive/Swerve/saturatedPreOptimizedSetpoints", unOptimizedSetpointStates);
             Logger.recordOutput("Drive/Odometry/preOptimizedChassisSpeeds", DriveConstants.kKinematics.toChassisSpeeds(unOptimizedSetpointStates));
 
-            /* Redux setpoints */
+            /* Non-generated swerve setpoints */
             SwerveModuleState[] swerveModuleStates = DriveConstants.kKinematics.toSwerveModuleStates(desiredSpeeds);
 
-            Logger.recordOutput("Drive/Swerve/ReduxSetpoints", swerveModuleStates);
+            Logger.recordOutput("Drive/Swerve/RegularSetpoints", swerveModuleStates);
 
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, kMaxLinearSpeedMPS);
 
-            Logger.recordOutput("Drive/Swerve/SaturatedReduxSetpoints", swerveModuleStates);
-            Logger.recordOutput("Drive/Odometry/FieldReduxChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(
+            Logger.recordOutput("Drive/Swerve/SaturatedRegularSetpoints", swerveModuleStates);
+            Logger.recordOutput("Drive/Odometry/FieldRegularChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(
                 DriveConstants.kKinematics.toChassisSpeeds(swerveModuleStates), robotRotation));
         }
     }

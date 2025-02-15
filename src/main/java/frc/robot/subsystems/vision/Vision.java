@@ -17,7 +17,7 @@ import static frc.robot.subsystems.vision.VisionConstants.KUseSingleTagTransform
 import static frc.robot.subsystems.vision.VisionConstants.kAmbiguityThreshold;;
 
 public class Vision {
-    private VisionIO[] cameras;
+    private CameraIO[] cameras;
     private VisionIOInputsAutoLogged[] camerasData;
 
     private static final LoggedTunableNumber kSingleXYStdev = new LoggedTunableNumber(
@@ -27,7 +27,7 @@ public class Vision {
 
     private final AprilTagFieldLayout k2025Field = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
 
-    public Vision(VisionIO[] cameras) {
+    public Vision(CameraIO[] cameras) {
         Logger.recordOutput("Vision/UseSingleTagTransform", KUseSingleTagTransform);
         this.cameras = cameras;
         camerasData = new VisionIOInputsAutoLogged[cameras.length];
@@ -69,16 +69,18 @@ public class Vision {
                     }
                 }
 
-                // No point in adding vision data if it doesn't exist
+                // No point in adding vision data if it doesn't exist(as all the tags were to ambiguos to trust)
                 if(numberOfTargets == 0) {
                     observations[i] = new VisionObservation(
                         true, 
                         camData.latestEstimatedRobotPose.toPose2d(), 
+                        /* Max std devs indicate the data can't be trusted */
                         VecBuilder.fill(
                             Double.MAX_VALUE, 
                             Double.MAX_VALUE, 
                             Double.MAX_VALUE), 
                         camData.latestTimestamp, camData.camName);
+                    continue;
                 }
 
                 avgDistMeters /= numberOfTargets;
@@ -89,10 +91,11 @@ public class Vision {
                 Logger.recordOutput("Vision/xyScalar", xyScalar);
 
                 // Cases where we shouldn't add vision measurements
-                if(numberOfTargets == 0 || (numberOfTargets == 1 && avgDistMeters > 3.5)) {
+                if(numberOfTargets == 1 && avgDistMeters > 3.5) {
                     observations[i] = new VisionObservation(
                         true,
                         camData.latestEstimatedRobotPose.toPose2d(), 
+                        /* Max std devs indicate the data can't be trusted */
                         VecBuilder.fill(
                             Double.MAX_VALUE, 
                             Double.MAX_VALUE, 
@@ -104,7 +107,7 @@ public class Vision {
                     if(KUseSingleTagTransform) {
                         singleTagPose = 
                             // Pose of involved tag
-                            k2025Field.getTagPose(camData.aprilTagID).get().toPose2d()
+                            k2025Field.getTagPose(camData.singleTagAprilTagID).get().toPose2d()
                             // Transform pose to camera
                             .plus(new Transform2d(
                                     camData.cameraToApriltag.getX(), camData.cameraToApriltag.getY(), 
@@ -137,6 +140,7 @@ public class Vision {
                 observations[i] = new VisionObservation(
                     false, 
                     new Pose2d(), 
+                    /* Max std devs indicate the data can't be trusted */
                     VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE), 
                     camData.latestTimestamp, camData.camName);
             }

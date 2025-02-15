@@ -17,8 +17,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIOKraken;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPV;
+import frc.robot.subsystems.vision.CameraIO;
+import frc.robot.subsystems.vision.CameraIOPV;
 import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
@@ -57,9 +57,9 @@ public class RobotContainer {
                     new Module("FR", new ModuleIOKraken(kFrontRightHardware)),
                     new Module("BL", new ModuleIOKraken(kBackLeftHardware  )),
                     new Module("BR", new ModuleIOKraken(kBackRightHardware ))
-                }, new GyroIOPigeon2(), new Vision(new VisionIO[] {
-                    new VisionIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
-                    new VisionIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
+                }, new GyroIOPigeon2(), new Vision(new CameraIO[] {
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
                 }));
                 break;
             case SIM:
@@ -69,9 +69,9 @@ public class RobotContainer {
                     new Module("FR", new ModuleIOSim()),
                     new Module("BL", new ModuleIOSim()),
                     new Module("BR", new ModuleIOSim())
-                }, new GyroIO() {}, new Vision(new VisionIO[] {
-                    new VisionIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
-                    new VisionIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
+                }, new GyroIO() {}, new Vision(new CameraIO[] {
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
                 }));
                 break;
             default:
@@ -81,8 +81,8 @@ public class RobotContainer {
                     new Module("FR", new ModuleIO() {}),
                     new Module("BL", new ModuleIO() {}),
                     new Module("BR", new ModuleIO() {})
-                }, new GyroIO() {}, new Vision(new VisionIO[] {
-                    new VisionIO() {}, new VisionIO() {}
+                }, new GyroIO() {}, new Vision(new CameraIO[] {
+                    new CameraIO() {}, new CameraIO() {}
                 }));
                 break;
         }
@@ -120,6 +120,7 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
+    /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
             robotDrive.setDriveStateCommand(DriveState.TELEOP)
@@ -137,6 +138,7 @@ public class RobotContainer {
     }
 
     private void configureStateTriggers() {
+        /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
