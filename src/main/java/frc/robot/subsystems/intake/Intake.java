@@ -66,8 +66,9 @@ public class Intake extends SubsystemBase {
     IntakeConstants.kLinearFilterSampleCount);
 
   @AutoLogOutput(key = "Intake/RollerGoal")
-  private IntakeGoal goal = null;
-  // @AutoLogOutput(key = "Intake/PivotGoal")
+  private IntakeGoal rollerGoal = null;
+  @AutoLogOutput(key = "Intake/PivotGoal")
+  private PivotGoal pivotGoal = null;
 
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kHardware = hardwareIO;
@@ -87,7 +88,7 @@ public class Intake extends SubsystemBase {
     // Stop and clear goal if disabled. Used if copilot is still pressing button to command
     // intake when the disabled key is pressed
     if (DriverStation.isDisabled()) {
-      stop();
+      stop(true, true);
     }
 
     // If the CANrange disconnects we can use motor current to detect when we have a coral
@@ -101,35 +102,62 @@ public class Intake extends SubsystemBase {
         kInputs.statorCurrentAmps) > IntakeConstants.kAmpFilterThreshold;
     }
 
-    Logger.recordOutput("Intake/Goal", goal);
+    Logger.recordOutput("Intake/Goal", rollerGoal);
 
-    if (goal != null) {
-      setVoltage(goal.getGoalVolts());
+    if (rollerGoal != null) {
+      setRollerVoltage(rollerGoal.getGoalVolts());
+    }
+    if (pivotGoal != null) {
+      kPivotHardware.setPosition(pivotGoal.getGoalPosition());
     }
   }
 
   /**
-   * Sets the voltage goal of the mechanism, logic runs in subsystem periodic method
+   * Sets the voltage goal of the roller mechanism, logic runs in subsystem periodic method
    * 
    * @param desiredGoal The desired voltage goal
    */
-  public void setGoal(IntakeGoal desiredGoal) {
-    goal = desiredGoal;
-  }
-
-  /** Stops the motor */
-  public void stop() {
-    goal = null;
-    kHardware.stop();
+  public void setRollerGoal(IntakeGoal desiredGoal) {
+    rollerGoal = desiredGoal;
   }
 
   /**
-   * Sets the voltage of the motor,
+   * Sets the voltage goal of the pivo mechanism, logic runs in subsystem periodic method
+   * 
+   * @param desiredGoal The desired voltage goal
+   */
+  public void setPivotGoal(PivotGoal desiredGoal) {
+    pivotGoal = desiredGoal;
+  }
+
+  /** Stops the motor */
+  public void stop(boolean stopRollers, boolean stopPivot) {
+    if (stopRollers) {
+      rollerGoal = null;
+      kHardware.stop();
+    }
+    if (stopPivot) {
+      pivotGoal = null;
+      kPivotHardware.stop();
+    }
+  }
+
+  /**
+   * Sets the voltage of the roller motor
    * 
    * @param voltage
    */
-  public void setVoltage(double voltage) {
+  public void setRollerVoltage(double voltage) {
     kHardware.setVoltage(voltage);
+  }
+
+  /**
+   * Sets the voltage of the pivot motor
+   * 
+   * @param voltage
+   */
+  public void setPivotVoltage(double voltage) {
+    kPivotHardware.setVoltage(voltage);
   }
 
   /**
