@@ -158,6 +158,17 @@ public class Intake extends SubsystemBase {
       kPivotHardware.setPosition(pivotGoal.getGoalPosition());
     }
 
+    // Check if pivot is attempting to move beyond its limitations
+    if (getPivotPosition().getDegrees() > IntakeConstants.kMaxPivotPosition.getDegrees() 
+        && kPivotInputs.appliedVoltage > 0.0) {
+      stop(false, true);
+    } else if (getPivotPosition().getDegrees() < IntakeConstants.kMinPivotPosition.getDegrees() 
+        && kPivotInputs.appliedVoltage < 0.0) {
+      stop(false, true);
+    } else {
+      // Do nothing if limits are not reached
+    }
+
     // This says that if the value is changed in the advantageScope tool,
     // Then we change the values in the code. Saves deploy time.
     // More found in prerequisites slide
@@ -256,5 +267,12 @@ public class Intake extends SubsystemBase {
   @AutoLogOutput(key = "Intake/detectedGamepiece")
   public boolean detectedGamepiece() {
     return detectedGamepiece;
+  }
+
+  /**
+   * @return The position of the pivot
+   */
+  public Rotation2d getPivotPosition() {
+    return kPivotInputs.position;
   }
 }
