@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision;
 
+import java.util.prefs.BackingStoreException;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 public class VisionConstants {
     // From CAD and decided by you in configuration
     public static final String kLeftCamName = "9105-Left";
+    public static final Orientation kLeftCamOrientation = Orientation.BACK;
     public static final Transform3d kLeftCamTransform = new Transform3d(
         new Translation3d(0.3, 0.3, 0.0),
         // Accounts for cameras being on back
@@ -20,6 +23,7 @@ public class VisionConstants {
     );
 
     public static final String kRightCamName = "9105_BACKUP";
+    public static final Orientation kRightCamOrientation = Orientation.BACK;
     public static final Transform3d kRightCamTransform = new Transform3d(
         new Translation3d(0.3, -0.3, 0.0),
         // Accounts for cameras being on back
@@ -41,4 +45,9 @@ public class VisionConstants {
     public static final double kAmbiguityThreshold = (RobotBase.isReal()) ? 0.2 : 1.0;
 
     public static final Rotation2d kCameraFOV = Rotation2d.fromDegrees(95.0);
+
+    public static enum Orientation {
+        BACK,
+        FRONT
+    }
 }

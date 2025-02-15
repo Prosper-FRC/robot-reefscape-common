@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.subsystems.vision.VisionConstants.Orientation;
 
 import static frc.robot.subsystems.vision.VisionConstants.kCameraFOV;
 
@@ -30,14 +31,16 @@ public class CameraIOPV implements CameraIO {
     private PhotonCamera photonCam;
     private PhotonPoseEstimator poseEstimator;
     private Transform3d cameraTransform;
+    private Orientation orientation;
 
     private PhotonCameraSim limelightSim;
     private VisionSystemSim visionSim;
 
-    public CameraIOPV(String name, Transform3d cameraTransform) {
+    public CameraIOPV(String name, Transform3d cameraTransform, Orientation orientation) {
         camName = name;
         photonCam = new PhotonCamera(camName);
         this.cameraTransform = cameraTransform;
+        this.orientation = orientation;
         // Don't worry about it
         PhotonCamera.setVersionCheckEnabled(false);
 
@@ -100,11 +103,19 @@ public class CameraIOPV implements CameraIO {
                     inputs.area = target.getArea();
                     inputs.latencySeconds = result.getTimestampSeconds() / 1000.0;
 
+
                     latestEstimatedRobotPose.ifPresent(est -> {
-                        inputs.latestEstimatedRobotPose = latestEstimatedRobotPose.get().estimatedPose
-                        // Rotate by 180 to account for camera being on back, needs to be come parameter in constructor later
-                            .transformBy(new Transform3d(
-                                new Translation3d(), new Rotation3d(0.0, 0.0, Math.PI)));
+
+                        if(orientation.equals(Orientation.FRONT)){
+                            inputs.latestEstimatedRobotPose = latestEstimatedRobotPose.get().estimatedPose;
+                        }
+
+                        else{
+                            inputs.latestEstimatedRobotPose = latestEstimatedRobotPose.get().estimatedPose
+                            // Rotate by 180 to account for camera being on back, needs to be come parameter in constructor later
+                                .transformBy(new Transform3d(
+                                    new Translation3d(), new Rotation3d(0.0, 0.0, Math.PI)));
+                        }
 
                         ArrayList<Transform3d> tagTs = new ArrayList<>();
                         double[] ambiguities = new double[latestEstimatedRobotPose.get().targetsUsed.size()];

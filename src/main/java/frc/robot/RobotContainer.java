@@ -58,6 +58,8 @@ import static frc.robot.subsystems.drive.DriveConstants.*;
 
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.photonvision.common.hardware.VisionLEDMode;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class RobotContainer {
@@ -90,8 +92,14 @@ public class RobotContainer {
                     new Module("BL", new ModuleIOKraken(kBackLeftHardware  )),
                     new Module("BR", new ModuleIOKraken(kBackRightHardware ))
                 }, new GyroIOPigeon2(), new Vision(new CameraIO[] {
-                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
-                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
+                    new CameraIOPV(
+                        VisionConstants.kRightCamName, 
+                        VisionConstants.kRightCamTransform, 
+                        VisionConstants.kRightCamOrientation), 
+                    new CameraIOPV(
+                        VisionConstants.kLeftCamName, 
+                        VisionConstants.kLeftCamTransform, 
+                        VisionConstants.kLeftCamOrientation)
                 }));
 
                 elevator = new Elevator(
@@ -134,8 +142,14 @@ public class RobotContainer {
                     new Module("BL", new ModuleIOSim()),
                     new Module("BR", new ModuleIOSim())
                 }, new GyroIO() {}, new Vision(new CameraIO[] {
-                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
-                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
+                    new CameraIOPV(
+                        VisionConstants.kRightCamName, 
+                        VisionConstants.kRightCamTransform, 
+                        VisionConstants.kRightCamOrientation), 
+                    new CameraIOPV(
+                        VisionConstants.kLeftCamName, 
+                        VisionConstants.kLeftCamTransform, 
+                        VisionConstants.kLeftCamOrientation)
                 }));
             
                 elevator = new Elevator(

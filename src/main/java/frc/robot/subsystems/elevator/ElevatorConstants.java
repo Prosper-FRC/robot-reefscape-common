@@ -63,7 +63,7 @@ public class ElevatorConstants {
   public static final int kAmpFilterThreshold = 40;
   public static final boolean kHomeWithCurrent = false;
 
-  public static final double kMaxPositionMeters = 1.65;
+  public static final double kMaxPositionMeters = 1.655;
   public static final double kMinPositionMeters = 0.0;
 
   /** Position tolerance when controlling the elevator via feedback */
