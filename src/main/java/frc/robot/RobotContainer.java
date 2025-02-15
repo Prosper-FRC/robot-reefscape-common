@@ -3,11 +3,14 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -16,6 +19,23 @@ import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.climb.DutyCycleEncoderIO;
 import frc.robot.subsystems.climb.DutyCycleEncoderIORev;
 import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
+
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIOKraken;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.CameraIO;
+import frc.robot.subsystems.vision.CameraIOPV;
+import frc.robot.subsystems.drive.Module;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.Drive.DriveState;
+
+import static frc.robot.subsystems.drive.DriveConstants.*;
+
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -27,7 +47,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     // Define subsystems
-    // ex: private final LEDSubsystem LEDs;
+    private final Drive robotDrive;
 
     // Define other utility classes
     private final AutonCommands autonCommands;
@@ -35,7 +55,8 @@ public class RobotContainer {
 
     private LoggedDashboardChooser<Command> autoChooser;
 
-    private final boolean useCompetitionBindings = true;
+    /* TODO: Set to true before competition please */
+    private final boolean useCompetitionBindings = false;
 
     public RobotContainer() {
 
@@ -43,6 +64,16 @@ public class RobotContainer {
         switch (Constants.kCurrentMode) {
             case REAL:
                 // Instantiate subsystems that operate actual hardware (Hardware controller based modules)
+                robotDrive = new Drive( new Module[] {
+                    new Module("FL", new ModuleIOKraken(kFrontLeftHardware )),
+                    new Module("FR", new ModuleIOKraken(kFrontRightHardware)),
+                    new Module("BL", new ModuleIOKraken(kBackLeftHardware  )),
+                    new Module("BR", new ModuleIOKraken(kBackRightHardware ))
+                }, new GyroIOPigeon2(), new Vision(new CameraIO[] {
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
+                }));
+            
                 climb = new Climb(
                     new DutyCycleEncoderIORev(
                         ClimbConstants.kDutyCycleConfiguration),
@@ -59,6 +90,16 @@ public class RobotContainer {
                 break;
             case SIM:
                 // Instantiate subsystems that simulate actual hardware (IOSim modules)
+                robotDrive = new Drive( new Module[] {
+                    new Module("FL", new ModuleIOSim()),
+                    new Module("FR", new ModuleIOSim()),
+                    new Module("BL", new ModuleIOSim()),
+                    new Module("BR", new ModuleIOSim())
+                }, new GyroIO() {}, new Vision(new CameraIO[] {
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform)
+                }));
+            
                 climb = new Climb(
                     new DutyCycleEncoderIO(){},
                     new ClimbIOSim(
@@ -69,10 +110,18 @@ public class RobotContainer {
                 break;
             default:
                 // Instantiate subsystems that are driven by playback of recorded sessions. (IO modules)
+                robotDrive = new Drive( new Module[] {
+                    new Module("FL", new ModuleIO() {}),
+                    new Module("FR", new ModuleIO() {}),
+                    new Module("BL", new ModuleIO() {}),
+                    new Module("BR", new ModuleIO() {})
+                }, new GyroIO() {}, new Vision(new CameraIO[] {
+                    new CameraIO() {}, new CameraIO() {}
+                }));
+            
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
-                break;
         }
 
         // Instantiate subsystems that don't care about mode, or are non-AdvantageKit enabled.
@@ -80,7 +129,7 @@ public class RobotContainer {
 
         // Instantiate your TeleopCommands and AutonCommands classes
         telopCommands = new TeleopCommands(/* pass subsystems here */);
-        autonCommands = new AutonCommands(/* pass subsystems here */);
+        autonCommands = new AutonCommands(robotDrive);
         try {
             autoChooser = new LoggedDashboardChooser<>("Auton Program", autonCommands.getAutoChooser());
             // Fill instant command with whatever your initial action is
@@ -88,12 +137,17 @@ public class RobotContainer {
         } catch (Exception e) {
             autoChooser = new LoggedDashboardChooser<Command>("Auton Program");
             // Fill instant command with whatever your initial action is, to prepare for the case of failure
-            autoChooser.addDefaultOption("initActionZeroPath", new InstantCommand());
+            autoChooser.addDefaultOption("PATHS FAILED: initActionZeroPath", new InstantCommand());
         }
 
+        robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
 
         // Pass subsystems to classes that need them for configuration
-
+        robotDrive.acceptJoystickInputs(
+            () -> - driverController.getLeftY(),
+            () -> - driverController.getLeftX(),
+            () -> - driverController.getRightX(),
+            () -> driverController.getHID().getPOV());
 
         // Create any Dashboard choosers (LoggedDashboardChooser, etc)
 
@@ -103,32 +157,53 @@ public class RobotContainer {
         configureButtonBindings();
     }
 
+    /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
-            // Commands to run on teleop go here.
+            robotDrive.setDriveStateCommand(DriveState.TELEOP)
         );
     }
 
     public Command getAutonomousCommand() {
+        Commands.runOnce(() -> robotDrive.setDriveState(DriveState.AUTON), robotDrive).schedule();
+
         return autoChooser.get();
     }
 
+    public void getAutonomousExit() {
+        robotDrive.setDriveState(DriveState.STOP);
+    }
+
     private void configureStateTriggers() {
-
-
+        /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
+        new Trigger(DriverStation::isEnabled)
+            .onTrue(
+                Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
     }
 
     private void configureButtonBindings() {
-        operatorController.a()
-            .whileTrue(
-                Commands.run(() -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab), climb))
-            .whileFalse(
-                Commands.runOnce(climb::stop, climb));
+        if(useCompetitionBindings) {} 
+        else {
+            driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
+    
+            driverController.x()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIFT_TEST))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-        operatorController.b()
-            .whileTrue(
-                Commands.run(() -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease), climb))
-            .whileFalse(
-                Commands.runOnce(climb::stop, climb));
+            // getPOV == -1 if nothing is pressed, so if it doesn't return that
+            // then pov control is being used as its being pressed
+            new Trigger(()-> driverController.getHID().getPOV() != -1)
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.b()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.a()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_POSE))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+        }
     }
+
 }

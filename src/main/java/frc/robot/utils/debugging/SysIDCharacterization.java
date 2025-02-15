@@ -92,41 +92,4 @@ public class SysIDCharacterization {
     private static void sysIDREVStateLogger(String key, String state) {
         Logger.recordOutput(key, state);
     }
-
-    // Untested
-    public static Command MOISYSid(
-        Consumer<Double> voltSetter, Supplier<double[]> motorAmps, 
-        double kDrivebaseRadiusMeters, double kWheelRadiusMeters, Subsystem requirement) {
-        double totalTimeSeconds = 15.0;
-        double rampTimeSeconds = 10.0;
-        double maxVoltage = 4.0;
-        double voltageOverTime = maxVoltage / rampTimeSeconds;
-        double neoTorqueConstantNmPerAmp = 0.1495;
-
-        Timer timer = new Timer();
-
-        return new SequentialCommandGroup(
-            startCTRELoggingRoutine(),
-            Commands.waitSeconds(3.0),
-            new FunctionalCommand(
-                () -> timer.start(),
-                () -> {
-                    double driveBaseTorque = 0.0;
-                    voltSetter.accept(Math.min(voltageOverTime * timer.get(), maxVoltage));
-                    SignalLogger.writeString("Test Running", "RUN");
-                    for(int i = 0; i < motorAmps.get().length; i++ ) {
-                        driveBaseTorque +=  ((neoTorqueConstantNmPerAmp * motorAmps.get()[i]) 
-                            / kWheelRadiusMeters) * kDrivebaseRadiusMeters;
-                    }
-                    SignalLogger.writeDouble("DriveBaseTorque", driveBaseTorque);
-                    Logger.recordOutput("MOIingTime", timer.get());
-                }, 
-                (interrupted) -> {
-                    SignalLogger.writeString("Test Not Running", "NO RUN");
-                }, 
-                () -> false, 
-                requirement).withTimeout(totalTimeSeconds),
-            Commands.waitSeconds(3.0),
-            stopCTRELoggingRoutine());
-    }
 }
