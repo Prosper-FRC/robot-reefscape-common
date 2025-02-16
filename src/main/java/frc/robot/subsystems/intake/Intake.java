@@ -14,6 +14,8 @@ import frc.robot.utils.visualizers.PivotVisualizer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
@@ -121,7 +123,11 @@ public class Intake extends SubsystemBase {
     kSensor = sensorIO;
     kPivotHardware = pivotHardwareIO;
 
-    kPivotVisualizer = new PivotVisualizer(IntakeConstants.kPivotVisualizerConfiguration);
+    kPivotVisualizer = new PivotVisualizer(
+      "Intake/PivotVisualizer", 
+      IntakeConstants.kPivotVisualizerConfiguration, 
+      4.0, 
+      new Color8Bit(Color.kBlue));
   }
 
   @Override
