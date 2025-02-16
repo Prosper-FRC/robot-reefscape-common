@@ -4,6 +4,7 @@ package frc.robot;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -109,6 +110,26 @@ public class TeleopCommands {
                     stopRollers = true;
                     kIntake.stop(stopRollers, stopPivot);
                 }
+            }, 
+            kIntake);
+    }
+
+    /**
+     * Runs the algae picker pivot and then stops it, this command should be decorated with an 
+     * end condition specified by the caller
+     * 
+     * @param pivotGoal The algae picker pivot goal
+     * @return The command to start and stop the algae picker pivot
+     */
+    public Command runPivotAndStopCommand(PivotGoal pivotGoal) {
+        return Commands.startEnd(
+            ()-> {
+                stopPivot = false;
+                kIntake.setPivotGoal(pivotGoal);
+            }, 
+            () -> {
+                stopPivot = true;
+                kIntake.stop(stopRollers, stopPivot);
             }, 
             kIntake);
     }

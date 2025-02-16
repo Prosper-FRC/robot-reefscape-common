@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -62,6 +63,8 @@ import frc.robot.subsystems.drive.Drive.DriveState;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
@@ -283,6 +286,19 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>> reefPositions = 
+            new HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>>();
+        reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kL4Algae));
+        reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
+        reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kGroundAlgae));
+
+        ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
+        positionButtons.add(operatorController.y());
+        positionButtons.add(operatorController.b());
+        positionButtons.add(operatorController.a());
+        positionButtons.add(operatorController.x());
+
         // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
             teleopLoop,
@@ -312,61 +328,48 @@ public class RobotContainer {
                     teleopCommands.stopRollersCommand()
                 );
 
-            // CORAL - SCORE - L4
-            operatorController.y().and(coralSelectTrigger)
-                .whileTrue(
-                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL4Coral)
-                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
-                    .andThen(
-                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
-                    )   
-                )
-                .whileFalse(
-                    teleopCommands.stopElevatorCommand()
-                    .alongWith(teleopCommands.stopRollersCommand())
-                );
+            // SCORE CORAL AND PICKUP ALGAE
+            for (int i = 0; i < positionButtons.size(); i++) {
+                Trigger button = positionButtons.get(i);
 
-            // CORAL - SCORE - L3
-            operatorController.b().and(coralSelectTrigger)
-                .whileTrue(
-                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL3Coral)
-                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
-                    .andThen(
-                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
-                    )   
-                )
-                .whileFalse(
-                    teleopCommands.stopElevatorCommand()
-                    .alongWith(teleopCommands.stopRollersCommand())
-                );
+                // CORAL - SCORE
+                button.and(coralSelectTrigger)
+                    .whileTrue(
+                        teleopCommands.runElevatorAndHoldCommand(
+                            reefPositions.get(button).getFirst())
+                                .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                        .andThen(
+                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                        )   
+                    )
+                    .whileFalse(
+                        teleopCommands.stopElevatorCommand()
+                        .alongWith(teleopCommands.stopRollersCommand())
+                    );
 
-            // CORAL - SCORE - L2
-            operatorController.a().and(coralSelectTrigger)
-                .whileTrue(
-                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Coral)
-                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
-                    .andThen(
-                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
-                    )   
-                )
-                .whileFalse(
-                    teleopCommands.stopElevatorCommand()
-                    .alongWith(teleopCommands.stopRollersCommand())
-                );
-
-            // CORAL - SCORE - L1
-            operatorController.x().and(coralSelectTrigger)
-                .whileTrue(
-                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
-                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
-                    .andThen(
-                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
-                    )   
-                )
-                .whileFalse(
-                    teleopCommands.stopElevatorCommand()
-                    .alongWith(teleopCommands.stopRollersCommand())
-                );
+                // ALGAE - PICKUP
+                button.and(algaeSelectTrigger)
+                    .whileTrue(
+                        teleopCommands.runElevatorAndHoldCommand(
+                            reefPositions.get(button).getSecond())
+                                .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                        .andThen(
+                            teleopCommands.runPivotAndStopCommand(PivotGoal.kIntake)
+                        )
+                        .andThen(
+                            teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeAlgae)
+                                .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
+                        ).andThen(
+                            teleopCommands.runPivotAndStopCommand(PivotGoal.kStow)
+                        )
+                    )
+                    .whileFalse(
+                        teleopCommands.stopElevatorCommand()
+                        .alongWith(teleopCommands.stopRollersCommand())
+                        .alongWith(teleopCommands.runPivotAndStopCommand(PivotGoal.kStow))
+                        .andThen(teleopCommands.stopPivotCommand())
+                    );
+            }
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
