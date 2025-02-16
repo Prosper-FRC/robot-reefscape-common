@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -63,6 +64,7 @@ import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.photonvision.common.hardware.VisionLEDMode;
 
@@ -85,7 +87,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     /* TODO: Set to true before competition please */
-    private final boolean useCompetitionBindings = false;
+    private final boolean useCompetitionBindings = true;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -274,20 +276,23 @@ public class RobotContainer {
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
     }
 
+    private Command rumbleCommand() {
+        return Commands.startEnd(
+            () -> operatorController.getHID().setRumble(RumbleType.kBothRumble, 1.0), 
+            () -> operatorController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
+    }
+
     private void configureButtonBindings() {
-        Command startRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.75));
-        Command stopRumbleCommand = Commands.runOnce(() -> operatorController.setRumble(RumbleType.kBothRumble, 0.0));
+        new Trigger(
+            teleopLoop,
+            intake::detectedGamepiece)
+                .and(operatorController.leftBumper())
+            .onTrue(
+                rumbleCommand()
+                    .withTimeout(0.5)
+        );
 
-        Trigger autoSelectCoral = operatorController.rightTrigger(0.5, teleopLoop)
-            .onTrue(Commands.runOnce(() -> intake.selectGamepiece(Gamepiece.kCoral)));
-        Trigger autoSelectAlgae = operatorController.leftTrigger(0.5, teleopLoop)
-            .onTrue(Commands.runOnce(() -> intake.selectGamepiece(Gamepiece.kAlgae)));
-        Trigger autoRumble = new Trigger(teleopLoop, intake::detectedGamepiece).debounce(0.4)
-            .and(operatorController.leftBumper())
-            .whileTrue(startRumbleCommand)
-            .whileFalse(stopRumbleCommand);
-
-        Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece).debounce(0.4);
+        Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
@@ -297,34 +302,60 @@ public class RobotContainer {
             /* Coral bindings */
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
-                    Commands.run(() -> {
-                        intake.setRollerGoal(RollerGoal.kIntakeCoral);
-                    }, 
-                    intake)
-                    .until(hasGamepieceTrigger).alongWith(startRumbleCommand)
-                )
-                .whileFalse(
-                    Commands.runOnce(
+                    Commands.startEnd(
+                        () -> intake.setRollerGoal(RollerGoal.kIntakeCoral), 
                         () -> intake.stop(true, false), 
-                        intake).alongWith(stopRumbleCommand)
+                        intake)
+                    .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
                 );
 
             operatorController.y().and(coralSelectTrigger)
                 .whileTrue(
-                    Commands.runEnd(
-                        () -> elevator.setGoal(ElevatorGoal.kL4Coral),
-                        () -> elevator.setPosition(elevator.getPositionMeters()),
+                    Commands.startEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL4Coral), 
+                        () -> elevator.setPosition(elevator.getPositionMeters()), 
                         elevator)
-                    .until(elevatorAtGoalTrigger)
+                    .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                     .andThen(
-                        Commands.run(() -> {
-                            if (confirmScoreTrigger.getAsBoolean()) {
-                                intake.setRollerGoal(RollerGoal.kScoreCoral);
-                            } else {
-                                intake.stop(true, false);
-                            }
-                        }, 
-                        intake)
+                        Commands.run(
+                            () -> {
+                                if (confirmScoreTrigger.getAsBoolean()) {
+                                    intake.setRollerGoal(RollerGoal.kScoreCoral);
+                                } else {
+                                    intake.stop(true, false);
+                                }
+                            },
+                            intake)
+                    )
+                )
+                .whileFalse(
+                    Commands.runOnce(
+                        () -> elevator.stop(), 
+                        elevator)
+                    .alongWith(
+                        Commands.runOnce(
+                            () -> intake.stop(true, false), 
+                            intake)
+                    )
+                );
+
+            operatorController.a().and(coralSelectTrigger)
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL1Coral), 
+                        () -> elevator.setPosition(elevator.getPositionMeters()), 
+                        elevator)
+                    .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                    .andThen(
+                        Commands.run(
+                            () -> {
+                                if (confirmScoreTrigger.getAsBoolean()) {
+                                    intake.setRollerGoal(RollerGoal.kScoreCoral);
+                                } else {
+                                    intake.stop(true, false);
+                                }
+                            },
+                            intake)
                     )
                 )
                 .whileFalse(
