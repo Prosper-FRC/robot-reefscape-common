@@ -240,6 +240,14 @@ public class RobotContainer {
         }
 
         robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
+        elevator.setDefaultCommand(Commands.run(() -> elevator.setGoal(ElevatorGoal.kStow), elevator));
+        intake.setDefaultCommand(
+            Commands.run(
+                () -> {
+                    intake.setPivotGoal(PivotGoal.kStow);
+                    intake.stop(true, false);
+                }, 
+                intake));
 
         // Pass subsystems to classes that need them for configuration
         robotDrive.acceptJoystickInputs(
@@ -368,7 +376,11 @@ public class RobotContainer {
                     )
                     .whileFalse(
                         teleopCommands.stopElevatorCommand()
-                            .alongWith(teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStow))
+                            .alongWith(
+                                teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStow)
+                                    // This "onlyWhile" is required so that this command composition ends
+                                    // eventually and releases its resources back to the CommandScheduler
+                                    .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
                     );
             }
         } 
