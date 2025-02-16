@@ -311,6 +311,7 @@ public class RobotContainer {
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
+        Trigger pivotAtGoalTrigger = new Trigger(teleopLoop, intake::pivotAtGoal);
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
@@ -335,39 +336,39 @@ public class RobotContainer {
                 // CORAL - SCORE
                 button.and(coralSelectTrigger)
                     .whileTrue(
-                        teleopCommands.runElevatorAndHoldCommand(
-                            reefPositions.get(button).getFirst())
-                                .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                        teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getFirst())
+                            .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                            .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
                             teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
                         )   
                     )
                     .whileFalse(
                         teleopCommands.stopElevatorCommand()
-                        .alongWith(teleopCommands.stopRollersCommand())
+                            .alongWith(teleopCommands.stopRollersCommand())
                     );
 
                 // ALGAE - PICKUP
                 button.and(algaeSelectTrigger)
                     .whileTrue(
-                        teleopCommands.runElevatorAndHoldCommand(
-                            reefPositions.get(button).getSecond())
-                                .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                        teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                            .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                            .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .andThen(
                             teleopCommands.runPivotAndStopCommand(PivotGoal.kIntake)
+                                .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5))
                         )
                         .andThen(
                             teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeAlgae)
                                 .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
-                        ).andThen(
+                        )
+                        .andThen(
                             teleopCommands.runPivotAndStopCommand(PivotGoal.kStow)
                         )
                     )
                     .whileFalse(
                         teleopCommands.stopElevatorCommand()
-                        .alongWith(teleopCommands.stopRollersCommand())
-                        .alongWith(teleopCommands.runPivotAndStopCommand(PivotGoal.kStow))
-                        .andThen(teleopCommands.stopPivotCommand())
+                            .alongWith(teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStow))
                     );
             }
         } 
