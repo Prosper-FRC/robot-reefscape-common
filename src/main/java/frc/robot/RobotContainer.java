@@ -79,7 +79,7 @@ public class RobotContainer {
     
     // Define other utility classes
     private final AutonCommands autonCommands;
-    private final TeleopCommands telopCommands;
+    private final TeleopCommands teleopCommands;
     
     private LoggedDashboardChooser<Command> autoChooser;
     
@@ -224,7 +224,7 @@ public class RobotContainer {
         // ex: LEDs = new LEDSubsystem();
 
         // Instantiate your TeleopCommands and AutonCommands classes
-        telopCommands = new TeleopCommands(elevator, intake, climb);
+        teleopCommands = new TeleopCommands(elevator, intake, climb);
         autonCommands = new AutonCommands(robotDrive);
         try {
             autoChooser = new LoggedDashboardChooser<>("Auton Program", autonCommands.getAutoChooser());
@@ -283,6 +283,7 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
             teleopLoop,
             intake::detectedGamepiece)
@@ -300,73 +301,71 @@ public class RobotContainer {
 
         if (useCompetitionBindings) {
             /* Coral bindings */
+
+            // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
-                    Commands.startEnd(
-                        () -> intake.setRollerGoal(RollerGoal.kIntakeCoral), 
-                        () -> intake.stop(true, false), 
-                        intake)
-                    .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
+                    teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeCoral)
+                        .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
+                )
+                .whileFalse(
+                    teleopCommands.stopRollersCommand()
                 );
 
+            // CORAL - SCORE - L4
             operatorController.y().and(coralSelectTrigger)
                 .whileTrue(
-                    Commands.startEnd(
-                        () -> elevator.setGoal(ElevatorGoal.kL4Coral), 
-                        () -> elevator.setPosition(elevator.getPositionMeters()), 
-                        elevator)
-                    .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL4Coral)
+                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                     .andThen(
-                        Commands.run(
-                            () -> {
-                                if (confirmScoreTrigger.getAsBoolean()) {
-                                    intake.setRollerGoal(RollerGoal.kScoreCoral);
-                                } else {
-                                    intake.stop(true, false);
-                                }
-                            },
-                            intake)
-                    )
+                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                    )   
                 )
                 .whileFalse(
-                    Commands.runOnce(
-                        () -> elevator.stop(), 
-                        elevator)
-                    .alongWith(
-                        Commands.runOnce(
-                            () -> intake.stop(true, false), 
-                            intake)
-                    )
+                    teleopCommands.stopElevatorCommand()
+                    .alongWith(teleopCommands.stopRollersCommand())
                 );
 
-            operatorController.a().and(coralSelectTrigger)
+            // CORAL - SCORE - L3
+            operatorController.b().and(coralSelectTrigger)
                 .whileTrue(
-                    Commands.startEnd(
-                        () -> elevator.setGoal(ElevatorGoal.kL1Coral), 
-                        () -> elevator.setPosition(elevator.getPositionMeters()), 
-                        elevator)
-                    .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL3Coral)
+                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                     .andThen(
-                        Commands.run(
-                            () -> {
-                                if (confirmScoreTrigger.getAsBoolean()) {
-                                    intake.setRollerGoal(RollerGoal.kScoreCoral);
-                                } else {
-                                    intake.stop(true, false);
-                                }
-                            },
-                            intake)
-                    )
+                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                    )   
                 )
                 .whileFalse(
-                    Commands.runOnce(
-                        () -> elevator.stop(), 
-                        elevator)
-                    .alongWith(
-                        Commands.runOnce(
-                            () -> intake.stop(true, false), 
-                            intake)
-                    )
+                    teleopCommands.stopElevatorCommand()
+                    .alongWith(teleopCommands.stopRollersCommand())
+                );
+
+            // CORAL - SCORE - L2
+            operatorController.a().and(coralSelectTrigger)
+                .whileTrue(
+                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Coral)
+                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                    .andThen(
+                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                    )   
+                )
+                .whileFalse(
+                    teleopCommands.stopElevatorCommand()
+                    .alongWith(teleopCommands.stopRollersCommand())
+                );
+
+            // CORAL - SCORE - L1
+            operatorController.x().and(coralSelectTrigger)
+                .whileTrue(
+                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
+                        .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                    .andThen(
+                        teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                    )   
+                )
+                .whileFalse(
+                    teleopCommands.stopElevatorCommand()
+                    .alongWith(teleopCommands.stopRollersCommand())
                 );
         } 
         else {
