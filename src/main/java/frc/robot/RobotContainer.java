@@ -325,8 +325,6 @@ public class RobotContainer {
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
 
         if (useCompetitionBindings) {
-            /* Coral bindings */
-
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
@@ -379,10 +377,28 @@ public class RobotContainer {
                             .alongWith(
                                 teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStow)
                                     // This "onlyWhile" is required so that this command composition ends
-                                    // eventually and releases its resources back to the CommandScheduler
+                                    // at some point and frees its resources back to the CommandScheduler
                                     .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
                     );
             }
+
+            // CLIMB - GRAB
+            operatorController.povLeft()
+                .whileTrue(
+                    teleopCommands.runClimbVoltage(ClimbVoltageGoal.kGrab)
+                )
+                .whileFalse(
+                    teleopCommands.stopClimbCommand()
+                );
+                
+            // CLIMB - RELEASE
+            operatorController.povRight()
+                .whileTrue(
+                    teleopCommands.runClimbVoltage(ClimbVoltageGoal.kRelease)
+                )
+                .whileFalse(
+                    teleopCommands.stopClimbCommand()
+                );
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));

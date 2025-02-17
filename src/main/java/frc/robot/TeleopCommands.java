@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
 
 /**
  * <p> A commands factory for the teleoperated period. 
@@ -157,6 +158,20 @@ public class TeleopCommands {
     }
 
     /**
+     * Runs the climb at a specified goal voltage and then stops it, this command should be
+     * deocrated with an end condition specified by the caller
+     * 
+     * @param climbVoltageGoal The climb's voltage goal
+     * @return The command to start the climb and stop it when ended
+     */
+    public Command runClimbVoltage(ClimbVoltageGoal climbVoltageGoal) {
+        return Commands.startEnd(
+            () -> kClimb.setGoalVoltage(climbVoltageGoal), 
+            () -> kClimb.stop(), 
+            kClimb);
+    }
+
+    /**
      * Stops the intake rollers. This will also stop the algae picker pivot if the
      * stopPivot variable is set to true
      * 
@@ -191,6 +206,15 @@ public class TeleopCommands {
      */
     public Command stopElevatorCommand() {
         return Commands.runOnce(() -> kElevator.stop(), kElevator);
+    }
+
+    /**
+     * Stops the climb
+     * 
+     * @return The command to stop the climb that runs once
+     */
+    public Command stopClimbCommand() {
+        return Commands.runOnce(() -> kClimb.stop(), kClimb);
     }
 
     /**

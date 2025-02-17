@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.visualizers.PivotVisualizer;
 
@@ -171,12 +173,16 @@ public class Climb extends SubsystemBase {
    */
   @AutoLogOutput(key = "Climb/Position")
   public Rotation2d getPosition() {
-    if (isAbsoluteEncoderConnected) {
-      return Rotation2d.fromRotations(
-        kAbsoluteEncoderInputs.dutyCycleReading).minus(ClimbConstants.kPositionOffset);
+    if (Constants.kCurrentMode == Mode.REAL) {
+      if (isAbsoluteEncoderConnected) {
+        return Rotation2d.fromRotations(
+          kAbsoluteEncoderInputs.dutyCycleReading).minus(ClimbConstants.kPositionOffset);
+      } else {
+        // Only need to return one position since the motors are mechaically linked
+        return new Rotation2d();
+      }
     } else {
-      // Only need to return one position since the motors are mechaically linked
-      return new Rotation2d();
+      return kInputs[0].position;
     }
   }
 }
