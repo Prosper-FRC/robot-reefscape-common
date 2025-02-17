@@ -14,6 +14,8 @@ import frc.robot.utils.visualizers.PivotVisualizer;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
@@ -121,7 +123,11 @@ public class Intake extends SubsystemBase {
     kSensor = sensorIO;
     kPivotHardware = pivotHardwareIO;
 
-    kPivotVisualizer = new PivotVisualizer(IntakeConstants.kPivotVisualizerConfiguration);
+    kPivotVisualizer = new PivotVisualizer(
+      "Intake/PivotVisualizer", 
+      IntakeConstants.kPivotVisualizerConfiguration, 
+      4.0, 
+      new Color8Bit(Color.kBlue));
   }
 
   @Override
@@ -216,7 +222,7 @@ public class Intake extends SubsystemBase {
         kMaxAcceleration);
 
     // The visualizer needs to be periodically fed the current position of the mechanism
-    kPivotVisualizer.updatePosition(getPivotPosition());
+    kPivotVisualizer.updatePosition(getPivotPosition().times(-1.0));
   }
 
   /**
@@ -280,6 +286,16 @@ public class Intake extends SubsystemBase {
    */
   public void setPivotVoltage(double voltage) {
     kPivotHardware.setVoltage(voltage);
+  }
+
+  /**
+   * Sets the vertical position of the mechanism on the visuzlier, useful as the
+   * pivot moves with the elevator
+   * 
+   * @param positionMeters
+   */
+  public void setVisualizerVerticalPosition(double positionMeters) {
+    kPivotVisualizer.setRootVerticalPositionMeters(positionMeters);
   }
 
   /**

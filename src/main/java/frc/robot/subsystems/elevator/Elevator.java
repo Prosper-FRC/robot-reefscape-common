@@ -25,6 +25,10 @@ public class Elevator extends SubsystemBase {
     kL3Coral(() -> 0.84),
     kL2Coral(() -> 0.41),
     kL1Coral(() -> Units.inchesToMeters(8.0)),
+    kL4Algae(() -> Units.inchesToMeters(60.0)),
+    kL3Algae(() -> 0.84),
+    kL2Algae(() -> 0.41),
+    kGroundAlgae(() -> Units.inchesToMeters(8.0)),
     /** Stow the elevator during transit */
     kStow(() -> Units.inchesToMeters(4.0)),
     /** Position for intaking from the coral station */

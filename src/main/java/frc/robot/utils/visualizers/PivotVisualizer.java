@@ -28,6 +28,7 @@ public class PivotVisualizer {
     String rootName,
     Pair<Double, Double> rootPoisition,
     String ligamentName,
+    Rotation2d offset,
     double ligamentLengthMeters,
     Rotation2d initialPosition
   ) {}
@@ -39,6 +40,10 @@ public class PivotVisualizer {
 
   private LoggedMechanismRoot2d root;
   private LoggedMechanismLigament2d ligament;
+
+  private Rotation2d offset;
+
+  private double rootXPosition = 0.0;
 
   /**
    * Creates a new visualizer
@@ -63,6 +68,10 @@ public class PivotVisualizer {
       configuration.rootName, 
       configuration.rootPoisition.getFirst(), 
       configuration.rootPoisition.getSecond());
+
+    rootXPosition = configuration.rootPoisition.getFirst();
+
+    offset = configuration.offset;
 
     ligament = root.append(
       new LoggedMechanismLigament2d(
@@ -91,9 +100,18 @@ public class PivotVisualizer {
    * @param position The current positiopn of the pivot mechanism
    */
   public void updatePosition(Rotation2d position) {
-    ligament.setAngle(position);
+    ligament.setAngle(position.minus(offset));
 
     Logger.recordOutput(kLogKey, visualField);
+  }
+
+  /**
+   * Updates the position of the pivot root on the visualizer
+   * 
+   * @param positionMeters The current vertical position of the pivot mechanism
+   */
+  public void setRootVerticalPositionMeters(double positionMeters) {
+    root.setPosition(rootXPosition, positionMeters);
   }
 }
 
