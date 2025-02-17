@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -46,6 +47,8 @@ public class Climb extends SubsystemBase {
   private boolean isAbsoluteEncoderConnected = false;
 
   private final PivotVisualizer kClimbVisualizer;
+
+  private final LoggedNetworkBoolean kDisableLimits = new LoggedNetworkBoolean("Climb/DisableLimits", false);
 
   /** 
    * Creates a new Climb. Note that the first argument is considered 
@@ -91,14 +94,16 @@ public class Climb extends SubsystemBase {
     // Continuously check if climb has moved beyond its limitations, note
     // that we only need to compare the left voltage as that is the lead
     // motor
-    if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-        && kInputs[0].appliedVoltage > 0.0) {
-      stop();
-    } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
-        && kInputs[0].appliedVoltage < 0.0) {
-      stop();
-    } else {
-      // Do nothing if limits are not reached
+    if (!kDisableLimits.get()) {
+      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+          && kInputs[0].appliedVoltage > 0.0) {
+        stop();
+      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
+          && kInputs[0].appliedVoltage < 0.0) {
+        stop();
+      } else {
+        // Do nothing if limits are not reached
+      }
     }
 
     // The visualizer needs to be periodically fed the current position of the mechanism
@@ -126,18 +131,23 @@ public class Climb extends SubsystemBase {
     // Notice how we are not checking if position control is running, it is up 
     // to the caller to check for this before calling this method (I recommend 
     // calling this subsystem's stop() method after completing any action)
-    if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-        && voltage > 0) {
-      return;
-    } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
-        && voltage < 0) {
-      return;
+    if (!kDisableLimits.get()) {
+      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+          && voltage > 0) {
+        return;
+      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
+          && voltage < 0) {
+        return;
+      } else {
+        for (ClimbIO io : kHardware) {
+          io.setVoltage(voltage);
+        }
+      }
     } else {
       for (ClimbIO io : kHardware) {
         io.setVoltage(voltage);
       }
     }
-    
   }
 
   /** Stops the mechanism */
