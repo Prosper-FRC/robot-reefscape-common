@@ -218,8 +218,9 @@ public class IntakeConstants {
   public static final PivotVisualizerConfiguration kPivotVisualizerConfiguration = new PivotVisualizerConfiguration(
     new Pair<Double,Double>(1.0, 3.0),
     "boxPivotRoot",
-    new Pair<Double,Double>(0.4, 2.0),
+    new Pair<Double,Double>(0.75, 2.0),
     "boxPivotLigament",
+    Rotation2d.fromDegrees(270.0),
     Units.inchesToMeters(20.0),
     new Rotation2d());
 }

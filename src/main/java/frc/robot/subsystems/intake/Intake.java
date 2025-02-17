@@ -222,7 +222,7 @@ public class Intake extends SubsystemBase {
         kMaxAcceleration);
 
     // The visualizer needs to be periodically fed the current position of the mechanism
-    kPivotVisualizer.updatePosition(getPivotPosition());
+    kPivotVisualizer.updatePosition(getPivotPosition().times(-1.0));
   }
 
   /**
@@ -286,6 +286,16 @@ public class Intake extends SubsystemBase {
    */
   public void setPivotVoltage(double voltage) {
     kPivotHardware.setVoltage(voltage);
+  }
+
+  /**
+   * Sets the vertical position of the mechanism on the visuzlier, useful as the
+   * pivot moves with the elevator
+   * 
+   * @param positionMeters
+   */
+  public void setVisualizerVerticalPosition(double positionMeters) {
+    kPivotVisualizer.setRootVerticalPositionMeters(positionMeters);
   }
 
   /**

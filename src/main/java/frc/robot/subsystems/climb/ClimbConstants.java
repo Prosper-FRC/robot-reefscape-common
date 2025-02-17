@@ -156,6 +156,7 @@ public class ClimbConstants {
     "climbPivotRoot",
     new Pair<Double,Double>(0.1, 0.2),
     "climbPivotLigament",
+    Rotation2d.fromDegrees(90.0),
     Units.inchesToMeters(10.0),
     new Rotation2d());
 }

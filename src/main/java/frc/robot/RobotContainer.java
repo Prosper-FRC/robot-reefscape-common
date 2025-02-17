@@ -452,4 +452,10 @@ public class RobotContainer {
     public EventLoop getTeleopEventLoop() {
         return teleopLoop;
     }
+
+    public void updateVisualizers() {
+        // Add a fudge factor to make the algae picker visualizer line up with the 
+        // elevator better
+        intake.setVisualizerVerticalPosition(elevator.getPositionMeters() + 0.38);
+    }
 }
