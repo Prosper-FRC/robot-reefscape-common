@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
@@ -37,9 +38,9 @@ public class GoalPoseChooser {
             case kCustom:
                 return customGoal;
             case kIntake:
-                return new Pose2d();
+                return getIntakePose(pose);
             case kNet:
-                return new Pose2d();
+                return getNetPose(pose);
         }
         return new Pose2d();
     }
@@ -88,7 +89,9 @@ public class GoalPoseChooser {
     }
 
     public static Pose2d getIntakePose(Pose2d robotPose) {
-        return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL);
+        if(DriverStation.getAlliance().get().equals(Alliance.Blue)) {
+            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL);
+        } else return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IL : FieldConstants.IR);
     }
 
     /* DO NOT USE X COORDINATE, REPLACE y holonomic speeds with driver controller when using this! */
