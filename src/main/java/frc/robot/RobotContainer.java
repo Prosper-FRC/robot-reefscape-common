@@ -4,39 +4,29 @@
 
 package frc.robot;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj.GenericHID;
 
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
-import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.PivotIO;
 import frc.robot.subsystems.intake.PivotIOSim;
-import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
-import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
@@ -61,17 +51,13 @@ import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.Drive.DriveState;
-import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.function.Supplier;
 
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.photonvision.common.hardware.VisionLEDMode;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -315,6 +301,22 @@ public class RobotContainer {
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
 
         if (useCompetitionBindings) {
+            driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
+
+            // getPOV == -1 if nothing is pressed, so if it doesn't return that
+            // then pov control is being used as its being pressed
+            new Trigger(()-> driverController.getHID().getPOV() != -1)
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.a()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.b()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
