@@ -16,17 +16,22 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
+import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.PivotIO;
 import frc.robot.subsystems.intake.PivotIOSim;
+import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
+import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
@@ -78,7 +83,7 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     /* TODO: Set to true before competition please */
-    private final boolean useCompetitionBindings = false;
+    private final boolean useCompetitionBindings = true;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -98,24 +103,25 @@ public class RobotContainer {
                     new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.BACK)
                 }));
 
-            //     elevator = new Elevator(
-            //         new ElevatorIOTalonFX(
-            //             Constants.kCanbusName, 
-            //             ElevatorConstants.kRoboElevatorHardware, 
-            //             ElevatorConstants.kMotorConfiguration, 
-            //             ElevatorConstants.kElevatorGains),
-            //         new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+                elevator = new Elevator(
+                    new ElevatorIOTalonFX(
+                        Constants.kCanbusName, 
+                        ElevatorConstants.kRoboElevatorHardware, 
+                        ElevatorConstants.kMotorConfiguration, 
+                        ElevatorConstants.kElevatorGains),
+                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
             
-            //     intake = new Intake(
-            //         new IntakeIOTalonFX(
-            //             IntakeConstants.kIntakeHardware,
-            //             IntakeConstants.kIntakeMotorConfiguration), 
-            //         new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
-            //         new PivotIOTalonFX(
-            //             IntakeConstants.kPivotMotorHardware,
-            //             IntakeConstants.kPivotMotorConfiguration,
-            //             IntakeConstants.kPivotGains,
-            //             IntakeConstants.kStatusSignalUpdateFrequencyHz));
+                intake = new Intake(
+                    new IntakeIOTalonFX(
+                        IntakeConstants.kIntakeHardware,
+                        IntakeConstants.kIntakeMotorConfiguration), 
+                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+                    // new SensorIO() {},
+                    new PivotIOTalonFX(
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotMotorConfiguration,
+                        IntakeConstants.kPivotGains,
+                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
 
                 // robotDrive = new Drive( new Module[] {
                 //     new Module("FL", new ModuleIO() {}),
@@ -126,9 +132,9 @@ public class RobotContainer {
                 //     new CameraIO() {}, new CameraIO() {}
                 // }));
 
-                elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
+                // elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
             
-                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
+                // intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIORev(
@@ -216,14 +222,14 @@ public class RobotContainer {
         }
 
         robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
-        elevator.setDefaultCommand(Commands.run(() -> elevator.setGoal(ElevatorGoal.kStow), elevator));
-        intake.setDefaultCommand(
-            Commands.run(
-                () -> {
-                    intake.setPivotGoal(PivotGoal.kStow);
-                    intake.stop(true, false);
-                }, 
-                intake));
+        // elevator.setDefaultCommand(Commands.run(() -> elevator.setGoal(ElevatorGoal.kStow), elevator));
+        // intake.setDefaultCommand(
+        //     Commands.run(
+        //         () -> {
+        //             intake.setPivotGoal(PivotGoal.kStow);
+        //             intake.stop(true, false);
+        //         }, 
+        //         intake));
 
         // Pass subsystems to classes that need them for configuration
         robotDrive.acceptJoystickInputs(
