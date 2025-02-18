@@ -8,8 +8,9 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.subsystems.vision.VisionConstants.Orientation;
 
-import static frc.robot.subsystems.vision.VisionConstants.kCameraFOV;
+import static frc.robot.subsystems.vision.VisionConstants.kOV2311CameraFOV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +31,16 @@ public class CameraIOPV implements CameraIO {
     private PhotonCamera photonCam;
     private PhotonPoseEstimator poseEstimator;
     private Transform3d cameraTransform;
+    private Orientation orientation;
 
     private PhotonCameraSim limelightSim;
     private VisionSystemSim visionSim;
 
-    public CameraIOPV(String name, Transform3d cameraTransform) {
+    public CameraIOPV(String name, Transform3d cameraTransform, Orientation orientation) {
         camName = name;
         photonCam = new PhotonCamera(camName);
         this.cameraTransform = cameraTransform;
+        this.orientation = orientation;
         // Don't worry about it
         PhotonCamera.setVersionCheckEnabled(false);
 
@@ -53,7 +56,7 @@ public class CameraIOPV implements CameraIO {
             visionSim.addAprilTags(AprilTagFields.k2025Reefscape.loadAprilTagLayoutField());
             // Create simulated camera properties. These can be set to mimic your actual camera.
             var cameraProp = new SimCameraProperties();
-            cameraProp.setCalibration(960, 720, kCameraFOV);
+            cameraProp.setCalibration(960, 720, kOV2311CameraFOV);
             cameraProp.setCalibError(0.3, 0.20);
             cameraProp.setFPS(60);
             cameraProp.setAvgLatencyMs(5);
@@ -82,6 +85,7 @@ public class CameraIOPV implements CameraIO {
             poseEstimator.setLastPose(lastRobotPose);
             inputs.hasBeenUpdated = !unreadResults.isEmpty();
             if(!unreadResults.isEmpty()) {
+                /* Best solution is to go update through all of these, but just getting the latest one in the queue is good enough for us */
                 PhotonPipelineResult result = unreadResults.get(unreadResults.size()-1);
                 Optional<EstimatedRobotPose> latestEstimatedRobotPose = poseEstimator.update(result);
 
@@ -100,11 +104,19 @@ public class CameraIOPV implements CameraIO {
                     inputs.area = target.getArea();
                     inputs.latencySeconds = result.getTimestampSeconds() / 1000.0;
 
+
                     latestEstimatedRobotPose.ifPresent(est -> {
-                        inputs.latestEstimatedRobotPose = latestEstimatedRobotPose.get().estimatedPose
-                        // Rotate by 180 to account for camera being on back, needs to be come parameter in constructor later
-                            .transformBy(new Transform3d(
-                                new Translation3d(), new Rotation3d(0.0, 0.0, Math.PI)));
+
+                        if(orientation.equals(Orientation.FRONT)){
+                            inputs.latestEstimatedRobotPose = latestEstimatedRobotPose.get().estimatedPose;
+                        }
+
+                        else{
+                            inputs.latestEstimatedRobotPose = latestEstimatedRobotPose.get().estimatedPose
+                            // Rotate by 180 to account for camera being on back, needs to be come parameter in constructor later
+                                .transformBy(new Transform3d(
+                                    new Translation3d(), new Rotation3d(0.0, 0.0, Math.PI)));
+                        }
 
                         ArrayList<Transform3d> tagTs = new ArrayList<>();
                         double[] ambiguities = new double[latestEstimatedRobotPose.get().targetsUsed.size()];

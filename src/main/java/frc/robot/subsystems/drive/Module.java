@@ -34,7 +34,7 @@ public class Module {
 
     /* Drive Control */
     private Double velocitySetpointMPS = null;
-    // kDriveA ACTS AS A FUDGE FACTOR, NOT ACTUAL CONSTANT FOR AMPERAGE TUNING
+    // driveA ACTS AS A FUDGE FACTOR, NOT ACTUAL CONSTANT FOR AMPERAGE TUNING
     private Double amperageFeedforward = null;
     private SimpleMotorFeedforward driveFF = DriveConstants.kModuleControllerConfigs.driveFF();
 

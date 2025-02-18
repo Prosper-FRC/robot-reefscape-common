@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
+/* Controls the pose of the robot using 3 PID controllers and Feedforward */
 public class ManualTeleopController {
     public static final LoggedTunableNumber linearScalar =
         new LoggedTunableNumber("Drive/Teleop/LinearScalar", 1);
@@ -59,7 +60,7 @@ public class ManualTeleopController {
         int linearExp = (int) Math.round(linearInputsExponent.get());
         int rotationExp = (int) Math.round(rotationInputsExponent.get());
 
-        // Should never exceed 1 for exponent control to work. Clamped later as an edge ase
+        // Should never exceed 1 for exponent control to work. Clamped later as an edge case, but not a concern with XBox Controllers HID class
         double xJoystickScalar = getSniperScalar(joystickSniper) * linearScalar.get();
         double yJoystickScalar = getSniperScalar(joystickSniper) * linearScalar.get();
         double omegaJoystickScalar = getSniperScalar(joystickSniper) * linearScalar.get();
@@ -117,6 +118,7 @@ public class ManualTeleopController {
 
     /*
      * Takes in the POV angle and then moves the robot in that angle at sniper speeds
+     * If the driver wants simply controlled direction at low speeds for the robot to make little linear adjustments
      */
     public ChassisSpeeds computeSniperPOVChassisSpeeds(Rotation2d robotAngle) {
         double omegaAdjustedJoystickInput = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), rotationDeadband.get());

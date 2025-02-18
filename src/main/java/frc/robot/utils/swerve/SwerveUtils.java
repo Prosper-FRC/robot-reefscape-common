@@ -23,7 +23,9 @@ public class SwerveUtils {
     private static final DCMotor kKrakenFOCModel = DCMotor.getKrakenX60Foc(1);
     private static final double kJitterThreshold = 0.01;
 
-    /* Custom discretize function which has a scalar to over-discretize and compensate for response delay of swerve modules 
+    /* 
+     * Helps driftRate value helps account for translation drift while rotating and riving
+     * Also makes speed go from continous to discrete. Technical details:
      * https://www.chiefdelphi.com/t/whitepaper-swerve-drive-skew-and-second-order-kinematics/416964
      */
     public static ChassisSpeeds discretize(ChassisSpeeds speeds, double driftRate) {

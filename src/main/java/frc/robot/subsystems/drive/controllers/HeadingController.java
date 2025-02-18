@@ -10,6 +10,11 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+/* Controls the heading of the robot using PID and Feedforward 
+ * Thoroughly tested at NTX and showed positive results
+ * https://docs.google.com/document/d/1NHhyKmQlgkni1lrRiwqWf7-vbZUfIpNTPCeMLEWlYcE/edit?usp=sharing
+ * Past research on topic. PID+FF strategy is commonly used for small distance(0-5 meter) drive to pose control
+*/
 public class HeadingController {
     public static final LoggedTunableNumber snapP =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kP", 4.0);
@@ -37,9 +42,6 @@ public class HeadingController {
     private PIDController stabilizingController;
   
     private Supplier<Rotation2d> goal;
-    // Me: Sign that there may be something fundamentally wrong with the code :)
-    // Me at a later date: Yeah there is a fundamental mistake with the code :)
-    // private double invert;
 
     public HeadingController() {
         snapController = new ProfiledPIDController(
@@ -69,22 +71,26 @@ public class HeadingController {
     // Designed for large jumps toward a setpoint, kind of like an azimuth alignment
     public double getSnapOutput(Rotation2d robotRotation) {
         Logger.recordOutput("Drive/HeadingController/HeadingSetpoint", Rotation2d.fromDegrees(snapController.getSetpoint().position));
+
         double pidOutput = snapController.calculate(robotRotation.getDegrees(), goal.get().getDegrees());
         double ffOutput = snapController.getSetpoint().velocity;
-
-        Logger.recordOutput("Drive/HeadingController/pidOutput", pidOutput);
-        Logger.recordOutput("Drive/HeadingController/ffOutput", ffOutput);
         double output = Math.toRadians(pidOutput + ffOutput);
 
-        Logger.recordOutput("Drive/HeadingController/unAdjustedOutput", output);
         double setpointErrorDegrees = snapController.getSetpoint().position - robotRotation.getDegrees();
-
         double goalErrorDegrees = snapController.getGoal().position - robotRotation.getDegrees();
+
+        double adjustedOutput = output;
+        if(Math.abs(goalErrorDegrees) < toleranceDegrees.get()) adjustedOutput *= 0.0;
+
+        Logger.recordOutput("Drive/HeadingController/unAdjustedOutput", output);
+
         Logger.recordOutput("Drive/HeadingController/setpointErrorDegrees", setpointErrorDegrees);
         Logger.recordOutput("Drive/HeadingController/goalErrorDegrees", goalErrorDegrees);
 
-        if(Math.abs(goalErrorDegrees) < toleranceDegrees.get()) output *= 0.0;
-        Logger.recordOutput("Drive/HeadingController/adjustedOutput", output);
+        Logger.recordOutput("Drive/HeadingController/adjustedOutput", adjustedOutput);
+
+        Logger.recordOutput("Drive/HeadingController/pidOutput", pidOutput);
+        Logger.recordOutput("Drive/HeadingController/ffOutput", ffOutput);
 
         return output;
     }
