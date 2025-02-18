@@ -60,7 +60,10 @@ public class Drive extends SubsystemBase {
         TELEOP_SNIPER,
         POV_SNIPER,
         PROCESSOR_HEADING_ALIGN,
-        DRIVE_TO_POSE,
+        INTAKE_HEADING_ALIGN,
+        DRIVE_TO_REEF,
+        DRIVE_TO_INTAKE,
+        DRIVE_TO_NET,
         AUTON, 
         STOP,
         // TESTS
@@ -240,8 +243,25 @@ public class Drive extends SubsystemBase {
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
                 break;
-            case DRIVE_TO_POSE:
+            case INTAKE_HEADING_ALIGN:
+                goalRotation = AllianceFlipUtil.apply(GoalPoseChooser.getIntakePose(getPoseEstimate()).getRotation());
+                desiredSpeeds = new ChassisSpeeds(
+                    teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
+                    headingController.getSnapOutput( getPoseEstimate().getRotation() ));
+                break;
+            case DRIVE_TO_REEF:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                break;
+            case DRIVE_TO_INTAKE:
+                desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                break;
+            case DRIVE_TO_NET:
+                ChassisSpeeds autoAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());;
+                desiredSpeeds = new ChassisSpeeds(
+                    autoAlignSpeeds.vxMetersPerSecond,
+                    teleopSpeeds.vyMetersPerSecond,
+                    autoAlignSpeeds.omegaRadiansPerSecond
+                );
                 break;
             case AUTON:
                 desiredSpeeds = ppDesiredSpeeds;
@@ -290,9 +310,17 @@ public class Drive extends SubsystemBase {
             case PROCESSOR_HEADING_ALIGN:
                 headingController.reset(robotRotation, gyroInputs.yawVelocityPS);            
                 break;
-            case DRIVE_TO_POSE:
+            case DRIVE_TO_REEF:
                 autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
-                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kHexagonal, getPoseEstimate());
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
+                break;
+            case DRIVE_TO_INTAKE:
+                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kIntake, getPoseEstimate());
+                break;
+            case DRIVE_TO_NET:
+                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kNet, getPoseEstimate());
                 break;
             default:
         }
@@ -368,7 +396,7 @@ public class Drive extends SubsystemBase {
             case AUTON:
                 /* No need to optimize for Choreo, as it handles it under the hood */
                 return SwerveUtils.convertChoreoNewtonsToAmps(pathPlanningFF, i);
-            case DRIVE_TO_POSE:
+            case DRIVE_TO_REEF:
                 return SwerveUtils.optimizeTorque(unoptimizedState, optimizedState, pathPlanningFF.torqueCurrentsAmps()[i], i);
             default:
                 return 0.0;

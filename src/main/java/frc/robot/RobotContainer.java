@@ -54,12 +54,14 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIOKraken;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionConstants.Orientation;
 import frc.robot.subsystems.vision.CameraIO;
 import frc.robot.subsystems.vision.CameraIOPV;
 import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.Drive.DriveState;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
@@ -106,14 +108,8 @@ public class RobotContainer {
                     new Module("BL", new ModuleIOKraken(kBackLeftHardware  )),
                     new Module("BR", new ModuleIOKraken(kBackRightHardware ))
                 }, new GyroIOPigeon2(), new Vision(new CameraIO[] {
-                    new CameraIOPV(
-                        VisionConstants.kRightCamName, 
-                        VisionConstants.kRightCamTransform, 
-                        VisionConstants.kRightCamOrientation), 
-                    new CameraIOPV(
-                        VisionConstants.kLeftCamName, 
-                        VisionConstants.kLeftCamTransform, 
-                        VisionConstants.kLeftCamOrientation)
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.BACK), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.BACK)
                 }));
 
             //     elevator = new Elevator(
@@ -164,14 +160,8 @@ public class RobotContainer {
                     new Module("BL", new ModuleIOSim()),
                     new Module("BR", new ModuleIOSim())
                 }, new GyroIO() {}, new Vision(new CameraIO[] {
-                    new CameraIOPV(
-                        VisionConstants.kRightCamName, 
-                        VisionConstants.kRightCamTransform, 
-                        VisionConstants.kRightCamOrientation), 
-                    new CameraIOPV(
-                        VisionConstants.kLeftCamName, 
-                        VisionConstants.kLeftCamTransform, 
-                        VisionConstants.kLeftCamOrientation)
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.BACK), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.BACK)
                 }));
             
                 elevator = new Elevator(
@@ -418,7 +408,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_POSE))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             operatorController.povLeft()

@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.vision.VisionConstants.Orientation;
 
-import static frc.robot.subsystems.vision.VisionConstants.kCameraFOV;
+import static frc.robot.subsystems.vision.VisionConstants.kOV2311CameraFOV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class CameraIOPV implements CameraIO {
             visionSim.addAprilTags(AprilTagFields.k2025Reefscape.loadAprilTagLayoutField());
             // Create simulated camera properties. These can be set to mimic your actual camera.
             var cameraProp = new SimCameraProperties();
-            cameraProp.setCalibration(960, 720, kCameraFOV);
+            cameraProp.setCalibration(960, 720, kOV2311CameraFOV);
             cameraProp.setCalibError(0.3, 0.20);
             cameraProp.setFPS(60);
             cameraProp.setAvgLatencyMs(5);
@@ -85,6 +85,7 @@ public class CameraIOPV implements CameraIO {
             poseEstimator.setLastPose(lastRobotPose);
             inputs.hasBeenUpdated = !unreadResults.isEmpty();
             if(!unreadResults.isEmpty()) {
+                /* Best solution is to go update through all of these, but just getting the latest one in the queue is good enough for us */
                 PhotonPipelineResult result = unreadResults.get(unreadResults.size()-1);
                 Optional<EstimatedRobotPose> latestEstimatedRobotPose = poseEstimator.update(result);
 

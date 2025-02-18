@@ -36,6 +36,7 @@ public class VisionConstants {
     public static final boolean KUseSingleTagTransform = false;
 
     // Tuned by using AdvantageScope data analysis tool(Normal distribution)
+    /* https://docs.google.com/document/d/16ryTjwguRXpwBKdGc8rs4iRQL18iNsfMrIzfY3cchzU/edit?usp=sharing */
     public static final Vector<N3> kSingleStdDevs = (RobotBase.isReal()) ?
         VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
     public static final Vector<N3> kMultiStdDevs = (RobotBase.isReal()) ?
@@ -43,7 +44,7 @@ public class VisionConstants {
 
     public static final double kAmbiguityThreshold = (RobotBase.isReal()) ? 0.2 : 1.0;
 
-    public static final Rotation2d kCameraFOV = Rotation2d.fromDegrees(95.0);
+    public static final Rotation2d kOV2311CameraFOV = Rotation2d.fromDegrees(95.0);
 
     public static enum Orientation {
         BACK,

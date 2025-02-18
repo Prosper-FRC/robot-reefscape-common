@@ -78,7 +78,7 @@ public class ModuleIOSim implements ModuleIO {
 
     @Override
     public void resetAzimuthEncoder() {
-        
+        /* No code is needed, sim doesn't need an implementation of this */
     }
 
     /////////// AZIMUTH MOTOR METHODS \\\\\\\\\\\

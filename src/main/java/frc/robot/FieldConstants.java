@@ -4,6 +4,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class FieldConstants {
+    public static final Pose2d kReefCenter = new Pose2d(4.5, 4, Rotation2d.fromDegrees(0.0));
+
+    public static final double kXNetLineMeters = 7.15;
+
     public static final Pose2d AL = new Pose2d(3.18, 3.93, Rotation2d.k180deg);
     public static final Pose2d AR = new Pose2d(3.18, 3.64, Rotation2d.k180deg);
 
