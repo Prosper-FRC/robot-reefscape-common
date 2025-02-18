@@ -391,7 +391,7 @@ public class RobotContainer {
                 );
         } 
         else {
-            driverController.y().onTrue(Commands.runOnce(() -> robotDrive.setPose(new Pose2d(0.0, 0.0, Rotation2d.k180deg))));
+            driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
     
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
@@ -408,7 +408,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             operatorController.povLeft()
