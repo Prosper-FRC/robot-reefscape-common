@@ -83,7 +83,8 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     /* TODO: Set to true before competition please */
-    private final boolean useCompetitionBindings = true;
+
+    private final boolean useCompetitionBindings = false;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -327,7 +328,7 @@ public class RobotContainer {
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
                     teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeCoral)
-                        .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
+                        .onlyWhile(hasGamepieceTrigger.negate())
                 )
                 .whileFalse(
                     teleopCommands.stopRollersCommand()
@@ -339,9 +340,9 @@ public class RobotContainer {
 
                 // CORAL - SCORE
                 button.and(coralSelectTrigger)
-                    .whileTrue(
+                    .onTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getFirst())
-                            .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                            //.onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
                             teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
@@ -450,7 +451,7 @@ public class RobotContainer {
             operatorController.povDown()
                 .whileTrue(
                     Commands.startEnd(
-                        () -> elevator.setVoltage(-3.0), 
+                        () -> elevator.setVoltage(0.45), 
                         () -> elevator.stop(), 
                         elevator));
 

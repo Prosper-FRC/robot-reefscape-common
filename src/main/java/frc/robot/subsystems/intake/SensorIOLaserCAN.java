@@ -27,7 +27,7 @@ public class SensorIOLaserCAN implements SensorIO {
        * https://github.com/Prosper-FRC/robot-reefscape-common/pull/20#discussion_r1947983003
        * https://grapplerobotics.au/product/lasercan/
        */
-      kSensor.setRangingMode(LaserCan.RangingMode.SHORT);
+      kSensor.setRangingMode(LaserCan.RangingMode.LONG);
       kSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(
         configuration.x(),
         configuration.y(),
@@ -48,7 +48,7 @@ public class SensorIOLaserCAN implements SensorIO {
     inputs.isConnected = sensorMeasurement.status == LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT;
 
     if (sensorMeasurement != null && inputs.isConnected) {
-      inputs.detectsObject = sensorMeasurement.distance_mm < 5;
+      inputs.detectsObject = sensorMeasurement.distance_mm < 40;
     } else {
       inputs.detectsObject = false;
     }

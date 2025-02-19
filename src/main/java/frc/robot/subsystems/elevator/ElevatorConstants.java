@@ -94,7 +94,7 @@ public class ElevatorConstants {
         0.0,
         0.5,
         0.01, // 0.01
-        0.11); // 0.11
+        0.45); // 0.11
       case SIM -> new ElevatorGains(
         1.0,
         0.0,

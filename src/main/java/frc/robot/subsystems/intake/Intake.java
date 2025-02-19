@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
   public enum RollerGoal {
-    kIntakeCoral(() -> 4.0),
+    kIntakeCoral(() -> 2.0),
     kIntakeAlgae(() -> 5.0),
     kScoreCoral(() -> -4.0),
     kScoreAlgae(() -> -5.0),
