@@ -155,11 +155,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void setGains(double p, double i, double d, double s, double g, double v, double a) {
     var slotConfiguration = new Slot0Configs();
 
-    slotConfiguration.kP = metersToRotations(p);
-    slotConfiguration.kI = metersToRotations(i);
-    slotConfiguration.kD = metersToRotations(d);
-    slotConfiguration.kS = metersToRotations(s);
-    slotConfiguration.kG = metersToRotations(g);
+    slotConfiguration.kP = p;
+    slotConfiguration.kI = i;
+    slotConfiguration.kD = d;
+    slotConfiguration.kS = s;
+    slotConfiguration.kG = g;
     slotConfiguration.kV = metersToRotations(v);
     slotConfiguration.kA = metersToRotations(a);
 
