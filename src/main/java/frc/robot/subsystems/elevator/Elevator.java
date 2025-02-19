@@ -118,8 +118,16 @@ public class Elevator extends SubsystemBase {
       if (currentElevaotrGoal != null) {
         currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
         setPosition(currentElevatorGoalPositionMeters);
+        
+        /* To-do make tolerance a constant */
+        if(Math.abs(kInputs.positionMeters - currentElevatorGoalPositionMeters) < 0.015) {
+          kHardware.setVoltage(ElevatorConstants.kElevatorGains.g());
+        } else {
+          setPosition(currentElevatorGoalPositionMeters);
+        }
+
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
-  
+
         Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
       } else {
         Logger.recordOutput("Elevator/Goal", "NONE");
