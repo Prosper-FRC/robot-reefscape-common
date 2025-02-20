@@ -80,7 +80,7 @@ public class IntakeConstants {
    */
   public record SensorConfiguration(
     int sensorId,
-    double detectionThresholdMeters,
+    double detectionThresholdMilimeters,
     int x,
     int y,
     int w,
@@ -133,7 +133,7 @@ public class IntakeConstants {
 
   public static final SensorConfiguration kSensorConfiguration = new SensorConfiguration(
     57, // Sensor CAN ID
-    1.0, // Sensor detection threshold distance meters (detection distance)
+    40, // Sensor detection threshold distance meters (detection distance)
     8, // Region of interest SPADs starting x-coordinate
     8, // Region of interest SPADs starting y-coordinate
     16, // Total region of interest width

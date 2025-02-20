@@ -19,15 +19,18 @@ import au.grapplerobotics.ConfigurationFailedException;
 public class SensorIOLaserCAN implements SensorIO {
   private final LaserCan kSensor;
 
+  private final double detectionDistanceThresholdMilimeters;
+
   public SensorIOLaserCAN(SensorConfiguration configuration) {
     kSensor = new LaserCan(configuration.sensorId());
+    detectionDistanceThresholdMilimeters = configuration.detectionThresholdMilimeters();
     try {  
       /*
        * See this comment and documentation about the units if x, y, w, h 
        * https://github.com/Prosper-FRC/robot-reefscape-common/pull/20#discussion_r1947983003
        * https://grapplerobotics.au/product/lasercan/
        */
-      kSensor.setRangingMode(LaserCan.RangingMode.LONG);
+      kSensor.setRangingMode(LaserCan.RangingMode.SHORT);
       kSensor.setRegionOfInterest(new LaserCan.RegionOfInterest(
         configuration.x(),
         configuration.y(),
@@ -48,7 +51,7 @@ public class SensorIOLaserCAN implements SensorIO {
     inputs.isConnected = sensorMeasurement.status == LaserCanInterface.LASERCAN_STATUS_VALID_MEASUREMENT;
 
     if (sensorMeasurement != null && inputs.isConnected) {
-      inputs.detectsObject = sensorMeasurement.distance_mm < 40;
+      inputs.detectsObject = sensorMeasurement.distance_mm < detectionDistanceThresholdMilimeters;
     } else {
       inputs.detectsObject = false;
     }
