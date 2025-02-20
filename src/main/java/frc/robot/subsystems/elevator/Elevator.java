@@ -79,6 +79,9 @@ public class Elevator extends SubsystemBase {
           "Elevator/MotionMagic/kMaxAcceleration", 
           ElevatorConstants.kElevatorGains.maxAccelerationMetersPerSecondSquared());
 
+  private LoggedTunableNumber positionTolerance = 
+    new LoggedTunableNumber("Elevator/ToleranceMeters", ElevatorConstants.kPositionToleranceMeters);
+
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 
@@ -117,10 +120,8 @@ public class Elevator extends SubsystemBase {
       // Run the elevator goal
       if (currentElevaotrGoal != null) {
         currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
-        setPosition(currentElevatorGoalPositionMeters);
         
-        /* To-do make tolerance a constant */
-        if(Math.abs(kInputs.positionMeters - currentElevatorGoalPositionMeters) < 0.015) {
+        if (atGoal()) {
           kHardware.setVoltage(ElevatorConstants.kElevatorGains.g());
         } else {
           setPosition(currentElevatorGoalPositionMeters);
@@ -307,7 +308,7 @@ public class Elevator extends SubsystemBase {
    */
   @AutoLogOutput(key = "Elevator/Feedback/AtGoal")
   public boolean atGoal() {
-    return Math.abs(getErrorMeters()) < ElevatorConstants.kPositionToleranceMeters;
+    return Math.abs(getErrorMeters()) < positionTolerance.get();
   }
 
   /**
