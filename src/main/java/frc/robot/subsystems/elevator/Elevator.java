@@ -123,13 +123,13 @@ public class Elevator extends SubsystemBase {
         
         if (atGoal()) {
           kHardware.setVoltage(ElevatorConstants.kElevatorGains.g());
+          Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
         } else {
           setPosition(currentElevatorGoalPositionMeters);
+          Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
         }
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
-
-        Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
       } else {
         Logger.recordOutput("Elevator/Goal", "NONE");
         kVisualizer.setGoalLine(0.0, false);
