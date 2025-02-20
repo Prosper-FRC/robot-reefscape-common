@@ -111,7 +111,8 @@ public class RobotContainer {
                         ElevatorConstants.kRoboElevatorHardware, 
                         ElevatorConstants.kMotorConfiguration, 
                         ElevatorConstants.kElevatorGains),
-                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+                    new MagneticSensorIO(){});
+                    // new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
             
                 intake = new Intake(
                     new IntakeIOTalonFX(
@@ -119,11 +120,12 @@ public class RobotContainer {
                         IntakeConstants.kIntakeMotorConfiguration), 
                     new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
                     // new SensorIO() {},
-                    new PivotIOTalonFX(
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotMotorConfiguration,
-                        IntakeConstants.kPivotGains,
-                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
+                    new PivotIO(){});
+                    // new PivotIOTalonFX(
+                    //     IntakeConstants.kPivotMotorHardware,
+                    //     IntakeConstants.kPivotMotorConfiguration,
+                    //     IntakeConstants.kPivotGains,
+                    //     IntakeConstants.kStatusSignalUpdateFrequencyHz));
 
                 // robotDrive = new Drive( new Module[] {
                 //     new Module("FL", new ModuleIO() {}),

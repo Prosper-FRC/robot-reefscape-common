@@ -148,18 +148,34 @@ public class Elevator extends SubsystemBase {
     } else {
       // If we are homing...
       if (RobotBase.isReal()) {
-        // If the magnetic sensor is activated, we've completed homing
-        if (kSensorInputs.isActivated || (ElevatorConstants.kHomeWithCurrent && (
-            elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold))) {
-          resetPosition();
-          stop();
-          hasHomed = true;
-          isHoming = false;
+        if (kSensorInputs.isConnected) {
+          // If the magnetic sensor is activated, we've completed homing
+          if (kSensorInputs.isActivated || (ElevatorConstants.kHomeWithCurrent && (
+              elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold))) {
+            resetPosition();
+            stop();
+            hasHomed = true;
+            isHoming = false;
+          } else {
+          // Otherwise, continue to run the elevator downwards
+            kHardware.setVoltage(-2.0);
+            hasHomed = false;
+            isHoming = true;
+          }
         } else {
-        // Otherwise, continue to run the elevator downwards
-          kHardware.setVoltage(-2.0);
-          hasHomed = false;
-          isHoming = true;
+          // Default to home with current, ignoring the constant if the mag sensor is disconnected
+          // If the current amps is hitting the threshold
+          if (elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold) {
+            resetPosition();
+            stop();
+            hasHomed = true;
+            isHoming = false;
+          } else {
+          // Otherwise, continue to run the elevator downwards
+            kHardware.setVoltage(-2.0);
+            hasHomed = false;
+            isHoming = true;
+          }
         }
       } else {
         // If we're in sim, simulate via button that can be toggled on dashboard
