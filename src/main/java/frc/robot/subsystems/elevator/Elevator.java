@@ -52,10 +52,10 @@ public class Elevator extends SubsystemBase {
   private final MagneticSensorIO kSensor;
   private final MagneticSensorIOInputsAutoLogged kSensorInputs = new MagneticSensorIOInputsAutoLogged();
 
-  private ElevatorGoal currentElevaotrGoal = null;
+  private ElevatorGoal currentElevatorGoal = null;
 
   private double currentElevatorGoalPositionMeters = 0.0;
-  
+
   private final LoggedTunableNumber kP =
       new LoggedTunableNumber("Elevator/Gains/kP", ElevatorConstants.kElevatorGains.p());
   private final LoggedTunableNumber kI =
@@ -115,8 +115,8 @@ public class Elevator extends SubsystemBase {
     // Check if we are homing 
     if (!isHoming) {
       // Run the elevator goal
-      if (currentElevaotrGoal != null) {
-        currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
+      if (currentElevatorGoal != null) {
+        currentElevatorGoalPositionMeters = currentElevatorGoal.getGoalMeters();
         setPosition(currentElevatorGoalPositionMeters);
         
         /* To-do make tolerance a constant */
@@ -128,7 +128,7 @@ public class Elevator extends SubsystemBase {
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
 
-        Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
+        Logger.recordOutput("Elevator/Goal", currentElevatorGoal);
       } else {
         Logger.recordOutput("Elevator/Goal", "NONE");
         kVisualizer.setGoalLine(0.0, false);
@@ -212,7 +212,7 @@ public class Elevator extends SubsystemBase {
    * @param desiredGoal The desired position goal
    */
   public void setGoal(ElevatorGoal desiredGoal) {
-    currentElevaotrGoal = desiredGoal;
+    currentElevatorGoal = desiredGoal;
   }
 
   /**
@@ -237,7 +237,7 @@ public class Elevator extends SubsystemBase {
 
   /** Stops the mechanism */
   public void stop() {
-    currentElevaotrGoal = null;
+    currentElevatorGoal = null;
     kHardware.stop();
   }
 
