@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase {
   private ElevatorGoal currentElevaotrGoal = null;
 
   private double currentElevatorGoalPositionMeters = 0.0;
-
+  
   private final LoggedTunableNumber kP =
       new LoggedTunableNumber("Elevator/Gains/kP", ElevatorConstants.kElevatorGains.p());
   private final LoggedTunableNumber kI =

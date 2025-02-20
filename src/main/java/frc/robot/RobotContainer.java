@@ -110,7 +110,9 @@ public class RobotContainer {
                         ElevatorConstants.kRoboElevatorHardware, 
                         ElevatorConstants.kMotorConfiguration, 
                         ElevatorConstants.kElevatorGains),
-                    new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
+                    new MagneticSensorIO() {
+                        
+                    });
             
                 intake = new Intake(
                     new IntakeIOTalonFX(
