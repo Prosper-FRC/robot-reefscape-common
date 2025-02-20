@@ -82,9 +82,10 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
-    /* TODO: Set to true before competition please */
+    /* TODO: Set to true before competition
+     please */
 
-    private final boolean useCompetitionBindings = false;
+    private final boolean useCompetitionBindings = true;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -324,6 +325,11 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+            //TEMPORARY SCORE
+            operatorController.rightBumper().and(coralSelectTrigger)
+                .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(6.0)))
+                .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
+
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
@@ -458,7 +464,7 @@ public class RobotContainer {
             operatorController.y()
                 .whileTrue(
                     Commands.startEnd(
-                        () -> elevator.setGoal(ElevatorGoal.kL4Coral), 
+                        () -> elevator.setGoal(ElevatorGoal.kL2Coral), 
                         () -> elevator.stop(), 
                         elevator));       
         }
