@@ -44,7 +44,7 @@ public class VisionConstants {
 
     public static final double kAmbiguityThreshold = (RobotBase.isReal()) ? 0.2 : 1.0;
 
-    public static final Rotation2d kOV2311CameraFOV = Rotation2d.fromDegrees(95.0);
+    public static final Rotation2d kOV2311DiagonalCameraFOV = Rotation2d.fromDegrees(95.0);
 
     public static enum Orientation {
         BACK,
