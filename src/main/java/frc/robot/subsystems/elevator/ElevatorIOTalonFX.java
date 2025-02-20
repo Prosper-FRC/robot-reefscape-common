@@ -56,16 +56,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     kDrumCircumferenceMeters = hardware.drumCircumferenceMeters();
 
     // Apply configurations
-    motorConfiguration.Slot0.kP = gains.p();
-    motorConfiguration.Slot0.kI = gains.i();
-    motorConfiguration.Slot0.kD = gains.d();
+    motorConfiguration.Slot0.kP = metersToRotations(gains.p());
+    motorConfiguration.Slot0.kI = metersToRotations(gains.i());
+    motorConfiguration.Slot0.kD = metersToRotations(gains.d());
     motorConfiguration.Slot0.kS = gains.s();
-    motorConfiguration.Slot0.kV = gains.v();
-    motorConfiguration.Slot0.kA = gains.a();
+    motorConfiguration.Slot0.kV = metersToRotations(gains.v());
+    motorConfiguration.Slot0.kA = metersToRotations(gains.a());
     motorConfiguration.Slot0.kG = gains.g();
-    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = gains.maxVelocityMetersPerSecond();
-    motorConfiguration.MotionMagic.MotionMagicAcceleration = gains.maxAccelerationMetersPerSecondSquared();
-    motorConfiguration.MotionMagic.MotionMagicJerk = gains.jerkMetersPerSecondCubed();
+    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = metersToRotations(gains.maxVelocityMetersPerSecond());
+    motorConfiguration.MotionMagic.MotionMagicAcceleration = metersToRotations(gains.maxAccelerationMetersPerSecondSquared());
+    motorConfiguration.MotionMagic.MotionMagicJerk = metersToRotations(gains.jerkMetersPerSecondCubed());
 
     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.enableSupplyCurrentLimit();
     motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
@@ -158,8 +158,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     slotConfiguration.kP = metersToRotations(p);
     slotConfiguration.kI = metersToRotations(i);
     slotConfiguration.kD = metersToRotations(d);
-    slotConfiguration.kS = metersToRotations(s);
-    slotConfiguration.kG = metersToRotations(g);
+    slotConfiguration.kS = s;
+    slotConfiguration.kG = g;
     slotConfiguration.kV = metersToRotations(v);
     slotConfiguration.kA = metersToRotations(a);
 

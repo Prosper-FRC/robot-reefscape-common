@@ -92,9 +92,9 @@ public class ElevatorConstants {
         22.0, // 22
         0.0,
         0.0,
-        0.5,
-        0.01, // 0.01
-        0.45); // 0.11
+        11.95,
+        0.04, // 0.01
+        0.25); // 0.11
       case SIM -> new ElevatorGains(
         1.0,
         0.0,
@@ -132,7 +132,7 @@ public class ElevatorConstants {
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
     // empty carriage load = .8kg
-    // prototype carriage load = 5kg
+    // prototype carriage load = 13.61 kg
     5.0, 
     kDrumRadiusMeters, 
     true, 
