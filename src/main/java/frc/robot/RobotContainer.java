@@ -389,6 +389,24 @@ public class RobotContainer {
                     );
             }
 
+            // ELEVATOR - UP
+            operatorController.povUp()
+                .whileTrue(
+                    teleopCommands.runElevatorVoltage(3.0)
+                )
+                .whileFalse(
+                    teleopCommands.stopElevatorCommand()
+                );
+
+            // ELEVATOR - DOWN
+            operatorController.povDown()
+                .whileTrue(
+                    teleopCommands.runElevatorVoltage(-3.0)
+                )
+                .whileFalse(
+                    teleopCommands.stopElevatorCommand()
+                );
+
             // CLIMB - GRAB
             operatorController.povLeft()
                 .whileTrue(

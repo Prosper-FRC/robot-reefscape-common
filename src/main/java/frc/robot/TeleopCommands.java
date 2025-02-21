@@ -94,6 +94,24 @@ public class TeleopCommands {
     }
 
     /**
+     * Runs the elevator at the specified voltage, this command should be decorated with an
+     * end condition specified by the caller
+     * 
+     * @param voltage The voltage the elevator motor will be set to
+     * @return The command to start and stop the elevator at a specified voltage
+     */
+    public Command runElevatorVoltage(double voltage) {
+        return Commands.startEnd(
+            () -> {
+                kElevator.setVoltage(voltage);
+            }, 
+            () -> {
+                kElevator.stop();
+            }, 
+            kElevator);
+    }
+
+    /**
      * Runs the intake rollers when a trigger that is passed in is set to true. It will continuously
      * check against that trigger and run the rollers if the trigger is true until the command is 
      * cancelled
