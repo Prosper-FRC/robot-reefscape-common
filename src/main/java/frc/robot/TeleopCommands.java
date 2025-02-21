@@ -9,9 +9,11 @@ import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 
 /**
  * <p> A commands factory for the teleoperated period. 
@@ -110,6 +112,23 @@ public class TeleopCommands {
             }, 
             kElevator);
     }
+
+    public Command runTunableVoltage() {
+        LoggedTunableNumber voltageTunable = 
+            new LoggedTunableNumber("Elevator/VariableVoltage", 3.0);
+
+        return new FunctionalCommand(
+            () -> {},
+            () -> {
+                double voltage = voltageTunable.get();
+                kElevator.setVoltage(voltage);
+            },
+            (interrupted) -> {
+                kElevator.stop();
+            },
+            () -> false,
+            kElevator);    
+        }
 
     /**
      * Runs the intake rollers when a trigger that is passed in is set to true. It will continuously

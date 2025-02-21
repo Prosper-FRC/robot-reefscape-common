@@ -65,6 +65,7 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 
 public class RobotContainer {
     // Define subsystems
@@ -335,11 +336,14 @@ public class RobotContainer {
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
-                    teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeCoral)
-                        .onlyWhile(hasGamepieceTrigger.negate())
+                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kIntake)
+                        .alongWith(
+                            teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeCoral)
+                                .onlyWhile(hasGamepieceTrigger.negate()))
                 )
                 .whileFalse(
                     teleopCommands.stopRollersCommand()
+                        .alongWith(teleopCommands.stopElevatorCommand())
                 );
 
             // SCORE CORAL AND PICKUP ALGAE
@@ -350,7 +354,7 @@ public class RobotContainer {
                 button.and(coralSelectTrigger)
                     .onTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getFirst())
-                            //.onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                            // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
                             teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
@@ -392,7 +396,7 @@ public class RobotContainer {
             // ELEVATOR - UP
             operatorController.povUp()
                 .whileTrue(
-                    teleopCommands.runElevatorVoltage(3.0)
+                    teleopCommands.runTunableVoltage()
                 )
                 .whileFalse(
                     teleopCommands.stopElevatorCommand()
@@ -424,6 +428,9 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
+
+            operatorController.rightStick()
+                .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));

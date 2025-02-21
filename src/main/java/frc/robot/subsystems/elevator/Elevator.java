@@ -30,7 +30,7 @@ public class Elevator extends SubsystemBase {
     kL2Algae(() -> 0.41),
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
     /** Stow the elevator during transit */
-    kStow(() -> Units.inchesToMeters(4.0)),
+    kStow(() -> Units.inchesToMeters(0.0)),
     /** Position for intaking from the coral station */
     kIntake(() -> Units.inchesToMeters(8.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
@@ -122,12 +122,15 @@ public class Elevator extends SubsystemBase {
         currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
         
         if (atGoal()) {
-          kHardware.setVoltage(ElevatorConstants.kElevatorGains.g());
+          kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
           Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
         } else {
           setPosition(currentElevatorGoalPositionMeters);
           Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
         }
+
+        // setPosition(currentElevatorGoalPositionMeters);
+        // Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
       } else {
