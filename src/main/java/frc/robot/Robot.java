@@ -83,7 +83,6 @@ public class Robot extends LoggedRobot {
 
         // Some visualizers need to interop and share data between one another
         // periodically, thus this method must be called periodically
-        mRobotContainer.updateVisualizers();
         //mRobotContainer.getTeleopEventLoop().poll();
     }
 

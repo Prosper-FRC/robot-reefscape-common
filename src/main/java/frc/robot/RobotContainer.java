@@ -19,7 +19,6 @@ import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
-import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -27,12 +26,8 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
-import frc.robot.subsystems.intake.PivotIO;
-import frc.robot.subsystems.intake.PivotIOSim;
-import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
-import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -118,13 +113,9 @@ public class RobotContainer {
                     new IntakeIOTalonFX(
                         IntakeConstants.kIntakeHardware,
                         IntakeConstants.kIntakeMotorConfiguration), 
-                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration)
                     // new SensorIO() {},
-                    new PivotIOTalonFX(
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotMotorConfiguration,
-                        IntakeConstants.kPivotGains,
-                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
+                    );
 
                 // robotDrive = new Drive( new Module[] {
                 //     new Module("FL", new ModuleIO() {}),
@@ -173,12 +164,7 @@ public class RobotContainer {
                         IntakeConstants.kIntakeHardware, 
                         IntakeConstants.kIntakeSimulationConfiguration, 
                         0.02), 
-                        new SensorIO(){},
-                        new PivotIOSim(
-                            0.02,
-                            IntakeConstants.kPivotMotorHardware,
-                            IntakeConstants.kPivotSimulationConfiguration,
-                            IntakeConstants.kPivotGains));
+                        new SensorIO(){});
 
                 climb = new Climb(
                     new DutyCycleEncoderIO(){},
@@ -200,7 +186,7 @@ public class RobotContainer {
 
                 elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
             
-                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
@@ -304,9 +290,7 @@ public class RobotContainer {
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
-        Trigger pivotAtGoalTrigger = new Trigger(teleopLoop, intake::pivotAtGoal);
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
-        Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
 
         if (useCompetitionBindings) {
@@ -354,34 +338,7 @@ public class RobotContainer {
                         teleopCommands.stopElevatorCommand()
                             .alongWith(teleopCommands.stopRollersCommand())
                     );
-
-                // ALGAE - PICKUP
-                button.and(algaeSelectTrigger)
-                    .whileTrue(
-                        teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
-                            .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
-                            .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
-                        .andThen(
-                            teleopCommands.runPivotAndStopCommand(PivotGoal.kIntake)
-                                .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5))
-                        )
-                        .andThen(
-                            teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeAlgae)
-                                .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
-                        )
-                        .andThen(
-                            teleopCommands.runPivotAndStopCommand(PivotGoal.kStow)
-                        )
-                    )
-                    .whileFalse(
-                        teleopCommands.stopElevatorCommand()
-                            .alongWith(
-                                teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStow)
-                                    // This "onlyWhile" is required so that this command composition ends
-                                    // at some point and frees its resources back to the CommandScheduler
-                                    .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
-                    );
-            }
+                
 
             // CLIMB - GRAB
             operatorController.povLeft()
@@ -400,6 +357,7 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
+            }
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -468,11 +426,5 @@ public class RobotContainer {
 
     public EventLoop getTeleopEventLoop() {
         return teleopLoop;
-    }
-
-    public void updateVisualizers() {
-        // Add a fudge factor to make the algae picker visualizer line up with the 
-        // elevator better
-        intake.setVisualizerVerticalPosition(elevator.getPositionMeters() + 0.38);
     }
 }

@@ -5,7 +5,6 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
-import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,13 +36,6 @@ public class TeleopCommands {
      * when they should no longer run
      */
     private boolean stopRollers = false;
-    /** 
-     * Internal state to decide whether or not to stop the algae picker when the intake's 
-     * stop method is invoked. When creating a command that requires the algae picker, this
-     * variable should be set to true when the algae picker is running then set to false
-     * when it should no longer run
-     */
-    private boolean stopPivot = false;
 
     /**
      * Creates a new TeleopCommands factory
@@ -88,7 +80,7 @@ public class TeleopCommands {
             }, 
             () -> {
                 stopRollers = true;
-                kIntake.stop(stopRollers, stopPivot);
+                kIntake.stop(stopRollers);
             },
             kIntake);
     }
@@ -110,49 +102,8 @@ public class TeleopCommands {
                     kIntake.setRollerGoal(rollerGoal);
                 } else {
                     stopRollers = true;
-                    kIntake.stop(stopRollers, stopPivot);
+                    kIntake.stop(stopRollers);
                 }
-            }, 
-            kIntake);
-    }
-
-    /**
-     * Runs the algae picker pivot and then stops it, this command should be decorated with an 
-     * end condition specified by the caller
-     * 
-     * @param pivotGoal The algae picker pivot goal
-     * @return The command to start and stop the algae picker pivot
-     */
-    public Command runPivotAndStopCommand(PivotGoal pivotGoal) {
-        return Commands.startEnd(
-            ()-> {
-                stopPivot = false;
-                kIntake.setPivotGoal(pivotGoal);
-            }, 
-            () -> {
-                stopPivot = true;
-                kIntake.stop(stopRollers, stopPivot);
-            }, 
-            kIntake);
-    }
-
-    /**
-     * Runs the algae picker pivot and then stops it as well as the rollers, this command should 
-     * be decorated with an end condition specified by the caller
-     * 
-     * @param pivotGoal The algae picker pivot goal
-     * @return The command to start the algae picker pivot and stop the entire intake
-     */
-    public Command runPivotAndStopIntakeCommand(PivotGoal pivotGoal) {
-        return Commands.startEnd(
-            ()-> {
-                stopPivot = false;
-                kIntake.setPivotGoal(pivotGoal);
-            }, 
-            () -> {
-                stopPivot = true;
-                stopRollers = true;
-                kIntake.stop(stopRollers, stopPivot);
             }, 
             kIntake);
     }
@@ -182,21 +133,7 @@ public class TeleopCommands {
         // only returns an instance of the command and does not run its internal logic
         return setStopRollersStateCommand(true)
             .andThen(
-                Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake));
-    }
-
-    /**
-     * Stops the algae picker pivot. This will also stop the rollers if the stopRollers
-     * internal variable is set to true
-     * 
-     * @return The command to stop the algae picker pivot that runs once
-     */
-    public Command stopPivotCommand() {
-        // Note that the state must be set via command and not in method since the method
-        // only returns an instance of the command and does not run its internal logic
-        return setStopPivotStateCommand(true)
-            .andThen(
-                Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake));
+                Commands.runOnce(() -> kIntake.stop(stopRollers), kIntake));
     }
 
     /**
@@ -237,17 +174,6 @@ public class TeleopCommands {
      */
     private Command setStopRollersStateCommand(boolean stopRollersState) {
         return Commands.runOnce(() -> stopRollers = stopRollersState);
-    }
-
-    /**
-     * Since changing the state requires a command to be scheduled and ran, this method
-     * returns a command to change the pivot state
-     * 
-     * @param stopRollersState The desired state
-     * @return The command to chagne the pivot state
-     */
-    private Command setStopPivotStateCommand(boolean stopPivotState) {
-        return Commands.runOnce(() -> stopPivot = stopPivotState);
     }
 
     /*
