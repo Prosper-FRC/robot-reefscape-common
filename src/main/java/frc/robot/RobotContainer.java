@@ -121,12 +121,12 @@ public class RobotContainer {
                         IntakeConstants.kIntakeMotorConfiguration), 
                     new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
                     // new SensorIO() {},
-                    new PivotIO(){});
-                    // new PivotIOTalonFX(
-                    //     IntakeConstants.kPivotMotorHardware,
-                    //     IntakeConstants.kPivotMotorConfiguration,
-                    //     IntakeConstants.kPivotGains,
-                    //     IntakeConstants.kStatusSignalUpdateFrequencyHz));
+                    // new PivotIO(){});
+                    new PivotIOTalonFX(
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotMotorConfiguration,
+                        IntakeConstants.kPivotGains,
+                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
 
                 // robotDrive = new Drive( new Module[] {
                 //     new Module("FL", new ModuleIO() {}),
@@ -369,10 +369,10 @@ public class RobotContainer {
                 button.and(algaeSelectTrigger)
                     .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
-                            .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                            .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.3))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .andThen(
-                            teleopCommands.runPivotAndStopCommand(PivotGoal.kIntake)
+                            teleopCommands.runPivotAndHoldCommand(PivotGoal.kIntake)
                                 .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5))
                         )
                         .andThen(
@@ -411,22 +411,40 @@ public class RobotContainer {
                     teleopCommands.stopElevatorCommand()
                 );
 
-            // CLIMB - GRAB
+            // // CLIMB - GRAB
+            // operatorController.povLeft()
+            //     .whileTrue(
+            //         teleopCommands.runClimbVoltage(ClimbVoltageGoal.kGrab)
+            //     )
+            //     .whileFalse(
+            //         teleopCommands.stopClimbCommand()
+            //     );
+                
+            // // CLIMB - RELEASE
+            // operatorController.povRight()
+            //     .whileTrue(
+            //         teleopCommands.runClimbVoltage(ClimbVoltageGoal.kRelease)
+            //     )
+            //     .whileFalse(
+            //         teleopCommands.stopClimbCommand()
+            //     );
+
+            // PIVOT - OUT
             operatorController.povLeft()
                 .whileTrue(
-                    teleopCommands.runClimbVoltage(ClimbVoltageGoal.kGrab)
+                    teleopCommands.runPivotAndRollersVoltage(3.0, -3.0, confirmScoreTrigger)
                 )
                 .whileFalse(
-                    teleopCommands.stopClimbCommand()
+                    teleopCommands.stopRollersAndPivotCommand()
                 );
                 
-            // CLIMB - RELEASE
+            // PIVOT - IN
             operatorController.povRight()
                 .whileTrue(
-                    teleopCommands.runClimbVoltage(ClimbVoltageGoal.kRelease)
+                    teleopCommands.runPivotAndRollersVoltage(-3.0, -3.0, confirmScoreTrigger)
                 )
                 .whileFalse(
-                    teleopCommands.stopClimbCommand()
+                    teleopCommands.stopRollersAndPivotCommand()
                 );
 
             operatorController.rightStick()

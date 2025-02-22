@@ -62,9 +62,9 @@ public class PivotIOTalonFX implements PivotIO {
     motorConfiguration.Slot0.kV = gains.v();
     motorConfiguration.Slot0.kA = gains.a();
     motorConfiguration.Slot0.kG = gains.g();
-    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = gains.maxVelocityMetersPerSecond();
-    motorConfiguration.MotionMagic.MotionMagicAcceleration = gains.maxAccelerationMetersPerSecondSquared();
-    motorConfiguration.MotionMagic.MotionMagicJerk = gains.jerkMetersPerSecondCubed();
+    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity = gains.maxVelocityRotationsPerSecond();
+    motorConfiguration.MotionMagic.MotionMagicAcceleration = gains.maxAccelerationRotationsPerSecondSquared();
+    motorConfiguration.MotionMagic.MotionMagicJerk = gains.jerkRotationsPerSecondCubed();
 
     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = configuration.enableSupplyCurrentLimit();
     motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
@@ -79,14 +79,16 @@ public class PivotIOTalonFX implements PivotIO {
         ? InvertedValue.CounterClockwise_Positive 
         : InvertedValue.Clockwise_Positive;
 
-    // Reset position on startup
-    kMotor.setPosition(0.0);
-
     motorConfiguration.Feedback.SensorToMechanismRatio = hardware.gearing();
     // Rotor sensor is the built-in sensor
     motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-
+    // Enable to true because arm
+    motorConfiguration.ClosedLoopGeneral.ContinuousWrap = true;
+    
     kMotor.getConfigurator().apply(motorConfiguration, 1.0);
+        
+    // Reset position on startup
+    kMotor.setPosition(Rotation2d.fromDegrees(64.331).getRotations());
 
     // Get status signals from the motor controller
     positionRotations = kMotor.getPosition();
@@ -160,7 +162,7 @@ public class PivotIOTalonFX implements PivotIO {
   @Override
   public void setPosition(Rotation2d goalPositionDegrees) {
     kMotor.setControl(
-      kPositionControl.withPosition(goalPositionDegrees.getDegrees()).withSlot(0));
+      kPositionControl.withPosition(goalPositionDegrees.getRotations()).withSlot(0));
   }
 
   @Override

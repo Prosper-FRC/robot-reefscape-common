@@ -10,6 +10,9 @@ import frc.robot.subsystems.intake.Intake.RollerGoal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
@@ -194,6 +197,83 @@ public class TeleopCommands {
             kIntake);
     }
 
+    public Command runPivotAndHoldCommand(PivotGoal pivotGoal) {
+        return Commands.startEnd(
+            () -> {
+                stopPivot = false;
+                kIntake.setPivotGoal(pivotGoal);
+            }, 
+            () -> {
+                stopPivot = false;
+                kIntake.setPivotPosition(kIntake.getPivotPosition());
+            }, 
+            kIntake);
+    }
+
+    public Command runPivotAndRollerGoalWhenConfirmed(
+        PivotGoal pivotGoal, 
+        RollerGoal rollerGoal, 
+        Trigger hasGamepieceTrigger, 
+        Trigger pivotAtGoalTrigger, 
+        Trigger confirmRollerTrigger) {
+
+        return new FunctionalCommand(
+            () -> {
+                stopRollers = false;
+                stopPivot = false;
+            },
+            () -> {
+                if (hasGamepieceTrigger.negate().getAsBoolean()) {
+                    stopPivot = false;
+                    kIntake.setPivotGoal(pivotGoal);
+                } else {
+                    stopPivot = false;
+                    kIntake.setPivotGoal(PivotGoal.kStow);
+                }
+
+                if (confirmRollerTrigger.and(pivotAtGoalTrigger).and(hasGamepieceTrigger.negate()).getAsBoolean()) {
+                    stopRollers = false;
+                    kIntake.setRollerGoal(rollerGoal);
+                } else {
+                    stopRollers = true;
+                    kIntake.stop(stopRollers, stopPivot);
+                }
+            },
+            (interrupted) -> {
+                stopPivot = true;
+                stopRollers = true;
+                kIntake.stop(stopRollers, stopPivot);
+            },
+            () -> false,
+            kIntake);    
+    }
+
+    public Command runPivotAndRollersVoltage(double pivotVoltage, double rollerVoltage, Trigger confirmRollerTrigger) {
+        return new FunctionalCommand(
+            () -> {
+                stopRollers = false;
+                stopPivot = false;
+            },
+            () -> {
+                stopPivot = false;
+                kIntake.setPivotVoltage(pivotVoltage);
+                if (confirmRollerTrigger.getAsBoolean()) {
+                    stopRollers = false;
+                    kIntake.setRollerVoltage(rollerVoltage);
+                } else {
+                    stopRollers = true;
+                    kIntake.stop(stopRollers, stopPivot);
+                }
+            },
+            (interrupted) -> {
+                stopRollers = true;
+                stopPivot = true;
+                kIntake.stop(stopRollers, stopPivot);
+            },
+            () -> false,
+            kIntake);    
+        }
+
     /**
      * Runs the climb at a specified goal voltage and then stops it, this command should be
      * deocrated with an end condition specified by the caller
@@ -234,6 +314,13 @@ public class TeleopCommands {
         return setStopPivotStateCommand(true)
             .andThen(
                 Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake));
+    }
+
+    public Command stopRollersAndPivotCommand() {
+        return setStopRollersStateCommand(true)
+            .andThen(setStopPivotStateCommand(true)
+                .andThen(
+                    Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake)));
     }
 
     /**

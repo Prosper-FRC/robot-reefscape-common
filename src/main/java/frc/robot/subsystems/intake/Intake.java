@@ -40,9 +40,9 @@ public class Intake extends SubsystemBase {
 
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
-    kStow(() -> Rotation2d.fromDegrees(0.0)),
-    kIntake(() -> Rotation2d.fromDegrees(90.0)),
-    kScore(() -> Rotation2d.fromDegrees(85.0)),
+    kStow(() -> Rotation2d.fromDegrees(64.311)),
+    kIntake(() -> Rotation2d.fromDegrees(0.0)),
+    kScore(() -> Rotation2d.fromDegrees(0.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
       new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
@@ -94,11 +94,11 @@ public class Intake extends SubsystemBase {
   private final LoggedTunableNumber kMaxVelocity =
       new LoggedTunableNumber(
           "Intake/MotionMagic/kMaxVelocity", 
-          IntakeConstants.kPivotGains.maxVelocityMetersPerSecond());
+          IntakeConstants.kPivotGains.maxVelocityRotationsPerSecond());
   private final LoggedTunableNumber kMaxAcceleration =
       new LoggedTunableNumber(
           "Intake/MotionMagic/kMaxAcceleration", 
-          IntakeConstants.kPivotGains.maxAccelerationMetersPerSecondSquared());
+          IntakeConstants.kPivotGains.maxAccelerationRotationsPerSecondSquared());
 
   private boolean detectedGamepiece = false;
   private LinearFilter ampFilter = LinearFilter.movingAverage(
@@ -180,7 +180,7 @@ public class Intake extends SubsystemBase {
       Logger.recordOutput("Intake/RollerGoal", "NONE");
     }
     if (pivotGoal != null) {
-      kPivotHardware.setPosition(pivotGoal.getGoalPosition());
+      setPivotPosition(pivotGoal.getGoalPosition());
       Logger.recordOutput("Intake/PivotGoal", pivotGoal);
     } else {
       Logger.recordOutput("Intake/PivotGoal", "NONE");
@@ -286,6 +286,10 @@ public class Intake extends SubsystemBase {
    */
   public void setPivotVoltage(double voltage) {
     kPivotHardware.setVoltage(voltage);
+  }
+
+  public void setPivotPosition(Rotation2d position) {
+    kPivotHardware.setPosition(position);
   }
 
   /**

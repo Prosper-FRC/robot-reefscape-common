@@ -44,9 +44,9 @@ public class IntakeConstants {
     double i, 
     double d, 
     // Motion magic constraints
-    double maxVelocityMetersPerSecond, 
-    double maxAccelerationMetersPerSecondSquared, 
-    double jerkMetersPerSecondCubed, 
+    double maxVelocityRotationsPerSecond, 
+    double maxAccelerationRotationsPerSecondSquared, 
+    double jerkRotationsPerSecondCubed, 
     // Pivot feedforward values
     double s, 
     double v, 
@@ -145,8 +145,8 @@ public class IntakeConstants {
 
   /* Pivot constants */
   
-  public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(0.0);
-  public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(90.0);
+  public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(-30.0);
+  public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(64.331);
 
   public static final Rotation2d kPivotPositionTolerance = Rotation2d.fromDegrees(1.0);
   
@@ -162,11 +162,11 @@ public class IntakeConstants {
         0.0,
         0.0,
         0.0,
+        0.25,
+        0.25,
+        0.025,
         0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
+        13.0,
         0.0, 
         0.0); 
       case SIM -> new PivotGains(
