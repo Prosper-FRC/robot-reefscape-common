@@ -121,13 +121,13 @@ public class Elevator extends SubsystemBase {
       if (currentElevaotrGoal != null) {
         currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
         
-        if (atGoal()) {
-          kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
-          Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
-        } else {
-          setPosition(currentElevatorGoalPositionMeters);
-          Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
-        }
+        // if (atGoal()) {
+        //   kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
+        //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
+        // } else {
+        setPosition(currentElevatorGoalPositionMeters);
+        //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
+        // }
 
         // setPosition(currentElevatorGoalPositionMeters);
         // Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
