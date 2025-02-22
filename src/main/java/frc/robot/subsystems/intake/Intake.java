@@ -145,6 +145,8 @@ public class Intake extends SubsystemBase {
       stop(true, true);
     }
 
+    double ampFilterCalculation = ampFilter.calculate(kRollerInputs.statorCurrentAmps);
+
     if (selectedGamepiece == Gamepiece.kCoral) {
       // If the CANrange disconnects we can use motor current to detect when we have a coral
       // TODO Test this fallback to see if it actually works
@@ -154,8 +156,7 @@ public class Intake extends SubsystemBase {
         } else {
           // Checks for spike in amperage, and if greater than the value then
           // the intake motor probbaly has the coral
-          detectedGamepiece = ampFilter.calculate(
-            kRollerInputs.statorCurrentAmps) > IntakeConstants.kCoralAmpFilterThreshold;
+          detectedGamepiece = ampFilterCalculation > IntakeConstants.kCoralAmpFilterThreshold;
         }
       } else {
         detectedGamepiece = true;
@@ -164,8 +165,7 @@ public class Intake extends SubsystemBase {
       if (!kOverrideDetectGamepiece.get()) {
         // Checks for spike in amperage, and if greater than the value then
         // the intake motor probbaly has the algae
-        detectedGamepiece = ampFilter.calculate(
-          kRollerInputs.statorCurrentAmps) > IntakeConstants.kAlgaeAmpFilterThreshold;
+        detectedGamepiece = ampFilterCalculation > IntakeConstants.kAlgaeAmpFilterThreshold;
       } else {
         detectedGamepiece = true;
       }

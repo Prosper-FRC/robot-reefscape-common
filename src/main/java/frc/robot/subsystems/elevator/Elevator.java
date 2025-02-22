@@ -130,7 +130,7 @@ public class Elevator extends SubsystemBase {
         // }
 
         // setPosition(currentElevatorGoalPositionMeters);
-        // Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
+        Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
       } else {

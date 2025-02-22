@@ -150,7 +150,7 @@ public class IntakeConstants {
 
   public static final Rotation2d kPivotPositionTolerance = Rotation2d.fromDegrees(1.0);
   
-  public static final double kPivotGearing = 9.0 / 1.0;
+  public static final double kPivotGearing = (48.0 / 1.0) * (48.0 / 22.0);
 
   public static final PivotHardware kPivotMotorHardware = new PivotHardware(
     58, // CAN ID
