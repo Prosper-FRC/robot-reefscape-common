@@ -29,7 +29,8 @@ public class RobotContainer {
     private LoggedDashboardChooser<Command> autoChooser;
 
     private final boolean useCompetitionBindings = true;
-    LED mainLED = new LED(9, 300);
+    LED rightLED = new LED(9, 36);
+    LED leftLED = new LED(8, 36);
 
     public RobotContainer() {
 
@@ -91,11 +92,15 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         driverController.y().toggleOnTrue(new InstantCommand(() -> {
-            mainLED.setSolidColor(25, 50, 75);
-            mainLED.animatePatternRelative(20);
+            leftLED.setSolidColor(198, 115, 225);
+            leftLED.animatePatternRelative(20);
+            rightLED.setSolidColor(198, 115, 225);
+            rightLED.animatePatternRelative(20);
+
         }));
         driverController.y().toggleOnFalse(new InstantCommand(() -> {
-            mainLED.disable();
+            leftLED.disable();
+            rightLED.disable();
         }));
     }
 }
