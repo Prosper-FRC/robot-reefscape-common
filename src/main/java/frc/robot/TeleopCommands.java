@@ -392,6 +392,10 @@ public class TeleopCommands {
                     // Call stop elevator just in case there is any voltage still being
                     // set
                     kElevator.stop();
+                    // If the elevator actually finished its command and was not cancelled
+                    if (!interrupted) {
+                        kElevator.resetPosition();
+                    }
                 },
                 () -> kElevator.hasHomed(), // Run until has homed is true
                 kElevator)
