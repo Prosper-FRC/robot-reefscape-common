@@ -6,6 +6,6 @@ public class LEDConstants {
         int port,
         int bufferLength) {}
     
-    public static final LEDConfig kLeftLED = new LEDConfig(9, 33);
-    public static final LEDConfig kRightLED = new LEDConfig(8, 33);
+    public static final LEDConfig kLeftLED = new LEDConfig(8, 10);
+    public static final LEDConfig kRightLED = new LEDConfig(9, 10);
 }

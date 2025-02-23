@@ -78,7 +78,7 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber(
           "Elevator/MotionMagic/kMaxAcceleration", 
           ElevatorConstants.kElevatorGains.maxAccelerationMetersPerSecondSquared());
-
+ 
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 

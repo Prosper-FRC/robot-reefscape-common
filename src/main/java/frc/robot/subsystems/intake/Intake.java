@@ -16,7 +16,7 @@ public class Intake extends SubsystemBase {
   public enum RollerGoal {
     kIntakeCoral(() -> 2.0),
     kIntakeAlgae(() -> 5.0),
-    kScoreCoral(() -> -4.0),
+    kScoreCoral(() -> 4.0),
     kScoreAlgae(() -> -5.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Intake/Feedback/RollerSetpointVolts", 0.0));

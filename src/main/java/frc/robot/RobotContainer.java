@@ -6,7 +6,9 @@ package frc.robot;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,6 +30,8 @@ import frc.robot.subsystems.intake.Intake.RollerGoal;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
+import frc.robot.subsystems.LED.LED;
+import frc.robot.subsystems.LED.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -67,6 +71,8 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
+    // private final LED ledRight;
+    // private final LED ledLeft;
     
     // Define other utility classes
     private final AutonCommands autonCommands;
@@ -79,7 +85,7 @@ public class RobotContainer {
 
     /* TODO: Set to true before competition please */
 
-    private final boolean useCompetitionBindings = false;
+    private final boolean useCompetitionBindings = true;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -138,6 +144,9 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorConfiguration, 
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
+
+                // ledRight = new LED(LEDConstants.kRightLED);
+                // ledLeft = new LED(LEDConstants.kLeftLED);
                 break;
             case SIM:
                robotDrive = new Drive( new Module[] {
@@ -173,6 +182,8 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
+                // ledRight = new LED(LEDConstants.kRightLED);
+                // ledLeft = new LED(LEDConstants.kLeftLED);
                 break;
             default:
                robotDrive = new Drive( new Module[] {
@@ -191,6 +202,10 @@ public class RobotContainer {
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
+
+                // ledRight = new LED(LEDConstants.kRightLED);
+                // ledLeft = new LED(LEDConstants.kLeftLED);
+
                 break;
         }
 
@@ -256,6 +271,14 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+
+        // new Trigger(DriverStation::isEnabled)
+        //         .onTrue(
+        //             Commands.runOnce(() -> ledRight.setGradientAnimation(100, GradientType.kContinuous , Color.kAliceBlue, Color.kBlue, Color.kViolet)));
+
+        // new Trigger(DriverStation::isEnabled)
+        //     .onTrue(
+        //         Commands.runOnce(() -> ledLeft.setGradientAnimation(100, GradientType.kContinuous , Color.kAliceBlue, Color.kBlue, Color.kViolet)));
     }
 
     private Command rumbleCommand() {
@@ -270,7 +293,7 @@ public class RobotContainer {
         reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kL4Algae));
         reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
         reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
-        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kGroundAlgae));
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.custom, ElevatorGoal.kGroundAlgae));
 
         ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
         positionButtons.add(operatorController.y());
@@ -320,6 +343,15 @@ public class RobotContainer {
                     teleopCommands.stopRollersCommand()
                 );
 
+            // CORAL - SCORE
+            operatorController.rightBumper().and(coralSelectTrigger)
+                .whileTrue(
+                    teleopCommands.runRollersAndStopCommand(RollerGoal.kScoreCoral)
+                )
+                .whileFalse(
+                    teleopCommands.stopRollersCommand()
+                );                
+
             // SCORE CORAL AND PICKUP ALGAE
             for (int i = 0; i < positionButtons.size(); i++) {
                 Trigger button = positionButtons.get(i);
@@ -338,7 +370,7 @@ public class RobotContainer {
                         teleopCommands.stopElevatorCommand()
                             .alongWith(teleopCommands.stopRollersCommand())
                     );
-                
+            }
 
             // CLIMB - GRAB
             operatorController.povLeft()
@@ -348,7 +380,7 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
-                
+            
             // CLIMB - RELEASE
             operatorController.povRight()
                 .whileTrue(
@@ -357,28 +389,27 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
-            }
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
     
-            driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.x()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
-            new Trigger(()-> driverController.getHID().getPOV() != -1)
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // new Trigger(()-> driverController.getHID().getPOV() != -1)
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.b()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.a()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             operatorController.povLeft()
                 .whileTrue(
@@ -394,24 +425,24 @@ public class RobotContainer {
                         () -> climb.stop(), 
                         climb));
 
-            operatorController.a()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> climb.setGoalVoltage(ClimbVoltageGoal.custom), 
-                        () -> climb.stop(), 
-                        climb));
+            // operatorController.a()
+            //     .whileTrue(
+            //         Commands.startEnd(
+            //             () -> climb.setGoalVoltage(ClimbVoltageGoal.custom), 
+            //             () -> climb.stop(), 
+            //             climb));
 
             operatorController.povUp()
                 .whileTrue(
                     Commands.startEnd(
-                        () -> elevator.setVoltage(3.0), 
+                        () -> elevator.setVoltage(2.0), 
                         () -> elevator.stop(), 
                         elevator));
 
             operatorController.povDown()
                 .whileTrue(
                     Commands.startEnd(
-                        () -> elevator.setVoltage(0.45), 
+                        () -> elevator.setVoltage(-2.0), 
                         () -> elevator.stop(), 
                         elevator));
 
@@ -420,7 +451,30 @@ public class RobotContainer {
                     Commands.startEnd(
                         () -> elevator.setGoal(ElevatorGoal.kL4Coral), 
                         () -> elevator.stop(), 
-                        elevator));       
+                        elevator));  
+                        
+            operatorController.x()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL3Coral), 
+                        () -> elevator.stop(), 
+                        elevator));  
+
+            operatorController.a()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL2Coral), 
+                        () -> elevator.stop(), 
+                        elevator));  
+                                    
+            operatorController.b()
+                .whileTrue(
+                    Commands.startEnd(
+                        () -> elevator.setGoal(ElevatorGoal.kL1Coral), 
+                        () -> elevator.stop(), 
+                        elevator));  
+
+            
         }
     }
 

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -30,6 +31,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         CanBridge.runTCP();
+        CameraServer.startAutomaticCapture();
       
         /* Metadata can be set before data receiving is set-up */
         Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -51,11 +53,11 @@ public class Robot extends LoggedRobot {
 
         switch (Constants.kCurrentMode) {
             case REAL:
-                Logger.addDataReceiver(new WPILOGWriter());
+                // Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
-                SignalLogger.setPath("/U/logs");
+                // SignalLogger.setPath("/U/logs");
                 // SignalLogger.enableAutoLogging(false);
-                // SignalLogger.stop();
+                SignalLogger.stop();
                 break;
             case SIM:
                 Logger.addDataReceiver(new NT4Publisher());
@@ -63,9 +65,9 @@ public class Robot extends LoggedRobot {
 
             case REPLAY:
                 setUseTiming(false); // Run as fast as possible
-                String logPath = LogFileUtil.findReplayLog();
-                Logger.setReplaySource(new WPILOGReader(logPath));
-                Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+                // String logPath = LogFileUtil.findReplayLog();
+                // Logger.setReplaySource(new WPILOGReader(logPath));
+                // Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
                 break;
         }
 

@@ -74,7 +74,7 @@ public class ElevatorConstants {
 
   public static final ElevatorHardware kRoboElevatorHardware = new ElevatorHardware(
     50, // Motor CAN ID
-    9.0 / 1.0,  // Gearing
+    15.0 / 1.0,  // Gearing
     /*
     * Outside sprocket radius: 0.944 in
     * Root sprocket radius: 0.819

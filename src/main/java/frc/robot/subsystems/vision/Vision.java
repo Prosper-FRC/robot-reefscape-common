@@ -80,6 +80,7 @@ public class Vision {
                             Double.MAX_VALUE, 
                             Double.MAX_VALUE), 
                         camData.latestTimestamp, camData.camName);
+                    i++;
                     continue;
                 }
 
