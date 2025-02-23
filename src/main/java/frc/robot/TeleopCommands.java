@@ -374,6 +374,30 @@ public class TeleopCommands {
         return Commands.runOnce(() -> stopPivot = stopPivotState);
     }
 
+    public Command homeElevatorCommand() {
+        return Commands.sequence(
+            stopElevatorCommand(),
+            new FunctionalCommand(
+                () -> {
+                    // Tell elevator we want to home so it disables soft limits
+                    kElevator.homeElevator();
+                },
+                () -> {
+                    // Begin elevator running downwards, the hasHomed() method will
+                    kElevator.setVoltage(-2.0);
+                },
+                (interrupted) -> {
+                    // Stop homing when we end
+                    kElevator.stopHoming();
+                    // Call stop elevator just in case there is any voltage still being
+                    // set
+                    kElevator.stop();
+                },
+                () -> kElevator.hasHomed(), // Run until has homed is true
+                kElevator)
+            );
+    }
+ 
     /*
     return new FunctionalCommand(
         () -> {},
