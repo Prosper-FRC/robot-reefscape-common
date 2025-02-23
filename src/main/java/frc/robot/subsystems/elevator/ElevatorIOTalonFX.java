@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -56,6 +57,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     kDrumCircumferenceMeters = hardware.drumCircumferenceMeters();
 
     // Apply configurations
+    motorConfiguration.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     motorConfiguration.Slot0.kP = metersToRotations(gains.p());
     motorConfiguration.Slot0.kI = metersToRotations(gains.i());
     motorConfiguration.Slot0.kD = metersToRotations(gains.d());
@@ -154,6 +156,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void setGains(double p, double i, double d, double s, double g, double v, double a) {
     var slotConfiguration = new Slot0Configs();
+    slotConfiguration.GravityType = GravityTypeValue.Elevator_Static;
 
     slotConfiguration.kP = metersToRotations(p);
     slotConfiguration.kI = metersToRotations(i);

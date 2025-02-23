@@ -40,9 +40,9 @@ public class Intake extends SubsystemBase {
 
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
-    kStow(() -> Rotation2d.fromDegrees(64.311)),
-    kIntake(() -> Rotation2d.fromDegrees(0.0)),
-    kScore(() -> Rotation2d.fromDegrees(0.0)),
+    kStow(() -> Rotation2d.fromDegrees(64.0)),
+    kIntake(() -> Rotation2d.fromDegrees(30.0)),
+    kScore(() -> Rotation2d.fromDegrees(50.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
       new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
@@ -181,6 +181,7 @@ public class Intake extends SubsystemBase {
     }
     if (pivotGoal != null) {
       setPivotPosition(pivotGoal.getGoalPosition());
+      Logger.recordOutput("Intake/PivotGoalValue", pivotGoal.getGoalPosition());
       Logger.recordOutput("Intake/PivotGoal", pivotGoal);
     } else {
       Logger.recordOutput("Intake/PivotGoal", "NONE");

@@ -78,6 +78,13 @@ public class TeleopCommands {
             kElevator);
     }
 
+    public Command runElevatorAndStopCommand(ElevatorGoal elevatorGoal) {
+        return Commands.startEnd(
+            () -> kElevator.setGoal(elevatorGoal), 
+            () -> kElevator.stop(), 
+            kElevator);
+    }
+
     /**
      * Runs the rollers and then stops them, this command should be decorated with an end
      * condition specified by the caller

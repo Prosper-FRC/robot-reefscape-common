@@ -8,7 +8,7 @@ public class FieldConstants {
 
     public static final double kXNetLineMeters = 7.15;
 
-    public static final Pose2d AL = new Pose2d(3.18, 3.93, Rotation2d.k180deg);
+    public static final Pose2d AL = new Pose2d(3.18, 4.03, Rotation2d.k180deg);
     public static final Pose2d AR = new Pose2d(3.18, 3.64, Rotation2d.k180deg);
 
     public static final Pose2d BL = new Pose2d(3.52, 4.97, Rotation2d.fromDegrees(120.0));

@@ -11,7 +11,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -30,9 +32,9 @@ public class Elevator extends SubsystemBase {
     kL2Algae(() -> 0.41),
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
     /** Stow the elevator during transit */
-    kStow(() -> Units.inchesToMeters(0.0)),
+    kStow(() -> Units.inchesToMeters(5.0)),
     /** Position for intaking from the coral station */
-    kIntake(() -> Units.inchesToMeters(8.0)),
+    kIntake(() -> Units.inchesToMeters(3.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Elevator/Custom", 0.0));
 
@@ -93,6 +95,10 @@ public class Elevator extends SubsystemBase {
   private boolean isHoming = false;
   private boolean hasHomed = false;
 
+  private boolean hasStowed = false;
+
+  private Debouncer stowDebouncer = new Debouncer(0.05, DebounceType.kBoth);
+
   public Elevator(ElevatorIO io, MagneticSensorIO ioSensor) {
     kHardware = io;
     kSensor = ioSensor;
@@ -125,7 +131,17 @@ public class Elevator extends SubsystemBase {
         //   kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
         //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
         // } else {
-        setPosition(currentElevatorGoalPositionMeters);
+        if(!currentElevaotrGoal.equals(ElevatorGoal.kStow)) {
+          setPosition(currentElevatorGoalPositionMeters);
+          hasStowed = false;
+        } else {
+          if(hasStowed) {
+            setVoltage(0.0);
+          } else {
+            setPosition(currentElevatorGoalPositionMeters);
+            hasStowed = stowDebouncer.calculate(atGoal());
+          }
+        }
         //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
         // }
 
@@ -264,6 +280,10 @@ public class Elevator extends SubsystemBase {
   /** Reset the mechanism's encoder to 0 meters */
   public void resetPosition() {
     kHardware.resetPosition();
+  }
+
+  public ElevatorGoal getGoal(){
+    return currentElevaotrGoal;
   }
 
   /**

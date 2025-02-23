@@ -4,6 +4,7 @@
 
 package frc.robot;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.event.EventLoop;
@@ -333,6 +334,11 @@ public class RobotContainer {
                 .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(6.0)))
                 .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
 
+            //TEMPORARY SCORE
+            operatorController.rightBumper().and(algaeSelectTrigger)
+                .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(6.0)))
+                .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
+
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
@@ -342,8 +348,23 @@ public class RobotContainer {
                                 .onlyWhile(hasGamepieceTrigger.negate()))
                 )
                 .whileFalse(
+                    teleopCommands.stopElevatorCommand()
+                        .andThen(teleopCommands.stopRollersCommand())
+                );
+
+            // ALGAE - INTAKE
+            operatorController.leftBumper().and(algaeSelectTrigger)
+                .whileTrue(
+                    // teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kIntake)
+                    //     .alongWith(
+                                new InstantCommand(() -> intake.setRollerVoltage(-6.0))
+                                .onlyWhile(hasGamepieceTrigger.negate())
+                                .alongWith(teleopCommands.runPivotAndHoldCommand(PivotGoal.kIntake))
+                               // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
+                )
+                .whileFalse(
                     teleopCommands.stopRollersCommand()
-                        .alongWith(teleopCommands.stopElevatorCommand())
+                        .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStow))
                 );
 
             // SCORE CORAL AND PICKUP ALGAE
@@ -352,7 +373,7 @@ public class RobotContainer {
 
                 // CORAL - SCORE
                 button.and(coralSelectTrigger)
-                    .onTrue(
+                    .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getFirst())
                             // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
@@ -361,8 +382,7 @@ public class RobotContainer {
                         )   
                     )
                     .whileFalse(
-                        teleopCommands.stopElevatorCommand()
-                            .alongWith(teleopCommands.stopRollersCommand())
+                        teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
                     );
 
                 // ALGAE - PICKUP
@@ -373,14 +393,11 @@ public class RobotContainer {
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .andThen(
                             teleopCommands.runPivotAndHoldCommand(PivotGoal.kIntake)
-                                .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5))
+                                .onlyWhile(pivotAtGoalTrigger.negate())
                         )
-                        .andThen(
-                            teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeAlgae)
-                                .onlyWhile(hasGamepieceTrigger.negate().debounce(0.5))
-                        )
-                        .andThen(
-                            teleopCommands.runPivotAndStopCommand(PivotGoal.kStow)
+                        .alongWith(
+                            new InstantCommand(() -> intake.setRollerVoltage(-6.0))
+                                .onlyWhile(hasGamepieceTrigger.negate())
                         )
                     )
                     .whileFalse(
@@ -390,6 +407,7 @@ public class RobotContainer {
                                     // This "onlyWhile" is required so that this command composition ends
                                     // at some point and frees its resources back to the CommandScheduler
                                     .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
+                            .alongWith(new InstantCommand(() -> intake.setRollerVoltage(0.0)))
                     );
             }
 
