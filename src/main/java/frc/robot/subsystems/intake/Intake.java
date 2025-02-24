@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
   public enum RollerGoal {
     kIntakeCoral(() -> 2.0),
-    kIntakeAlgae(() -> 5.0),
+    kIntakeAlgae(() -> -5.0),
     kScoreCoral(() -> -4.0),
     kScoreAlgae(() -> -5.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
@@ -40,9 +40,11 @@ public class Intake extends SubsystemBase {
 
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
-    kStow(() -> Rotation2d.fromDegrees(64.0)),
-    kIntake(() -> Rotation2d.fromDegrees(5.0)),
-    kScore(() -> Rotation2d.fromDegrees(50.0)),
+    kStowScore(() -> Rotation2d.fromDegrees(64.0)),
+    kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
+    kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
+    kIntakeGround(() -> Rotation2d.fromDegrees(-50.0)),
+    kScore(() -> Rotation2d.fromDegrees(40.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
       new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
@@ -342,5 +344,9 @@ public class Intake extends SubsystemBase {
    */
   public Rotation2d getPivotPosition() {
     return kPivotInputs.position;
+  }
+
+  public Double getStatorCurrent() {
+    return kRollerInputs.statorCurrentAmps;
   }
 }

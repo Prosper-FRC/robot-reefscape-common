@@ -106,6 +106,30 @@ public class TeleopCommands {
     }
 
     /**
+     * Runs the rollers and then stops them for algae pickup, this command should be decorated with an end
+     * condition specified by the caller
+     * 
+     * @param rollerGoal The intake rollers goal
+     * @return The command to start and stop the intake rollers
+     */
+    public Command runAlgaeAndStopCommand(RollerGoal rollerGoal, PivotGoal pivotGoal){
+        return Commands.startEnd(
+            () -> {
+                stopRollers = false;
+                stopPivot = false;
+                kIntake.setPivotGoal(pivotGoal);
+                kIntake.setRollerGoal(rollerGoal);
+            },
+            () -> {
+                stopRollers = true;
+                kIntake.stop(stopRollers, stopPivot);
+                stopPivot = false;
+                kIntake.setPivotPosition(kIntake.getPivotPosition());
+            },
+            kIntake);     
+    }
+
+    /**
      * Runs the elevator at the specified voltage, this command should be decorated with an
      * end condition specified by the caller
      * 
@@ -235,7 +259,7 @@ public class TeleopCommands {
                     kIntake.setPivotGoal(pivotGoal);
                 } else {
                     stopPivot = false;
-                    kIntake.setPivotGoal(PivotGoal.kStow);
+                    kIntake.setPivotGoal(PivotGoal.kStowScore);
                 }
 
                 if (confirmRollerTrigger.and(pivotAtGoalTrigger).and(hasGamepieceTrigger.negate()).getAsBoolean()) {

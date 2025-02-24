@@ -145,7 +145,7 @@ public class IntakeConstants {
 
   /* Pivot constants */
   
-  public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(-30.0);
+  public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(-70.0);
   public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(64.331);
 
   public static final Rotation2d kPivotPositionTolerance = Rotation2d.fromDegrees(1.0);
@@ -159,11 +159,11 @@ public class IntakeConstants {
   public static final PivotGains kPivotGains =  
     switch (Constants.kCurrentMode) {
       case REAL -> new PivotGains(
+        5.0,
         0.0,
         0.0,
-        0.0,
-        1.0,
-        1.0,
+        1000,
+        0.5,
         0.025,
         0.0,
         13.0,
