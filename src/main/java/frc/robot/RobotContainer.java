@@ -57,6 +57,8 @@ import frc.robot.subsystems.drive.Module;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.Drive.DriveState;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
 
@@ -328,6 +330,16 @@ public class RobotContainer {
             driverController.b()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.x()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.leftTrigger()
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
+
+            driverController.rightTrigger()
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)

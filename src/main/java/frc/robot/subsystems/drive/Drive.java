@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
-
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
 import frc.robot.subsystems.drive.controllers.HolonomicController;
 
@@ -61,6 +61,7 @@ public class Drive extends SubsystemBase {
         POV_SNIPER,
         PROCESSOR_HEADING_ALIGN,
         INTAKE_HEADING_ALIGN,
+        REEF_HEADING_ALIGN,
         DRIVE_TO_REEF,
         DRIVE_TO_INTAKE,
         DRIVE_TO_NET,
@@ -249,6 +250,12 @@ public class Drive extends SubsystemBase {
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
                 break;
+            case REEF_HEADING_ALIGN:
+                goalRotation = AllianceFlipUtil.apply(GoalPoseChooser.turnFromReefOrigin(getPoseEstimate()));
+                desiredSpeeds = new ChassisSpeeds(
+                    teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
+                    headingController.getSnapOutput( getPoseEstimate().getRotation() ));
+                break;
             case DRIVE_TO_REEF:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
@@ -309,6 +316,9 @@ public class Drive extends SubsystemBase {
         switch(driveState) {
             case PROCESSOR_HEADING_ALIGN:
                 headingController.reset(robotRotation, gyroInputs.yawVelocityPS);            
+                break;
+            case REEF_HEADING_ALIGN:
+                headingController.reset(robotRotation, gyroInputs.yawVelocityPS);
                 break;
             case DRIVE_TO_REEF:
                 autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());

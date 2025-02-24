@@ -84,6 +84,7 @@ public class GoalPoseChooser {
                 goal = FieldConstants.AL;
             } else goal = FieldConstants.AR;
         }
+        Logger.recordOutput("Drive/SelectedSide", side);
 
         return AllianceFlipUtil.apply(goal);
     }
