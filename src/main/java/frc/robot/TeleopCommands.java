@@ -218,6 +218,7 @@ public class TeleopCommands {
         return Commands.startEnd(
             ()-> {
                 stopPivot = false;
+                stopRollers = false;
                 kIntake.setPivotGoal(pivotGoal);
             }, 
             () -> {
