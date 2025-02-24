@@ -28,8 +28,8 @@ public class Elevator extends SubsystemBase {
     kL2Coral(() -> 0.41),
     kL1Coral(() -> Units.inchesToMeters(8.0)),
     kL4Algae(() -> Units.inchesToMeters(60.0)),
-    kL3Algae(() -> 0.84),
-    kL2Algae(() -> 0.41),
+    kL3Algae(() -> 0.7),
+    kL2Algae(() -> 0.3),
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
     /** Stow the elevator during transit */
     kStow(() -> Units.inchesToMeters(5.0)),

@@ -23,7 +23,7 @@ public class SensorIOLaserCAN implements SensorIO {
 
   public SensorIOLaserCAN(SensorConfiguration configuration) {
     kSensor = new LaserCan(configuration.sensorId());
-    detectionDistanceThresholdMilimeters = configuration.detectionThresholdMilimeters();
+    detectionDistanceThresholdMilimeters = 40.0;
     try {  
       /*
        * See this comment and documentation about the units if x, y, w, h 

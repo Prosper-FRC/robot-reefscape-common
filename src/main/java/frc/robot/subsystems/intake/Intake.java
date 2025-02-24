@@ -41,7 +41,7 @@ public class Intake extends SubsystemBase {
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
     kStow(() -> Rotation2d.fromDegrees(64.0)),
-    kIntake(() -> Rotation2d.fromDegrees(30.0)),
+    kIntake(() -> Rotation2d.fromDegrees(5.0)),
     kScore(() -> Rotation2d.fromDegrees(50.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
