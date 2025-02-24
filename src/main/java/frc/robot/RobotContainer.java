@@ -355,16 +355,17 @@ public class RobotContainer {
             // ALGAE - INTAKE
             operatorController.leftBumper().and(algaeSelectTrigger)
                 .whileTrue(
-                    teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
-                         .alongWith(
-                                teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeGround)
-                                .onlyWhile(hasGamepieceTrigger.negate())
-                               // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
+                    teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeGround)
+                    .onlyWhile(hasGamepieceTrigger.negate())
+                         .andThen(
+                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
+                            // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )
                 )
                 .whileFalse(
                     teleopCommands.stopRollersCommand()
                         .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup))
+                        .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow))
                 );
 
             // SCORE CORAL AND PICKUP ALGAE
@@ -392,53 +393,49 @@ public class RobotContainer {
                     // ALGAE - PICKUP
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
-                            teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
-                                .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.3))
-                                .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
-                            .andThen(
-                                teleopCommands.runPivotAndHoldCommand(PivotGoal.kIntakeReef)
-                                    .onlyWhile(pivotAtGoalTrigger.negate())
-                            )
-                            .alongWith(
-                                new InstantCommand(() -> intake.setRollerVoltage(-6.0))
-                                    .onlyWhile(hasGamepieceTrigger.negate())
-                            )
+                        teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .alongWith(
+                                teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeReef)
+                                .onlyWhile(hasGamepieceTrigger.negate())
+                               // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
+                        )
                         )
                         .whileFalse(
                             teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
                             .alongWith(
-                                    teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStowPickup)
+                                    teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup)
                                         // This "onlyWhile" is required so that this command composition ends
                                         // at some point and frees its resources back to the CommandScheduler
                                         .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
-                                .alongWith(new InstantCommand(() -> intake.setRollerVoltage(0.0)))
+                            .andThen(
+                                teleopCommands.stopRollersCommand()
+                            )
+
                         );
                 }
 
                 if(i == 0 || i == 3){
                     // ALGAE - SCORE
-                    algaeScore.and(algaeSelectTrigger)
+                    algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
-                            teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
-                                .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.3))
-                                .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
-                            .andThen(
-                                teleopCommands.runPivotAndHoldCommand(PivotGoal.kScore)
-                                    .onlyWhile(pivotAtGoalTrigger.negate())
-                            )
-                            // .alongWith(
-                            //     new InstantCommand(() -> intake.setRollerVoltage(6.0))
-                            //         .onlyWhile(hasGamepieceTrigger.negate())
-                            // )
+                        teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .alongWith(
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kScore)
+                                .onlyWhile(hasGamepieceTrigger.negate())
+                               // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
+                        )
                         )
                         .whileFalse(
                             teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
                             .alongWith(
-                                    teleopCommands.runPivotAndStopIntakeCommand(PivotGoal.kStowScore)
+                                    teleopCommands.runPivotAndStopCommand(PivotGoal.kStowScore)
                                         // This "onlyWhile" is required so that this command composition ends
                                         // at some point and frees its resources back to the CommandScheduler
                                         .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
-                                .alongWith(new InstantCommand(() -> intake.setRollerVoltage(0.0)))
+                            .andThen(
+                                teleopCommands.stopRollersCommand()
+                            )
+
                         );
                 }
             }
