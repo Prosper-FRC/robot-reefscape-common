@@ -335,10 +335,10 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftTrigger()
+            driverController.leftBumper()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            driverController.rightTrigger()
+            driverController.rightBumper()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
@@ -432,9 +432,9 @@ public class RobotContainer {
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kScore)
-                                .onlyWhile(hasGamepieceTrigger.negate())
-                               // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
+                                    .onlyWhile(hasGamepieceTrigger.negate())
+                                // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )
                         )
                         .whileFalse(
