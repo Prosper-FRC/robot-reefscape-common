@@ -7,7 +7,9 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,6 +36,8 @@ import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
+import frc.robot.subsystems.LED.LED;
+import frc.robot.subsystems.LED.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -68,7 +72,6 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.utils.debugging.LoggedTunableNumber;
 
 public class RobotContainer {
     // Define subsystems
@@ -76,6 +79,7 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
+    private final LED led;
     
     // Define other utility classes
     private final AutonCommands autonCommands;
@@ -86,8 +90,7 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
-    /* TODO: Set to true before competition
-     please */
+    /* TODO: Set to true before competition please */
 
     private final boolean useCompetitionBindings = true;
 
@@ -152,6 +155,8 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorConfiguration, 
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
+
+                led = new LED(LEDConstants.kRightLED);
                 break;
             case SIM:
                robotDrive = new Drive( new Module[] {
@@ -192,6 +197,8 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
+
+                led = new LED(LEDConstants.kRightLED);
                 break;
             default:
                robotDrive = new Drive( new Module[] {
@@ -210,6 +217,8 @@ public class RobotContainer {
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
+
+                led = new LED(LEDConstants.kRightLED);
                 break;
         }
 
@@ -275,6 +284,9 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+
+        new Trigger(DriverStation::isEnabled)
+            .onTrue(Commands.runOnce(() -> led.setGradientAnimation(100, GradientType.kContinuous, Color.kAliceBlue, Color.kBlue, Color.kBlueViolet)));
     }
 
     private Command rumbleCommand() {
@@ -517,7 +529,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
-            // then pov control is being used as its being pressed
+            // then pov control is being used as its being pressed`
             new Trigger(()-> driverController.getHID().getPOV() != -1)
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
