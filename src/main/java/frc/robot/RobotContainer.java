@@ -156,7 +156,7 @@ public class RobotContainer {
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
 
-                led = new LED(LEDConstants.kRightLED);
+                led = new LED(LEDConstants.kLED);
                 break;
             case SIM:
                robotDrive = new Drive( new Module[] {
@@ -198,7 +198,7 @@ public class RobotContainer {
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
 
-                led = new LED(LEDConstants.kRightLED);
+                led = new LED(LEDConstants.kLED);
                 break;
             default:
                robotDrive = new Drive( new Module[] {
@@ -218,7 +218,7 @@ public class RobotContainer {
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
 
-                led = new LED(LEDConstants.kRightLED);
+                led = new LED(LEDConstants.kLED);
                 break;
         }
 

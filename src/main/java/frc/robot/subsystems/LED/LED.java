@@ -1,5 +1,6 @@
 package frc.robot.subsystems.LED;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.LEDPattern;
@@ -44,6 +45,30 @@ public class LED extends SubsystemBase implements ILED {
     public void setGradientAnimation(int percentage, GradientType type, Color... colors){
         pattern = LEDPattern.gradient(type, colors);
         animatePatternRelative(percentage);
+    }
+
+    // Sets a blink rate by a on and off blink offset
+    public void setBlinkAnimation(double blinkOnRate, double blinkOffRate)
+    {
+        pattern = pattern.blink(Time.ofBaseUnits(blinkOnRate, Units.Seconds), Time.ofBaseUnits(blinkOffRate, Units.Seconds));
+    }
+
+    // Sets a blink rate in blinks per second
+    public void setBlinkAnimation(double blinkRate)
+    {
+        pattern = pattern.blink(Time.ofBaseUnits(blinkRate, Units.Seconds));
+    }
+
+    // Fades the LEDs in and out
+    public void setBreatheAnimation(double timePeriod)
+    {
+        pattern = pattern.breathe(Time.ofBaseUnits(timePeriod, Units.Seconds));
+    }
+
+    // Sets the brightness of the LED strip
+    public void setBrightness(double percent)
+    {
+        pattern = pattern.atBrightness(Units.Percent.of(percent));
     }
 
     // Percentage is the percent of the LED strip covers per second

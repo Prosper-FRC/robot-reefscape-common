@@ -6,12 +6,18 @@ interface ILED{
 
     public void setSingleRGB(int index, int r, int g, int b);
 
-    //RGB values bust be between 0-255 inclusive
     public void setSolidColor(int r, int g, int b);
 
     public void setRainbowAnimation(int saturation, int brightness);
 
     public void setGradientAnimation(int percentage, GradientType type, Color... colors);
+
+    public void setBlinkAnimation(double blinkOnRate, double blinkOffRate);
+    public void setBlinkAnimation(double blinkRate);
+
+    public void setBreatheAnimation(double timePeriod);
+
+    public void setBrightness(double percent);
 
     public void animatePatternRelative(int percentage);
 
