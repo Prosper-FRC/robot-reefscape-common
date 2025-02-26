@@ -143,10 +143,10 @@ public class ManualTeleopController {
             sniperControl.get() * kMaxLinearSpeedMPS * Math.sin(Math.toRadians(povSupplierDegrees.getAsDouble())), 
             DriveConstants.kMaxRotationSpeedRadiansPS * omegaJoystickInput);
 
-        if (fieldRelative) {
-            desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                desiredSpeeds, robotAngle);
-        }
+        // if (fieldRelative) {
+        //     desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+        //         desiredSpeeds, robotAngle);
+        // }
 
         return desiredSpeeds;
     }

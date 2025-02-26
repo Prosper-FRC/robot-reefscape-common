@@ -127,12 +127,12 @@ public class RobotContainer {
                         IntakeConstants.kIntakeMotorConfiguration), 
                     new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
                     // new SensorIO() {},
-                    new PivotIO(){});
-                    // new PivotIOTalonFX(
-                    //     IntakeConstants.kPivotMotorHardware,
-                    //     IntakeConstants.kPivotMotorConfiguration,
-                    //     IntakeConstants.kPivotGains,
-                    //     IntakeConstants.kStatusSignalUpdateFrequencyHz));
+                    // new PivotIO(){});
+                    new PivotIOTalonFX(
+                        IntakeConstants.kPivotMotorHardware,
+                        IntakeConstants.kPivotMotorConfiguration,
+                        IntakeConstants.kPivotGains,
+                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
 
                 // elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
             
@@ -537,66 +537,16 @@ public class RobotContainer {
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
-    
-            driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            
+            driverController.rightBumper()
+            .onTrue(robotDrive.setDriveStateCommand(DriveState.SYSID_CHARACTERIZATION).andThen(robotDrive.characterizeLinearMotion()))
+            .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // getPOV == -1 if nothing is pressed, so if it doesn't return that
-            // then pov control is being used as its being pressed`
-            new Trigger(()-> driverController.getHID().getPOV() != -1)
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            driverController.leftBumper()
+            .onTrue(robotDrive.setDriveStateCommand(DriveState.SYSID_CHARACTERIZATION).andThen(robotDrive.characterizeAngularMotion()))
+            .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            operatorController.povLeft()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab), 
-                        () -> climb.stop(), 
-                        climb));
-
-            operatorController.povRight()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease), 
-                        () -> climb.stop(), 
-                        climb));
-
-            operatorController.a()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> climb.setGoalVoltage(ClimbVoltageGoal.custom), 
-                        () -> climb.stop(), 
-                        climb));
-
-            operatorController.povUp()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> elevator.setVoltage(3.0), 
-                        () -> elevator.stop(), 
-                        elevator));
-
-            operatorController.povDown()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> elevator.setVoltage(0.45), 
-                        () -> elevator.stop(), 
-                        elevator));
-
-            operatorController.y()
-                .whileTrue(
-                    Commands.startEnd(
-                        () -> elevator.setGoal(ElevatorGoal.kL2Coral), 
-                        () -> elevator.stop(), 
-                        elevator));       
+        
         }
     }
 
