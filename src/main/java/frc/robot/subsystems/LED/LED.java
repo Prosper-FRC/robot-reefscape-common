@@ -14,7 +14,6 @@ public class LED extends SubsystemBase implements ILED {
     AddressableLED m_led;
     AddressableLEDBuffer m_ledBuffer;
     LEDPattern pattern = LEDPattern.kOff;
-    boolean isEnabled = false;
 
     public LED(LEDConfig configuration){
         m_led = new AddressableLED(configuration.port());
@@ -88,7 +87,6 @@ public class LED extends SubsystemBase implements ILED {
 
     @Override
     public void periodic() {
-        // If the LEDs are set to enabled then the LEDs will update periodically
         pattern.applyTo(m_ledBuffer);
         m_led.setData(m_ledBuffer);
     }

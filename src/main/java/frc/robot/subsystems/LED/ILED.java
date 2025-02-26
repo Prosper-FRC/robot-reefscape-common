@@ -1,9 +1,11 @@
 package frc.robot.subsystems.LED;
 import edu.wpi.first.wpilibj.util.Color;
+
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 
 interface ILED{
-
     public void setSingleRGB(int index, int r, int g, int b);
 
     public void setSolidColor(int r, int g, int b);
