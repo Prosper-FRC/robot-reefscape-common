@@ -72,7 +72,7 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
-    private final LED ledRight;
+    private final LED led;
     // private final LED ledLeft;
     
     // Define other utility classes
@@ -146,7 +146,7 @@ public class RobotContainer {
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
 
-                ledRight = new LED(LEDConstants.kRightLED);
+                led = new LED(LEDConstants.kLEDConfig);
                 // ledLeft = new LED(LEDConstants.kLeftLED);
                 break;
             case SIM:
@@ -183,7 +183,7 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
-                ledRight = new LED(LEDConstants.kRightLED);
+                led = new LED(LEDConstants.kLEDConfig);
                 // ledLeft = new LED(LEDConstants.kLeftLED);
                 break;
             default:
@@ -204,7 +204,7 @@ public class RobotContainer {
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
 
-                ledRight = new LED(LEDConstants.kRightLED);
+                led = new LED(LEDConstants.kLEDConfig);
                 // ledLeft = new LED(LEDConstants.kLeftLED);
 
                 break;
@@ -274,12 +274,30 @@ public class RobotContainer {
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
-                .onTrue(
-                    Commands.runOnce(() -> ledRight.setGradientAnimation(100, GradientType.kContinuous , Color.kAliceBlue, Color.kBlue, Color.kViolet)));
+            .onTrue(
+                Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100, 
+                    GradientType.kContinuous, 
+                    Color.kLightBlue, 
+                    Color.kMediumBlue, 
+                    Color.kDarkBlue)));
 
-        // new Trigger(DriverStation::isEnabled)
-        //     .onTrue(
-        //         Commands.runOnce(() -> ledLeft.setGradientAnimation(100, GradientType.kContinuous , Color.kAliceBlue, Color.kBlue, Color.kViolet)));
+        new Trigger(intake::detectedGamepiece)
+        .whileTrue(
+            Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                0.5, 
+                Color.kRed)))
+        .whileFalse(
+            Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100,                     
+                    GradientType.kContinuous, 
+                    Color.kLightBlue, 
+                    Color.kMediumBlue, 
+                    Color.kDarkBlue)));
+        
     }
 
     private Command rumbleCommand() {
