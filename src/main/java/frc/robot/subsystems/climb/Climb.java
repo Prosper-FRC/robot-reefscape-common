@@ -23,8 +23,8 @@ import frc.robot.utils.visualizers.PivotVisualizer;
 public class Climb extends SubsystemBase {
   /** List of voltage setpoints for the climb in volts */
   public enum ClimbVoltageGoal {
-    kGrab(() -> 6.0),
-    kRelease(() -> -6.0),
+    kGrab(() -> 12.0),
+    kRelease(() -> -12.0),
     /** Custom setpoint that can be modified over network tables; 
      * Useful for debugging */
     custom(new LoggedTunableNumber("Climb/customVoltageGoal", 0.0));
@@ -102,17 +102,17 @@ public class Climb extends SubsystemBase {
     // Continuously check if climb has moved beyond its limitations, note
     // that we only need to compare the left voltage as that is the lead
     // motor
-    if (!kDisableLimits.get()) {
-      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-          && kInputs[0].appliedVoltage > 0.0) {
-        stop();
-      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
-          && kInputs[0].appliedVoltage < 0.0) {
-        stop();
-      } else {
-        // Do nothing if limits are not reached
-      }
-    }
+    // if (!kDisableLimits.get()) {
+    //   if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+    //       && kInputs[0].appliedVoltage > 0.0) {
+    //     stop();
+    //   } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
+    //       && kInputs[0].appliedVoltage < 0.0) {
+    //     stop();
+    //   } else {
+    //     // Do nothing if limits are not reached
+    //   }
+    // }
 
     // The visualizer needs to be periodically fed the current position of the mechanism
     kClimbVisualizer.updatePosition(getPosition());
@@ -139,23 +139,23 @@ public class Climb extends SubsystemBase {
     // Notice how we are not checking if position control is running, it is up 
     // to the caller to check for this before calling this method (I recommend 
     // calling this subsystem's stop() method after completing any action)
-    if (!kDisableLimits.get()) {
-      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-          && voltage > 0) {
-        return;
-      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
-          && voltage < 0) {
-        return;
-      } else {
-        for (ClimbIO io : kHardware) {
-          io.setVoltage(voltage);
-        }
-      }
-    } else {
+    // if (!kDisableLimits.get()) {
+    //   if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+    //       && voltage > 0) {
+    //     return;
+    //   } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
+    //       && voltage < 0) {
+    //     return;
+    //   } else {
+    //     for (ClimbIO io : kHardware) {
+    //       io.setVoltage(voltage);
+    //     }
+    //   }
+    // } else {
       for (ClimbIO io : kHardware) {
         io.setVoltage(voltage);
       }
-    }
+    //}
   }
 
   /** Stops the mechanism */

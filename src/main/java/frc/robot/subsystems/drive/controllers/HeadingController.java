@@ -27,15 +27,15 @@ public class HeadingController {
     public static final LoggedTunableNumber snapMaxADPSS =
         new LoggedTunableNumber("SwerveHeadingController/Snap/kMaxA", 1000.0);
 
-    public static final LoggedTunableNumber stablizingP =
-        new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kP", 2.5);
-    public static final LoggedTunableNumber stablizingI =
-        new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kI", 0.0);
-    public static final LoggedTunableNumber stablizingD =
-        new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kD", 0.0);
+    // public static final LoggedTunableNumber stablizingP =
+    //     new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kP", 2.5);
+    // public static final LoggedTunableNumber stablizingI =
+    //     new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kI", 0.0);
+    // public static final LoggedTunableNumber stablizingD =
+    //     new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kD", 0.0);
 
     public static final LoggedTunableNumber toleranceDegrees =
-        new LoggedTunableNumber("SwerveHeadingController/Stabilizing/kD", 0.75);
+        new LoggedTunableNumber("SwerveHeadingController/Tolerance", 0.75);
 
     private ProfiledPIDController snapController;
   
@@ -54,10 +54,10 @@ public class HeadingController {
         snapController.enableContinuousInput(0, 360);
         snapController.setTolerance(1.0);
 
-        stabilizingController =
-            new PIDController(stablizingP.get(), stablizingI.get(), stablizingD.get());
-        stabilizingController.enableContinuousInput(0, 360);
-        stabilizingController.setTolerance(0.0);
+        // stabilizingController =
+        //     new PIDController(stablizingP.get(), stablizingI.get(), stablizingD.get());
+        // stabilizingController.enableContinuousInput(0, 360);
+        // stabilizingController.setTolerance(0.0);
     }
 
     public void setHeadingGoal(Supplier<Rotation2d> goalSupplier) {
@@ -84,8 +84,8 @@ public class HeadingController {
 
         Logger.recordOutput("Drive/HeadingController/unAdjustedOutput", output);
 
-        Logger.recordOutput("Drive/HeadingController/setpointErrorDegrees", setpointErrorDegrees);
-        Logger.recordOutput("Drive/HeadingController/goalErrorDegrees", goalErrorDegrees);
+        // Logger.recordOutput("Drive/HeadingController/setpointErrorDegrees", setpointErrorDegrees);
+        // Logger.recordOutput("Drive/HeadingController/goalErrorDegrees", goalErrorDegrees);
 
         Logger.recordOutput("Drive/HeadingController/adjustedOutput", adjustedOutput);
 
@@ -108,8 +108,8 @@ public class HeadingController {
             snapController.setConstraints(new Constraints(snapMaxVDPS.get(), snapMaxADPSS.get()));
         }, snapP, snapI, snapD, snapMaxVDPS, snapMaxADPSS);
 
-        LoggedTunableNumber.ifChanged(hashCode(), () -> {
-            stabilizingController.setPID(stablizingP.get(), stablizingI.get(), stablizingD.get());
-        }, stablizingP, stablizingI, stablizingD);
+        // LoggedTunableNumber.ifChanged(hashCode(), () -> {
+        //     stabilizingController.setPID(stablizingP.get(), stablizingI.get(), stablizingD.get());
+        // }, stablizingP, stablizingI, stablizingD);
     }
 }

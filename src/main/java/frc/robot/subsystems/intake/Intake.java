@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
   /** List of voltage setpoints for the intake in voltage */
   public enum RollerGoal {
     kIntakeCoral(() -> 2.0),
-    kIntakeAlgae(() -> 5.0),
+    kIntakeAlgae(() -> -5.0),
     kScoreCoral(() -> -4.0),
     kScoreAlgae(() -> -5.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
@@ -40,9 +40,12 @@ public class Intake extends SubsystemBase {
 
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
-    kStow(() -> Rotation2d.fromDegrees(0.0)),
-    kIntake(() -> Rotation2d.fromDegrees(90.0)),
-    kScore(() -> Rotation2d.fromDegrees(85.0)),
+    kStowScore(() -> Rotation2d.fromDegrees(64.0)),
+    kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
+    kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
+    kIntakeGround(() -> Rotation2d.fromDegrees(-40.0)),
+    kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
+    kScore(() -> Rotation2d.fromDegrees(40.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
       new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
@@ -94,11 +97,11 @@ public class Intake extends SubsystemBase {
   private final LoggedTunableNumber kMaxVelocity =
       new LoggedTunableNumber(
           "Intake/MotionMagic/kMaxVelocity", 
-          IntakeConstants.kPivotGains.maxVelocityMetersPerSecond());
+          IntakeConstants.kPivotGains.maxVelocityRotationsPerSecond());
   private final LoggedTunableNumber kMaxAcceleration =
       new LoggedTunableNumber(
           "Intake/MotionMagic/kMaxAcceleration", 
-          IntakeConstants.kPivotGains.maxAccelerationMetersPerSecondSquared());
+          IntakeConstants.kPivotGains.maxAccelerationRotationsPerSecondSquared());
 
   private boolean detectedGamepiece = false;
   private LinearFilter ampFilter = LinearFilter.movingAverage(
@@ -145,6 +148,8 @@ public class Intake extends SubsystemBase {
       stop(true, true);
     }
 
+    double ampFilterCalculation = ampFilter.calculate(kRollerInputs.statorCurrentAmps);
+
     if (selectedGamepiece == Gamepiece.kCoral) {
       // If the CANrange disconnects we can use motor current to detect when we have a coral
       // TODO Test this fallback to see if it actually works
@@ -154,8 +159,7 @@ public class Intake extends SubsystemBase {
         } else {
           // Checks for spike in amperage, and if greater than the value then
           // the intake motor probbaly has the coral
-          detectedGamepiece = ampFilter.calculate(
-            kRollerInputs.statorCurrentAmps) > IntakeConstants.kCoralAmpFilterThreshold;
+          detectedGamepiece = ampFilterCalculation > IntakeConstants.kCoralAmpFilterThreshold;
         }
       } else {
         detectedGamepiece = true;
@@ -164,8 +168,7 @@ public class Intake extends SubsystemBase {
       if (!kOverrideDetectGamepiece.get()) {
         // Checks for spike in amperage, and if greater than the value then
         // the intake motor probbaly has the algae
-        detectedGamepiece = ampFilter.calculate(
-          kRollerInputs.statorCurrentAmps) > IntakeConstants.kAlgaeAmpFilterThreshold;
+        detectedGamepiece = ampFilterCalculation > IntakeConstants.kAlgaeAmpFilterThreshold;
       } else {
         detectedGamepiece = true;
       }
@@ -180,7 +183,8 @@ public class Intake extends SubsystemBase {
       Logger.recordOutput("Intake/RollerGoal", "NONE");
     }
     if (pivotGoal != null) {
-      kPivotHardware.setPosition(pivotGoal.getGoalPosition());
+      setPivotPosition(pivotGoal.getGoalPosition());
+      Logger.recordOutput("Intake/PivotGoalValue", pivotGoal.getGoalPosition());
       Logger.recordOutput("Intake/PivotGoal", pivotGoal);
     } else {
       Logger.recordOutput("Intake/PivotGoal", "NONE");
@@ -288,6 +292,10 @@ public class Intake extends SubsystemBase {
     kPivotHardware.setVoltage(voltage);
   }
 
+  public void setPivotPosition(Rotation2d position) {
+    kPivotHardware.setPosition(position);
+  }
+
   /**
    * Sets the vertical position of the mechanism on the visuzlier, useful as the
    * pivot moves with the elevator
@@ -337,5 +345,9 @@ public class Intake extends SubsystemBase {
    */
   public Rotation2d getPivotPosition() {
     return kPivotInputs.position;
+  }
+
+  public Double getStatorCurrent() {
+    return kRollerInputs.statorCurrentAmps;
   }
 }

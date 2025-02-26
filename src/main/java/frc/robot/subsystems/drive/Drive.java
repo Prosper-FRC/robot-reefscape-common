@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
-
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
 import frc.robot.subsystems.drive.controllers.HolonomicController;
 
@@ -61,6 +61,7 @@ public class Drive extends SubsystemBase {
         POV_SNIPER,
         PROCESSOR_HEADING_ALIGN,
         INTAKE_HEADING_ALIGN,
+        REEF_HEADING_ALIGN,
         DRIVE_TO_REEF,
         DRIVE_TO_INTAKE,
         DRIVE_TO_NET,
@@ -209,7 +210,7 @@ public class Drive extends SubsystemBase {
             Logger.recordOutput(observation.camName()+"/stdDevX", observation.stdDevs().get(0));
             Logger.recordOutput(observation.camName()+"/stdDevY", observation.stdDevs().get(1));
             Logger.recordOutput(observation.camName()+"/stdDevTheta", observation.stdDevs().get(2));
-            Logger.recordOutput(observation.camName()+"/TransformFromOdometry", odometry.getPoseMeters().minus(observation.pose()));
+            // Logger.recordOutput(observation.camName()+"/TransformFromOdometry", odometry.getPoseMeters().minus(observation.pose()));
         }
 
         poseEstimator.update(robotRotation, getModulePositions());
@@ -217,7 +218,7 @@ public class Drive extends SubsystemBase {
 
         field.setRobotPose(getPoseEstimate());
 
-        Logger.recordOutput("Drive/Odometry/FieldCurrentChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(getRobotChassisSpeeds(), robotRotation));
+        // Logger.recordOutput("Drive/Odometry/FieldCurrentChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(getRobotChassisSpeeds(), robotRotation));
 
         /* Updating Controllers */
         headingController.updateHeadingController();
@@ -245,6 +246,12 @@ public class Drive extends SubsystemBase {
                 break;
             case INTAKE_HEADING_ALIGN:
                 goalRotation = AllianceFlipUtil.apply(GoalPoseChooser.getIntakePose(getPoseEstimate()).getRotation());
+                desiredSpeeds = new ChassisSpeeds(
+                    teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
+                    headingController.getSnapOutput( getPoseEstimate().getRotation() ));
+                break;
+            case REEF_HEADING_ALIGN:
+                goalRotation = AllianceFlipUtil.apply(GoalPoseChooser.turnFromReefOrigin(getPoseEstimate()));
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
@@ -310,6 +317,9 @@ public class Drive extends SubsystemBase {
             case PROCESSOR_HEADING_ALIGN:
                 headingController.reset(robotRotation, gyroInputs.yawVelocityPS);            
                 break;
+            case REEF_HEADING_ALIGN:
+                headingController.reset(robotRotation, gyroInputs.yawVelocityPS);
+                break;
             case DRIVE_TO_REEF:
                 autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
@@ -343,7 +353,7 @@ public class Drive extends SubsystemBase {
         previousSetpoint = setpointGenerator.generateSetpoint(
             previousSetpoint, desiredSpeeds, kDriveConstraints, 0.02);
 
-        Logger.recordOutput("Drive/Odometry/generatedFieldSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(previousSetpoint.robotRelativeSpeeds(), robotRotation));
+        // Logger.recordOutput("Drive/Odometry/generatedFieldSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(previousSetpoint.robotRelativeSpeeds(), robotRotation));
 
         for (int i = 0; i < 4; i++) {
             if(useGenerator) {
@@ -385,9 +395,9 @@ public class Drive extends SubsystemBase {
         
         Logger.recordOutput("Drive/Swerve/Setpoints", unOptimizedSetpointStates);
         Logger.recordOutput("Drive/Swerve/SetpointsOptimized", optimizedSetpointStates);
-        Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
-        Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
-            kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
+        // Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
+        // Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
+        //     kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
     }
 
     /* Calculates DriveFeedforward based off state */

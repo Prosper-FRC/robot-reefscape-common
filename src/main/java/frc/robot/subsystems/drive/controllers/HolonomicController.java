@@ -203,13 +203,13 @@ public class HolonomicController {
                 omegaController.getSetpoint().position ) );
     }
 
-    @AutoLogOutput(key = "Drive/HolonomicController/VelocityGoal")
-    public ChassisSpeeds getVelocityGoal() {
-        return new ChassisSpeeds(
-            xController.getGoal().velocity,
-            yController.getGoal().velocity,
-            Math.toRadians( omegaController.getGoal().velocity ) );
-    }
+    // @AutoLogOutput(key = "Drive/HolonomicController/VelocityGoal")
+    // public ChassisSpeeds getVelocityGoal() {
+    //     return new ChassisSpeeds(
+    //         xController.getGoal().velocity,
+    //         yController.getGoal().velocity,
+    //         Math.toRadians( omegaController.getGoal().velocity ) );
+    // }
 
     @AutoLogOutput(key = "Drive/HolonomicController/VelocitySetpoint")
     public ChassisSpeeds getVelocitySetpoint() {
@@ -219,14 +219,14 @@ public class HolonomicController {
             Math.toRadians( omegaController.getSetpoint().velocity ) );
     }
 
-    @AutoLogOutput(key = "Drive/HolonomicController/PoseError")
-    public Pose2d getPoseError() {
-        return new Pose2d(
-            xController.getPositionError(),
-            yController.getPositionError(),
-            new Rotation2d(omegaController.getPositionError())
-        );
-    }
+    // @AutoLogOutput(key = "Drive/HolonomicController/PoseError")
+    // public Pose2d getPoseError() {
+    //     return new Pose2d(
+    //         xController.getPositionError(),
+    //         yController.getPositionError(),
+    //         new Rotation2d(omegaController.getPositionError())
+    //     );
+    // }
 
     ////////////////////////// SETTERS \\\\\\\\\\\\\\\\\\\\\\\\\\\\
     public void updateAlignmentControllers() {

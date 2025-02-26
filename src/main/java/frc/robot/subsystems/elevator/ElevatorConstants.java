@@ -74,7 +74,7 @@ public class ElevatorConstants {
 
   public static final ElevatorHardware kRoboElevatorHardware = new ElevatorHardware(
     50, // Motor CAN ID
-    9.0 / 1.0,  // Gearing
+    15.0 / 1.0,  // Gearing
     /*
     * Outside sprocket radius: 0.944 in
     * Root sprocket radius: 0.819
@@ -85,16 +85,16 @@ public class ElevatorConstants {
   public static final ElevatorGains kElevatorGains = 
     switch (Constants.kCurrentMode) {
       case REAL -> new ElevatorGains(
-        5.0,
+        10.0,
         0.0,
         0.0,
-        2.947, //2.947
-        22.0, // 22
+        1000.0, //2.947
+      5.0, // 22
         0.0,
         0.0,
         0.5,
-        0.01, // 0.01
-        0.45); // 0.11
+        0.0, // 0.01
+        0.8); // 0.11
       case SIM -> new ElevatorGains(
         1.0,
         0.0,
@@ -132,7 +132,7 @@ public class ElevatorConstants {
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
     // empty carriage load = .8kg
-    // prototype carriage load = 5kg
+    // prototype carriage load = 13.61 kg
     5.0, 
     kDrumRadiusMeters, 
     true, 

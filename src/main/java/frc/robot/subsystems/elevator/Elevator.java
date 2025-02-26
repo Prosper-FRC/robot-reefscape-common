@@ -11,7 +11,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -26,13 +28,14 @@ public class Elevator extends SubsystemBase {
     kL2Coral(() -> 0.41),
     kL1Coral(() -> Units.inchesToMeters(8.0)),
     kL4Algae(() -> Units.inchesToMeters(60.0)),
-    kL3Algae(() -> 0.84),
-    kL2Algae(() -> 0.41),
+    kL3Algae(() -> 0.7 - 0.1),
+    kL2Algae(() -> 0.3 - 0.1),
+    kProcessor(() -> 0.3 - 0.15),
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
     /** Stow the elevator during transit */
-    kStow(() -> Units.inchesToMeters(4.0)),
+    kStow(() -> Units.inchesToMeters(2.0)),
     /** Position for intaking from the coral station */
-    kIntake(() -> Units.inchesToMeters(8.0)),
+    kIntake(() -> Units.inchesToMeters(0.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Elevator/Custom", 0.0));
 
@@ -79,6 +82,9 @@ public class Elevator extends SubsystemBase {
           "Elevator/MotionMagic/kMaxAcceleration", 
           ElevatorConstants.kElevatorGains.maxAccelerationMetersPerSecondSquared());
 
+  private LoggedTunableNumber positionTolerance = 
+    new LoggedTunableNumber("Elevator/ToleranceMeters", ElevatorConstants.kPositionToleranceMeters);
+
   // Object used to visualize the mechanism over network tables, useful in simulation
   private final ElevatorVisualizer kVisualizer;
 
@@ -89,6 +95,10 @@ public class Elevator extends SubsystemBase {
 
   private boolean isHoming = false;
   private boolean hasHomed = false;
+
+  private boolean hasStowed = false;
+
+  private Debouncer stowDebouncer = new Debouncer(0.05, DebounceType.kBoth);
 
   public Elevator(ElevatorIO io, MagneticSensorIO ioSensor) {
     kHardware = io;
@@ -117,18 +127,28 @@ public class Elevator extends SubsystemBase {
       // Run the elevator goal
       if (currentElevatorGoal != null) {
         currentElevatorGoalPositionMeters = currentElevatorGoal.getGoalMeters();
-        setPosition(currentElevatorGoalPositionMeters);
         
-        /* To-do make tolerance a constant */
-        if(Math.abs(kInputs.positionMeters - currentElevatorGoalPositionMeters) < 0.015) {
-          kHardware.setVoltage(ElevatorConstants.kElevatorGains.g());
-        } else {
+        // if (atGoal()) {
+        //   kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
+        //   Logger.recordOutput("Elevator/Goal", currentElevatorGoal.toString() + "HOLDING");
+        // } else {
+        if(!currentElevatorGoal.equals(ElevatorGoal.kStow)) {
           setPosition(currentElevatorGoalPositionMeters);
+          hasStowed = false;
+        } else {
+          if(hasStowed) {
+            setVoltage(0.0);
+          } else {
+            setPosition(currentElevatorGoalPositionMeters);
+            hasStowed = stowDebouncer.calculate(atGoal());
+          }
         }
+        //   Logger.recordOutput("Elevator/Goal", currentElevatorGoal);
+        // }
+        // setPosition(currentElevatorGoalPositionMeters);
+        Logger.recordOutput("Elevator/Goal", currentElevatorGoal);
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
-
-        Logger.recordOutput("Elevator/Goal", currentElevatorGoal);
       } else {
         Logger.recordOutput("Elevator/Goal", "NONE");
         kVisualizer.setGoalLine(0.0, false);
@@ -147,18 +167,34 @@ public class Elevator extends SubsystemBase {
     } else {
       // If we are homing...
       if (RobotBase.isReal()) {
-        // If the magnetic sensor is activated, we've completed homing
-        if (kSensorInputs.isActivated || (ElevatorConstants.kHomeWithCurrent && (
-            elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold))) {
-          resetPosition();
-          stop();
-          hasHomed = true;
-          isHoming = false;
+        if (kSensorInputs.isConnected) {
+          // If the magnetic sensor is activated, we've completed homing
+          if (kSensorInputs.isActivated || (ElevatorConstants.kHomeWithCurrent && (
+              elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold))) {
+            resetPosition();
+            stop();
+            hasHomed = true;
+            isHoming = false;
+          } else {
+          // Otherwise, continue to run the elevator downwards
+            kHardware.setVoltage(-2.0);
+            hasHomed = false;
+            isHoming = true;
+          }
         } else {
-        // Otherwise, continue to run the elevator downwards
-          kHardware.setVoltage(-2.0);
-          hasHomed = false;
-          isHoming = true;
+          // Default to home with current, ignoring the constant if the mag sensor is disconnected
+          // If the current amps is hitting the threshold
+          if (elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold) {
+            resetPosition();
+            stop();
+            hasHomed = true;
+            isHoming = false;
+          } else {
+          // Otherwise, continue to run the elevator downwards
+            kHardware.setVoltage(-2.0);
+            hasHomed = false;
+            isHoming = true;
+          }
         }
       } else {
         // If we're in sim, simulate via button that can be toggled on dashboard
@@ -246,6 +282,10 @@ public class Elevator extends SubsystemBase {
     kHardware.resetPosition();
   }
 
+  public ElevatorGoal getGoal(){
+    return currentElevatorGoal;
+  }
+
   /**
    * Set the position goal of the hardware layer
    * 
@@ -307,7 +347,7 @@ public class Elevator extends SubsystemBase {
    */
   @AutoLogOutput(key = "Elevator/Feedback/AtGoal")
   public boolean atGoal() {
-    return Math.abs(getErrorMeters()) < ElevatorConstants.kPositionToleranceMeters;
+    return Math.abs(getErrorMeters()) < positionTolerance.get();
   }
 
   /**

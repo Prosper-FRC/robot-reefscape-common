@@ -9,9 +9,14 @@ import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 
 /**
  * <p> A commands factory for the teleoperated period. 
@@ -73,6 +78,13 @@ public class TeleopCommands {
             kElevator);
     }
 
+    public Command runElevatorAndStopCommand(ElevatorGoal elevatorGoal) {
+        return Commands.startEnd(
+            () -> kElevator.setGoal(elevatorGoal), 
+            () -> kElevator.stop(), 
+            kElevator);
+    }
+
     /**
      * Runs the rollers and then stops them, this command should be decorated with an end
      * condition specified by the caller
@@ -92,6 +104,65 @@ public class TeleopCommands {
             },
             kIntake);
     }
+
+    /**
+     * Runs the rollers and then stops them for algae pickup, this command should be decorated with an end
+     * condition specified by the caller
+     * 
+     * @param rollerGoal The intake rollers goal
+     * @return The command to start and stop the intake rollers
+     */
+    public Command runAlgaeAndStopCommand(RollerGoal rollerGoal, PivotGoal pivotGoal){
+        return Commands.startEnd(
+            () -> {
+                stopRollers = false;
+                stopPivot = false;
+                kIntake.setPivotGoal(pivotGoal);
+                kIntake.setRollerGoal(rollerGoal);
+            },
+            () -> {
+                stopRollers = true;
+                kIntake.stop(stopRollers, stopPivot);
+                stopPivot = false;
+                kIntake.setPivotPosition(kIntake.getPivotPosition());
+            },
+            kIntake);     
+    }
+
+    /**
+     * Runs the elevator at the specified voltage, this command should be decorated with an
+     * end condition specified by the caller
+     * 
+     * @param voltage The voltage the elevator motor will be set to
+     * @return The command to start and stop the elevator at a specified voltage
+     */
+    public Command runElevatorVoltage(double voltage) {
+        return Commands.startEnd(
+            () -> {
+                kElevator.setVoltage(voltage);
+            }, 
+            () -> {
+                kElevator.stop();
+            }, 
+            kElevator);
+    }
+
+    public Command runTunableVoltage() {
+        LoggedTunableNumber voltageTunable = 
+            new LoggedTunableNumber("Elevator/VariableVoltage", 3.0);
+
+        return new FunctionalCommand(
+            () -> {},
+            () -> {
+                double voltage = voltageTunable.get();
+                kElevator.setVoltage(voltage);
+            },
+            (interrupted) -> {
+                kElevator.stop();
+            },
+            () -> false,
+            kElevator);    
+        }
 
     /**
      * Runs the intake rollers when a trigger that is passed in is set to true. It will continuously
@@ -147,6 +218,7 @@ public class TeleopCommands {
         return Commands.startEnd(
             ()-> {
                 stopPivot = false;
+                stopRollers = false;
                 kIntake.setPivotGoal(pivotGoal);
             }, 
             () -> {
@@ -156,6 +228,83 @@ public class TeleopCommands {
             }, 
             kIntake);
     }
+
+    public Command runPivotAndHoldCommand(PivotGoal pivotGoal) {
+        return Commands.startEnd(
+            () -> {
+                stopPivot = false;
+                kIntake.setPivotGoal(pivotGoal);
+            }, 
+            () -> {
+                stopPivot = false;
+                kIntake.setPivotPosition(kIntake.getPivotPosition());
+            }, 
+            kIntake);
+    }
+
+    public Command runPivotAndRollerGoalWhenConfirmed(
+        PivotGoal pivotGoal, 
+        RollerGoal rollerGoal, 
+        Trigger hasGamepieceTrigger, 
+        Trigger pivotAtGoalTrigger, 
+        Trigger confirmRollerTrigger) {
+
+        return new FunctionalCommand(
+            () -> {
+                stopRollers = false;
+                stopPivot = false;
+            },
+            () -> {
+                if (hasGamepieceTrigger.negate().getAsBoolean()) {
+                    stopPivot = false;
+                    kIntake.setPivotGoal(pivotGoal);
+                } else {
+                    stopPivot = false;
+                    kIntake.setPivotGoal(PivotGoal.kStowScore);
+                }
+
+                if (confirmRollerTrigger.and(pivotAtGoalTrigger).and(hasGamepieceTrigger.negate()).getAsBoolean()) {
+                    stopRollers = false;
+                    kIntake.setRollerGoal(rollerGoal);
+                } else {
+                    stopRollers = true;
+                    kIntake.stop(stopRollers, stopPivot);
+                }
+            },
+            (interrupted) -> {
+                stopPivot = true;
+                stopRollers = true;
+                kIntake.stop(stopRollers, stopPivot);
+            },
+            () -> false,
+            kIntake);    
+    }
+
+    public Command runPivotAndRollersVoltage(double pivotVoltage, double rollerVoltage, Trigger confirmRollerTrigger) {
+        return new FunctionalCommand(
+            () -> {
+                stopRollers = false;
+                stopPivot = false;
+            },
+            () -> {
+                stopPivot = false;
+                kIntake.setPivotVoltage(pivotVoltage);
+                if (confirmRollerTrigger.getAsBoolean()) {
+                    stopRollers = false;
+                    kIntake.setRollerVoltage(rollerVoltage);
+                } else {
+                    stopRollers = true;
+                    kIntake.stop(stopRollers, stopPivot);
+                }
+            },
+            (interrupted) -> {
+                stopRollers = true;
+                stopPivot = true;
+                kIntake.stop(stopRollers, stopPivot);
+            },
+            () -> false,
+            kIntake);    
+        }
 
     /**
      * Runs the climb at a specified goal voltage and then stops it, this command should be
@@ -197,6 +346,13 @@ public class TeleopCommands {
         return setStopPivotStateCommand(true)
             .andThen(
                 Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake));
+    }
+
+    public Command stopRollersAndPivotCommand() {
+        return setStopRollersStateCommand(true)
+            .andThen(setStopPivotStateCommand(true)
+                .andThen(
+                    Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake)));
     }
 
     /**

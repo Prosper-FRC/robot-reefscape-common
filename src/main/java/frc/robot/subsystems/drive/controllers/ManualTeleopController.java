@@ -87,7 +87,7 @@ public class ManualTeleopController {
         }
 
 
-        Logger.recordOutput("Drive/Teleop/preOffsetAngle", robotAngle);
+        // Logger.recordOutput("Drive/Teleop/preOffsetAngle", robotAngle);
         /* 
          * Field relative only works if the robot starts on blue side
          * Because the driver faces the other direction relative to field when on red
@@ -96,7 +96,7 @@ public class ManualTeleopController {
         */
         if(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)) 
             robotAngle = robotAngle.plus(Rotation2d.k180deg);
-        Logger.recordOutput("Drive/Teleop/offsetAngle", robotAngle);
+        // Logger.recordOutput("Drive/Teleop/offsetAngle", robotAngle);
 
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds( 
             DriveConstants.kMaxLinearSpeedMPS * xScaledJoystickInput, 
@@ -143,10 +143,10 @@ public class ManualTeleopController {
             sniperControl.get() * kMaxLinearSpeedMPS * Math.sin(Math.toRadians(povSupplierDegrees.getAsDouble())), 
             DriveConstants.kMaxRotationSpeedRadiansPS * omegaJoystickInput);
 
-        if (fieldRelative) {
-            desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                desiredSpeeds, robotAngle);
-        }
+        // if (fieldRelative) {
+        //     desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+        //         desiredSpeeds, robotAngle);
+        // }
 
         return desiredSpeeds;
     }

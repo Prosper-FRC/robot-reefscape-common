@@ -9,10 +9,10 @@ public interface ModuleIO {
         public boolean isDriveConnected = true;
         public double drivePositionM = 0.0;
         public double driveVelocityMPS = 0.0;
-        public double[] driveStatorCurrentAmps = new double[] {0.0};
-        public double[] driveSupplyCurrentAmps = new double[] {0.0};
-        public double[] driveTorqueCurrentAmps = new double[] {0.0};
-        public double[] driveTemperatureCelsius = new double[] {0.0};
+        public double driveStatorCurrentAmps = 0.0;
+        public double driveSupplyCurrentAmps = 0.0;
+        public double driveTorqueCurrentAmps = 0.0;
+        public double driveTemperatureCelsius = 0.0;
         public double driveAppliedVolts = 0.0;
         public double driveMotorVolts = 0.0;
         public double driveAccelerationMPSS = 0.0;
@@ -21,10 +21,10 @@ public interface ModuleIO {
         public Rotation2d azimuthPosition = new Rotation2d();
         public Rotation2d azimuthAbsolutePosition = new Rotation2d();
         public Rotation2d azimuthVelocity = new Rotation2d();
-        public double[] azimuthStatorCurrentAmps = new double[] {0.0};
-        public double[] azimuthSupplyCurrentAmps = new double[] {0.0};
-        public double[] azimuthTorqueCurrentAmps = new double[] {0.0};
-        public double[] azimuthTemperatureCelsius = new double[] {0.0};
+        public double azimuthStatorCurrentAmps = 0.0;
+        public double azimuthSupplyCurrentAmps = 0.0;
+        // public double azimuthTorqueCurrentAmps = 0.0;
+        public double azimuthTemperatureCelsius = 0.0;
         public double azimuthAppliedVolts = 0.0;
         public double azimuthMotorVolts = 0.0;
     }

@@ -40,10 +40,10 @@ public class Vision {
         for(int i = 0; i < cameras.length; i++) {
             cameras[i].updateInputs(camerasData[i], lastRobotPose, simOdomPose);
             Logger.processInputs("Vision/"+camerasData[i].camName, camerasData[i]);
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/Pose", camerasData[i].latestEstimatedRobotPose.toPose2d());
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/X", camerasData[i].latestEstimatedRobotPose.getRotation().getX());
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/Y", camerasData[i].latestEstimatedRobotPose.getRotation().getY());
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/Z", camerasData[i].latestEstimatedRobotPose.getRotation().getZ());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/Pose", camerasData[i].latestEstimatedRobotPose.toPose2d());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/X", camerasData[i].latestEstimatedRobotPose.getRotation().getX());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/Y", camerasData[i].latestEstimatedRobotPose.getRotation().getY());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/Z", camerasData[i].latestEstimatedRobotPose.getRotation().getZ());
         }
 
     }
@@ -80,15 +80,17 @@ public class Vision {
                             Double.MAX_VALUE, 
                             Double.MAX_VALUE), 
                         camData.latestTimestamp, camData.camName);
+
+                    i++;
                     continue;
                 }
 
                 avgDistMeters /= numberOfTargets;
-                Logger.recordOutput("Vision/AvgDistMeters", avgDistMeters);
+                // Logger.recordOutput("Vision/AvgDistMeters", avgDistMeters);
 
                 double xyScalar = Math.pow(avgDistMeters, 2) / (numberOfTargets);
 
-                Logger.recordOutput("Vision/xyScalar", xyScalar);
+                // Logger.recordOutput("Vision/xyScalar", xyScalar);
 
                 // Cases where we shouldn't add vision measurements
                 if(numberOfTargets == 1 && avgDistMeters > 3.5) {
@@ -117,14 +119,14 @@ public class Vision {
                     } else {
                         singleTagPose = camData.latestEstimatedRobotPose.toPose2d();
                     }
-                        observations[i] = new VisionObservation(
-                            true,
-                            singleTagPose, 
-                            VecBuilder.fill(
-                                kSingleXYStdev.get() * xyScalar, 
-                                kSingleXYStdev.get() * xyScalar, 
-                                Double.MAX_VALUE), 
-                            camData.latestTimestamp, camData.camName);
+                    observations[i] = new VisionObservation(
+                        true,
+                        singleTagPose, 
+                        VecBuilder.fill(
+                            kSingleXYStdev.get() * xyScalar, 
+                            kSingleXYStdev.get() * xyScalar, 
+                            Double.MAX_VALUE), 
+                        camData.latestTimestamp, camData.camName);
                 // In other cases, run multi-tag calibration
                 } else {
                     observations[i] = new VisionObservation(
@@ -135,6 +137,7 @@ public class Vision {
                             kMultiXYStdev.get() * xyScalar, 
                             Double.MAX_VALUE), 
                         camData.latestTimestamp, camData.camName);
+
                 }
             } else {
                 observations[i] = new VisionObservation(
@@ -151,6 +154,14 @@ public class Vision {
 
     private Transform2d toTransform2d(Transform3d transform) {
         return new Transform2d(transform.getX(), transform.getY(), transform.getRotation().toRotation2d());
+    }
+
+    public void logVisionObservation(VisionObservation observation, String state) {
+        Logger.recordOutput("Vision/Observation/"+observation.camName+"/State", state);
+        Logger.recordOutput("Vision/Observation/"+observation.camName+"/Timestamp", observation.camName());
+        Logger.recordOutput("Vision/Observation/"+observation.camName+"/Pose", observation.pose());
+        Logger.recordOutput("Vision/Observation/"+observation.camName+"/hasObserved", observation.hasObserved());
+        Logger.recordOutput("Vision/Observation/"+observation.camName+"/StdDevs", observation.stdDevs());
     }
 
     public record VisionObservation(boolean hasObserved, Pose2d pose, Vector<N3> stdDevs, double timeStamp, String camName) {}

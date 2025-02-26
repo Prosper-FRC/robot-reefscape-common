@@ -63,8 +63,8 @@ public class PivotIOSim implements PivotIO {
       configuration.measurementStdDevs());
 
     kProfile = new TrapezoidProfile(new TrapezoidProfile.Constraints(
-      gains.maxVelocityMetersPerSecond(), 
-      gains.maxAccelerationMetersPerSecondSquared()));
+      gains.maxVelocityRotationsPerSecond(), 
+      gains.maxAccelerationRotationsPerSecondSquared()));
 
     kFeedback = new PIDController(gains.p(), gains.i(), gains.d());
 

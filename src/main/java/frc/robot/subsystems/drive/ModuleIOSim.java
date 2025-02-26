@@ -38,16 +38,16 @@ public class ModuleIOSim implements ModuleIO {
         inputs.drivePositionM = driveMotor.getAngularPositionRotations() * kWheelCircumferenceMeters;
         inputs.driveVelocityMPS = (driveMotor.getAngularVelocityRPM() * kWheelCircumferenceMeters) / 60.0;
         inputs.driveAppliedVolts = driveAppliedVolts;
-        inputs.driveStatorCurrentAmps = new double[] {Math.abs(driveMotor.getCurrentDrawAmps())};
-        inputs.driveTemperatureCelsius = new double[] {0.0};
+        inputs.driveStatorCurrentAmps = Math.abs(driveMotor.getCurrentDrawAmps());
+        inputs.driveTemperatureCelsius = 0.0;
         inputs.azimuthAppliedVolts = azimuthAppliedVolts;
         inputs.azimuthMotorVolts = azimuthAppliedVolts;
 
         inputs.azimuthAbsolutePosition = new Rotation2d(azimuthMotor.getAngularPositionRad());
         inputs.azimuthPosition = new Rotation2d(azimuthMotor.getAngularPositionRad());
         inputs.azimuthVelocity = Rotation2d.fromRadians(azimuthMotor.getAngularVelocityRadPerSec());
-        inputs.azimuthStatorCurrentAmps = new double[] {Math.abs(azimuthMotor.getCurrentDrawAmps())};
-        inputs.azimuthTemperatureCelsius = new double[] {0.0};
+        inputs.azimuthStatorCurrentAmps = Math.abs(azimuthMotor.getCurrentDrawAmps());
+        inputs.azimuthTemperatureCelsius = 0.0;
         inputs.azimuthAppliedVolts = azimuthAppliedVolts;
         inputs.azimuthMotorVolts = azimuthAppliedVolts;
     }

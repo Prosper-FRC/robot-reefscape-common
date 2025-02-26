@@ -61,12 +61,12 @@ public class Module {
         // if Amperage is null no feedforward is used
         // Amperage is the FOC feedforward
         if (velocitySetpointMPS != null) {
-            Logger.recordOutput("Drive/"+kModuleName+"/velocitySepointMPS", velocitySetpointMPS);
+            // Logger.recordOutput("Drive/"+kModuleName+"/velocitySepointMPS", velocitySetpointMPS);
             if(amperageFeedforward != null) {
                 double ffOutput = driveFF.calculate(velocitySetpointMPS, amperageFeedforward);
 
-                Logger.recordOutput("Drive/"+kModuleName+"/AmperageFeedforward", amperageFeedforward);
-                Logger.recordOutput("Drive/"+kModuleName+"/ffOutput", ffOutput);
+                // Logger.recordOutput("Drive/"+kModuleName+"/AmperageFeedforward", amperageFeedforward);
+                // Logger.recordOutput("Drive/"+kModuleName+"/ffOutput", ffOutput);
 
                 io.setDriveVelocity(velocitySetpointMPS, ffOutput);
             } else {

@@ -44,9 +44,9 @@ public class IntakeConstants {
     double i, 
     double d, 
     // Motion magic constraints
-    double maxVelocityMetersPerSecond, 
-    double maxAccelerationMetersPerSecondSquared, 
-    double jerkMetersPerSecondCubed, 
+    double maxVelocityRotationsPerSecond, 
+    double maxAccelerationRotationsPerSecondSquared, 
+    double jerkRotationsPerSecondCubed, 
     // Pivot feedforward values
     double s, 
     double v, 
@@ -80,7 +80,7 @@ public class IntakeConstants {
    */
   public record SensorConfiguration(
     int sensorId,
-    double detectionThresholdMeters,
+    double detectionThresholdMilimeters,
     int x,
     int y,
     int w,
@@ -133,7 +133,7 @@ public class IntakeConstants {
 
   public static final SensorConfiguration kSensorConfiguration = new SensorConfiguration(
     57, // Sensor CAN ID
-    1.0, // Sensor detection threshold distance meters (detection distance)
+    40, // Sensor detection threshold distance meters (detection distance)
     8, // Region of interest SPADs starting x-coordinate
     8, // Region of interest SPADs starting y-coordinate
     16, // Total region of interest width
@@ -145,12 +145,12 @@ public class IntakeConstants {
 
   /* Pivot constants */
   
-  public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(0.0);
-  public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(90.0);
+  public static final Rotation2d kMinPivotPosition = Rotation2d.fromDegrees(-70.0);
+  public static final Rotation2d kMaxPivotPosition = Rotation2d.fromDegrees(64.331);
 
   public static final Rotation2d kPivotPositionTolerance = Rotation2d.fromDegrees(1.0);
   
-  public static final double kPivotGearing = 9.0 / 1.0;
+  public static final double kPivotGearing = (48.0 / 1.0) * (48.0 / 22.0);
 
   public static final PivotHardware kPivotMotorHardware = new PivotHardware(
     58, // CAN ID
@@ -159,14 +159,14 @@ public class IntakeConstants {
   public static final PivotGains kPivotGains =  
     switch (Constants.kCurrentMode) {
       case REAL -> new PivotGains(
+        5.0,
         0.0,
         0.0,
+        1000,
+        0.5,
+        0.025,
         0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
+        13.0,
         0.0, 
         0.0); 
       case SIM -> new PivotGains(
