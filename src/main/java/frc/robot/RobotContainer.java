@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,6 +35,9 @@ import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
+import frc.robot.subsystems.LED.LED;
+import frc.robot.subsystems.LED.LEDConstants;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -76,6 +80,7 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
+    private final LED led;
     
     // Define other utility classes
     private final AutonCommands autonCommands;
@@ -152,6 +157,8 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorConfiguration, 
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
+
+                led = new LED(LEDConstants.kLED);
                 break;
             case SIM:
                robotDrive = new Drive( new Module[] {
@@ -192,6 +199,7 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
+                        led = new LED(LEDConstants.kLED);
                 break;
             default:
                robotDrive = new Drive( new Module[] {
@@ -210,6 +218,8 @@ public class RobotContainer {
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
+
+                led = new LED(LEDConstants.kLED);
                 break;
         }
 
@@ -275,6 +285,31 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+
+                new Trigger(DriverStation::isEnabled)
+                .onTrue(
+                    Commands.runOnce(() -> 
+                    led.setGradientAnimation(
+                        100, 
+                        GradientType.kContinuous, 
+                        Color.kLavenderBlush, 
+                        Color.kDarkMagenta, 
+                        Color.kWhite)));
+    
+            new Trigger(intake::detectedGamepiece)
+            .whileTrue(
+                Commands.runOnce(() -> 
+                    led.setSolidBlinkAnimation(
+                    0.05, 
+                    Color.kPurple)))
+            .whileFalse(
+                Commands.runOnce(() -> 
+                    led.setGradientAnimation(
+                        100,                     
+                        GradientType.kContinuous, 
+                        Color.kLavenderBlush, 
+                        Color.kDarkMagenta, 
+                        Color.kWhite)));
     }
 
     private Command rumbleCommand() {
