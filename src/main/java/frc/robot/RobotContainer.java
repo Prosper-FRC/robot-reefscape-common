@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.LED.LED;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
@@ -25,6 +29,8 @@ public class RobotContainer {
     private LoggedDashboardChooser<Command> autoChooser;
 
     private final boolean useCompetitionBindings = true;
+    LED rightLED = new LED(9, 36);
+    //LED leftLED = new LED(8, 36);
 
     public RobotContainer() {
 
@@ -85,6 +91,20 @@ public class RobotContainer {
     }
 
     private void configureButtonBindings() {
+        driverController.y().toggleOnTrue(new InstantCommand(() -> {
+            // leftLED.setSolidColor(198, 115, 225);
+            // leftLED.animatePatternRelative(20);
+            rightLED.setSolidColor(198, 115, 225);
+            rightLED.animatePatternRelative(20);
 
+        }));
+        driverController.y().toggleOnFalse(new InstantCommand(() -> {
+            //leftLED.disable();
+            rightLED.disable();
+        }));
+    }
+
+    public void startLED(){
+        rightLED.setRainbowAnimation(100, 100);
     }
 }
