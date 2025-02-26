@@ -30,7 +30,7 @@ public class RobotContainer {
 
     private final boolean useCompetitionBindings = true;
     LED rightLED = new LED(9, 36);
-    LED leftLED = new LED(8, 36);
+    //LED leftLED = new LED(8, 36);
 
     public RobotContainer() {
 
@@ -92,15 +92,19 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         driverController.y().toggleOnTrue(new InstantCommand(() -> {
-            leftLED.setSolidColor(198, 115, 225);
-            leftLED.animatePatternRelative(20);
+            // leftLED.setSolidColor(198, 115, 225);
+            // leftLED.animatePatternRelative(20);
             rightLED.setSolidColor(198, 115, 225);
             rightLED.animatePatternRelative(20);
 
         }));
         driverController.y().toggleOnFalse(new InstantCommand(() -> {
-            leftLED.disable();
+            //leftLED.disable();
             rightLED.disable();
         }));
+    }
+
+    public void startLED(){
+        rightLED.setRainbowAnimation(100, 100);
     }
 }
