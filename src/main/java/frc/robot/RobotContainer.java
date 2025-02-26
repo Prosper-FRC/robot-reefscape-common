@@ -127,21 +127,12 @@ public class RobotContainer {
                         IntakeConstants.kIntakeMotorConfiguration), 
                     new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
                     // new SensorIO() {},
-                    // new PivotIO(){});
-                    new PivotIOTalonFX(
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotMotorConfiguration,
-                        IntakeConstants.kPivotGains,
-                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
-
-                // robotDrive = new Drive( new Module[] {
-                //     new Module("FL", new ModuleIO() {}),
-                //     new Module("FR", new ModuleIO() {}),
-                //     new Module("BL", new ModuleIO() {}),
-                //     new Module("BR", new ModuleIO() {})
-                // }, new GyroIO() {}, new Vision(new CameraIO[] {
-                //     new CameraIO() {}, new CameraIO() {}
-                // }));
+                    new PivotIO(){});
+                    // new PivotIOTalonFX(
+                    //     IntakeConstants.kPivotMotorHardware,
+                    //     IntakeConstants.kPivotMotorConfiguration,
+                    //     IntakeConstants.kPivotGains,
+                    //     IntakeConstants.kStatusSignalUpdateFrequencyHz));
 
                 // elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
             
@@ -253,7 +244,7 @@ public class RobotContainer {
             () -> - driverController.getLeftY(),
             () -> - driverController.getLeftX(),
             () -> - driverController.getRightX(),
-            () -> driverController.getHID().getPOV());
+            () -> driverController.getHID().getPOV() * 0.5);
 
         // Create any Dashboard choosers (LoggedDashboardChooser, etc)
 
@@ -286,7 +277,30 @@ public class RobotContainer {
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
-            .onTrue(Commands.runOnce(() -> led.setGradientAnimation(100, GradientType.kContinuous, Color.kAliceBlue, Color.kBlue, Color.kBlueViolet)));
+            .onTrue(
+                Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100, 
+                    GradientType.kContinuous, 
+                    Color.kLightBlue, 
+                    Color.kMediumBlue, 
+                    Color.kDarkBlue)));
+
+        new Trigger(intake::detectedGamepiece)
+        .whileTrue(
+            Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                0.5, 
+                Color.kRed)))
+        .whileFalse(
+            Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100,                     
+                    GradientType.kContinuous, 
+                    Color.kLightBlue, 
+                    Color.kMediumBlue, 
+                    Color.kDarkBlue)));
+        
     }
 
     private Command rumbleCommand() {
@@ -300,14 +314,14 @@ public class RobotContainer {
             new HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>>();
         reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kL4Algae));
         reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
-        reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
-        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kGroundAlgae));
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
+        reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kGroundAlgae));
 
         ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
         positionButtons.add(operatorController.y());
         positionButtons.add(operatorController.b());
-        positionButtons.add(operatorController.a());
         positionButtons.add(operatorController.x());
+        positionButtons.add(operatorController.a());
 
         // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
@@ -344,13 +358,13 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftTrigger()
+            driverController.leftBumper()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            driverController.rightTrigger()
+            driverController.rightBumper()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
@@ -444,9 +458,9 @@ public class RobotContainer {
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kScore)
-                                .onlyWhile(hasGamepieceTrigger.negate())
-                               // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
+                                    .onlyWhile(hasGamepieceTrigger.negate())
+                                // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )
                         )
                         .whileFalse(

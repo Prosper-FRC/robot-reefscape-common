@@ -40,11 +40,11 @@ public class VisionConstants {
     public static final Vector<N3> kSingleStdDevs = (RobotBase.isReal()) ?
         VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
     public static final Vector<N3> kMultiStdDevs = (RobotBase.isReal()) ?
-        VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
+        VecBuilder.fill(0.23188, 0.23188, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
 
     public static final double kAmbiguityThreshold = (RobotBase.isReal()) ? 0.2 : 1.0;
 
-    public static final Rotation2d kOV2311CameraFOV = Rotation2d.fromDegrees(95.0);
+    public static final Rotation2d kOV2311DiagonalCameraFOV = Rotation2d.fromDegrees(95.0);
 
     public static enum Orientation {
         BACK,

@@ -47,26 +47,27 @@ public class LED extends SubsystemBase implements ILED {
     }
 
     // Sets a blink rate by a on and off blink offset
-    public void setBlinkAnimation(double blinkOnRate, double blinkOffRate)
-    {
+    public void setBlinkAnimation(double blinkOnRate, double blinkOffRate){
         pattern = pattern.blink(Time.ofBaseUnits(blinkOnRate, Units.Seconds), Time.ofBaseUnits(blinkOffRate, Units.Seconds));
     }
 
     // Sets a blink rate in blinks per second
-    public void setBlinkAnimation(double blinkRate)
-    {
+    public void setBlinkAnimation(double blinkRate){
         pattern = pattern.blink(Time.ofBaseUnits(blinkRate, Units.Seconds));
     }
 
     // Fades the LEDs in and out
-    public void setBreatheAnimation(double timePeriod)
-    {
+    public void setBreatheAnimation(double timePeriod){
         pattern = pattern.breathe(Time.ofBaseUnits(timePeriod, Units.Seconds));
     }
 
+    public void setSolidBlinkAnimation(double blinkRate, Color color){
+        pattern = LEDPattern.solid(color);
+        pattern = pattern.blink(Time.ofBaseUnits(blinkRate, Units.Seconds));
+    }
+
     // Sets the brightness of the LED strip
-    public void setBrightness(double percent)
-    {
+    public void setBrightness(double percent){
         pattern = pattern.atBrightness(Units.Percent.of(percent));
     }
 

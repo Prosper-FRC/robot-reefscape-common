@@ -15,6 +15,7 @@ interface ILED{
     public void setGradientAnimation(int percentage, GradientType type, Color... colors);
 
     public void setBlinkAnimation(double blinkOnRate, double blinkOffRate);
+    
     public void setBlinkAnimation(double blinkRate);
 
     public void setBreatheAnimation(double timePeriod);
