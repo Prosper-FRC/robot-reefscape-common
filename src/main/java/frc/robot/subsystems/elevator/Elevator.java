@@ -55,7 +55,7 @@ public class Elevator extends SubsystemBase {
   private final MagneticSensorIO kSensor;
   private final MagneticSensorIOInputsAutoLogged kSensorInputs = new MagneticSensorIOInputsAutoLogged();
 
-  private ElevatorGoal currentElevaotrGoal = null;
+  private ElevatorGoal currentElevatorGoal = null;
 
   private double currentElevatorGoalPositionMeters = 0.0;
 
@@ -145,7 +145,6 @@ public class Elevator extends SubsystemBase {
         }
         //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
         // }
-
         // setPosition(currentElevatorGoalPositionMeters);
         Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
 
@@ -249,7 +248,7 @@ public class Elevator extends SubsystemBase {
    * @param desiredGoal The desired position goal
    */
   public void setGoal(ElevatorGoal desiredGoal) {
-    currentElevaotrGoal = desiredGoal;
+    currentElevatorGoal = desiredGoal;
   }
 
   /**
@@ -274,7 +273,7 @@ public class Elevator extends SubsystemBase {
 
   /** Stops the mechanism */
   public void stop() {
-    currentElevaotrGoal = null;
+    currentElevatorGoal = null;
     kHardware.stop();
   }
 

@@ -10,7 +10,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.vision.VisionConstants.Orientation;
 
-import static frc.robot.subsystems.vision.VisionConstants.kOV2311CameraFOV;
+import static frc.robot.subsystems.vision.VisionConstants.kOV2311DiagonalCameraFOV;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class CameraIOPV implements CameraIO {
             visionSim.addAprilTags(AprilTagFields.k2025Reefscape.loadAprilTagLayoutField());
             // Create simulated camera properties. These can be set to mimic your actual camera.
             var cameraProp = new SimCameraProperties();
-            cameraProp.setCalibration(960, 720, kOV2311CameraFOV);
+            cameraProp.setCalibration(960, 720, kOV2311DiagonalCameraFOV);
             cameraProp.setCalibError(0.3, 0.20);
             cameraProp.setFPS(60);
             cameraProp.setAvgLatencyMs(5);
