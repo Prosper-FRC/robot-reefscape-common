@@ -70,7 +70,7 @@ public class Robot extends LoggedRobot {
         }
 
         Logger.start();
-        SignalLogger.start();
+        SignalLogger.stop();
 
         mRobotContainer = new RobotContainer();
 

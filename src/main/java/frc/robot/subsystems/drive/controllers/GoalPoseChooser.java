@@ -107,7 +107,7 @@ public class GoalPoseChooser {
             Math.atan2(
                 robotPose.getY() - reefCenter.getY(), 
                 robotPose.getX() - reefCenter.getX()));
-        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg);
+        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg).times(-1.0);
         Logger.recordOutput("Drive/GoalPoseAngle", angleFromReefCenter);
         return angleFromReefCenter;
     }

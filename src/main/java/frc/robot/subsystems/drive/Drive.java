@@ -210,7 +210,7 @@ public class Drive extends SubsystemBase {
             Logger.recordOutput(observation.camName()+"/stdDevX", observation.stdDevs().get(0));
             Logger.recordOutput(observation.camName()+"/stdDevY", observation.stdDevs().get(1));
             Logger.recordOutput(observation.camName()+"/stdDevTheta", observation.stdDevs().get(2));
-            Logger.recordOutput(observation.camName()+"/TransformFromOdometry", odometry.getPoseMeters().minus(observation.pose()));
+            // Logger.recordOutput(observation.camName()+"/TransformFromOdometry", odometry.getPoseMeters().minus(observation.pose()));
         }
 
         poseEstimator.update(robotRotation, getModulePositions());
@@ -218,7 +218,7 @@ public class Drive extends SubsystemBase {
 
         field.setRobotPose(getPoseEstimate());
 
-        Logger.recordOutput("Drive/Odometry/FieldCurrentChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(getRobotChassisSpeeds(), robotRotation));
+        // Logger.recordOutput("Drive/Odometry/FieldCurrentChassisSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(getRobotChassisSpeeds(), robotRotation));
 
         /* Updating Controllers */
         headingController.updateHeadingController();
@@ -353,7 +353,7 @@ public class Drive extends SubsystemBase {
         previousSetpoint = setpointGenerator.generateSetpoint(
             previousSetpoint, desiredSpeeds, kDriveConstraints, 0.02);
 
-        Logger.recordOutput("Drive/Odometry/generatedFieldSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(previousSetpoint.robotRelativeSpeeds(), robotRotation));
+        // Logger.recordOutput("Drive/Odometry/generatedFieldSpeeds", ChassisSpeeds.fromRobotRelativeSpeeds(previousSetpoint.robotRelativeSpeeds(), robotRotation));
 
         for (int i = 0; i < 4; i++) {
             if(useGenerator) {
@@ -395,9 +395,9 @@ public class Drive extends SubsystemBase {
         
         Logger.recordOutput("Drive/Swerve/Setpoints", unOptimizedSetpointStates);
         Logger.recordOutput("Drive/Swerve/SetpointsOptimized", optimizedSetpointStates);
-        Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
-        Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
-            kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
+        // Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
+        // Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
+        //     kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
     }
 
     /* Calculates DriveFeedforward based off state */

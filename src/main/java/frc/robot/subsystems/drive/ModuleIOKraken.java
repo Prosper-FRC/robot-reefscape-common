@@ -53,7 +53,7 @@ public class ModuleIOKraken implements ModuleIO {
     private StatusSignal<Voltage> azimuthVoltage;
     private StatusSignal<Current> azimuthStatorCurrent;
     private StatusSignal<Current> azimuthSupplyCurrent;
-    private StatusSignal<Current> azimuthTorqueCurrent;
+    // private StatusSignal<Current> azimuthTorqueCurrent;
     private StatusSignal<Temperature> azimuthTemp;
 
     private CANcoder absoluteEncoder;
@@ -137,7 +137,7 @@ public class ModuleIOKraken implements ModuleIO {
         azimuthVoltage = azimuthMotor.getMotorVoltage();
         azimuthStatorCurrent = azimuthMotor.getStatorCurrent();
         azimuthSupplyCurrent = azimuthMotor.getSupplyCurrent();
-        azimuthTorqueCurrent = azimuthMotor.getTorqueCurrent();
+        // azimuthTorqueCurrent = azimuthMotor.getTorqueCurrent();
         azimuthTemp = azimuthMotor.getDeviceTemp();
 
         resetAzimuthEncoder();
@@ -157,10 +157,10 @@ public class ModuleIOKraken implements ModuleIO {
         inputs.driveVelocityMPS = (driveVelocityMPS.getValueAsDouble());
         inputs.driveAppliedVolts = driveAppliedVolts;
         inputs.driveMotorVolts = driveVoltage.getValueAsDouble();
-        inputs.driveSupplyCurrentAmps = new double[] {driveSupplyCurrent.getValueAsDouble()};
-        inputs.driveStatorCurrentAmps = new double[] {driveStatorCurrent.getValueAsDouble()};
-        inputs.driveTorqueCurrentAmps = new double[] {driveTorqueCurrent.getValueAsDouble()};
-        inputs.driveTemperatureCelsius = new double[] {driveTempCelsius.getValueAsDouble()};
+        inputs.driveSupplyCurrentAmps = driveSupplyCurrent.getValueAsDouble();
+        inputs.driveStatorCurrentAmps = driveStatorCurrent.getValueAsDouble();
+        inputs.driveTorqueCurrentAmps = driveTorqueCurrent.getValueAsDouble();
+        inputs.driveTemperatureCelsius = driveTempCelsius.getValueAsDouble();
         inputs.driveAccelerationMPSS = driveAccelerationMPSS.getValueAsDouble();
 
         inputs.isAzimuthConnected = BaseStatusSignal.refreshAll(
@@ -168,7 +168,6 @@ public class ModuleIOKraken implements ModuleIO {
             azimuthVoltage,
             azimuthStatorCurrent,
             azimuthSupplyCurrent,
-            azimuthTorqueCurrent,
             azimuthTemp,
             azimuthPosition,
             absolutePositionSignal).isOK();
@@ -177,10 +176,10 @@ public class ModuleIOKraken implements ModuleIO {
         inputs.azimuthVelocity = Rotation2d.fromRotations(azimuthVelocity.getValueAsDouble());
         inputs.azimuthAppliedVolts = azimuthAppliedVolts;
         inputs.azimuthMotorVolts = azimuthVoltage.getValueAsDouble();
-        inputs.azimuthStatorCurrentAmps = new double[] {azimuthStatorCurrent.getValueAsDouble()};
-        inputs.azimuthSupplyCurrentAmps = new double[] {azimuthSupplyCurrent.getValueAsDouble()};
-        inputs.azimuthTorqueCurrentAmps = new double[] {azimuthTorqueCurrent.getValueAsDouble()};
-        inputs.azimuthTemperatureCelsius = new double[] {azimuthTemp.getValueAsDouble()};
+        inputs.azimuthStatorCurrentAmps = azimuthStatorCurrent.getValueAsDouble();
+        inputs.azimuthSupplyCurrentAmps = azimuthSupplyCurrent.getValueAsDouble();
+        // inputs.azimuthTorqueCurrentAmps = azimuthTorqueCurrent.getValueAsDouble();
+        inputs.azimuthTemperatureCelsius = azimuthTemp.getValueAsDouble();
     }
 
     /////////// DRIVE MOTOR METHODS \\\\\\\\\\\

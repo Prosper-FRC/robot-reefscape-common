@@ -26,17 +26,8 @@ public interface CameraIO {
         public boolean hasBeenUpdated = false;
         public Pose3d latestEstimatedRobotPose = new Pose3d();
         /* Array size equal to amount of tags */
-        public Transform3d[] latestTagTransforms = new Transform3d[] {
-            new Transform3d(), new Transform3d(), new Transform3d(), new Transform3d(), 
-            new Transform3d(), new Transform3d(), new Transform3d(), new Transform3d(), 
-            new Transform3d(), new Transform3d(), new Transform3d(), new Transform3d(), 
-            new Transform3d(), new Transform3d(), new Transform3d(), new Transform3d(),
-            new Transform3d(), new Transform3d(), new Transform3d(), new Transform3d(),
-            new Transform3d(), new Transform3d(),};
-        public double[] latestTagAmbiguities = new double[] {
-            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-        };
+        public Transform3d[] latestTagTransforms = new Transform3d[] {};
+        public double[] latestTagAmbiguities = new double[] {};
     }
 
     public default void updateInputs(CameraIOInputs inputs, Pose2d lastRobotPose, Pose2d simOdomPose) {}

@@ -40,10 +40,10 @@ public class Vision {
         for(int i = 0; i < cameras.length; i++) {
             cameras[i].updateInputs(camerasData[i], lastRobotPose, simOdomPose);
             Logger.processInputs("Vision/"+camerasData[i].camName, camerasData[i]);
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/Pose", camerasData[i].latestEstimatedRobotPose.toPose2d());
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/X", camerasData[i].latestEstimatedRobotPose.getRotation().getX());
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/Y", camerasData[i].latestEstimatedRobotPose.getRotation().getY());
-            Logger.recordOutput("Vision/"+camerasData[i].camName+"/Z", camerasData[i].latestEstimatedRobotPose.getRotation().getZ());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/Pose", camerasData[i].latestEstimatedRobotPose.toPose2d());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/X", camerasData[i].latestEstimatedRobotPose.getRotation().getX());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/Y", camerasData[i].latestEstimatedRobotPose.getRotation().getY());
+            // Logger.recordOutput("Vision/"+camerasData[i].camName+"/Z", camerasData[i].latestEstimatedRobotPose.getRotation().getZ());
         }
 
     }
@@ -86,11 +86,11 @@ public class Vision {
                 }
 
                 avgDistMeters /= numberOfTargets;
-                Logger.recordOutput("Vision/AvgDistMeters", avgDistMeters);
+                // Logger.recordOutput("Vision/AvgDistMeters", avgDistMeters);
 
                 double xyScalar = Math.pow(avgDistMeters, 2) / (numberOfTargets);
 
-                Logger.recordOutput("Vision/xyScalar", xyScalar);
+                // Logger.recordOutput("Vision/xyScalar", xyScalar);
 
                 // Cases where we shouldn't add vision measurements
                 if(numberOfTargets == 1 && avgDistMeters > 3.5) {
