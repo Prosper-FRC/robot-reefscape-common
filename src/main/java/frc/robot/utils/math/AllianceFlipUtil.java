@@ -20,7 +20,7 @@ import frc.robot.Constants;
 public class AllianceFlipUtil {
   public static double apply(double xCoordinate) {
     if (shouldFlip()) {
-      return Constants.kFieldLengthMeters - xCoordinate;
+      return Constants.kFieldLength - xCoordinate;
     } else {
       return xCoordinate;
     }
@@ -30,7 +30,7 @@ public class AllianceFlipUtil {
 */
   public static Translation2d apply(Translation2d translation) {
     if (shouldFlip()) {
-      return new Translation2d(apply(translation.getX()), Constants.kFieldWidthMeters - translation.getY());
+      return new Translation2d(apply(translation.getX()), translation.getY());
     } else {
       return translation;
     }
@@ -39,7 +39,7 @@ public class AllianceFlipUtil {
   /** Flips a rotation based on the current alliance color. */
   public static Rotation2d apply(Rotation2d rotation) {
     if (shouldFlip()) {
-      return new Rotation2d(-rotation.getCos(), -rotation.getSin());
+      return new Rotation2d(-rotation.getCos(), rotation.getSin());
     } else {
       return rotation;
     }

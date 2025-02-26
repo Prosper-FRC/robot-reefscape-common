@@ -2,10 +2,9 @@ package frc.robot.utils.debugging;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.drive.Drive;
+// import frc.robot.subsystems.drive.Drive;
 import java.util.function.DoubleSupplier;
 import lombok.RequiredArgsConstructor;
 import org.littletonrobotics.junction.Logger;
@@ -25,7 +24,7 @@ public class WheelRadiusCharacterization extends Command {
         private final int value;
     }
 
-    private final Drive drive;
+    // private final Drive drive;
     private final Direction omegaDirection;
     private final SlewRateLimiter omegaLimiter = new SlewRateLimiter(1.0);
 
@@ -39,13 +38,13 @@ public class WheelRadiusCharacterization extends Command {
     private DoubleSupplier gyroYawRadsSupplier;
 
     public WheelRadiusCharacterization(
-        Drive drive, 
+        // Drive drive, 
         Direction omegaDirection, double driveRadiusM) {
-        this.drive = drive;
+        // this.drive = drive;
         this.omegaDirection = omegaDirection;
         driveRadius = driveRadiusM;
-        gyroYawRadsSupplier = () -> drive.getRobotRotation().getRadians();
-        addRequirements(drive);
+        // gyroYawRadsSupplier = () -> drive.getRotation().getRadians();
+        // addRequirements(drive);
     }
 
     @Override
@@ -62,8 +61,11 @@ public class WheelRadiusCharacterization extends Command {
     @Override
     public void execute() {
         // Run drive at velocity
-        drive.runAngularCharacterization(
-                omegaDirection.value * (characterizationSpeed.get()));
+        // drive.runSwerve(
+        //     new ChassisSpeeds(
+        //         0.0,
+        //         0.0,
+        //         omegaDirection.value * (characterizationSpeed.get() * DriveConstants.kMaxAngularSpeedRPS)));
 
         // Get yaw and wheel positions
         accumGyroYawRads += MathUtil.angleModulus(gyroYawRadsSupplier.getAsDouble() -
@@ -89,19 +91,20 @@ public class WheelRadiusCharacterization extends Command {
         if (accumGyroYawRads <= Math.PI * 2.0) {
             System.out.println("Not enough data for characterization");
         } else {
-            Logger.recordOutput(
-                "Effective Wheel Radius: ",
-                    currentEffectiveWheelRadius);
+            System.out.println(
+                "Effective Wheel Radius: "
+                    + Units.metersToInches(currentEffectiveWheelRadius)
+                    + " inches");
         }
     }
 
     public double[] getWheelPositions() {
-        SwerveModulePosition[] positions = drive.getModulePositions();
+        // SwerveModulePosition[] positions = drive.getModulePositions();
         double[] doublePosition = new double[4];
 
-        for (int i = 0; i < 4; i++) {
-            doublePosition[i] = positions[i].distanceMeters;
-        }
+        // for (int i = 0; i < 4; i++) {
+        //     startWheelPositions[i] = positions[i].angle.getRadians();
+        // }
 
         return doublePosition;
     }
