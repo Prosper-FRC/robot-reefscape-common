@@ -125,14 +125,14 @@ public class Elevator extends SubsystemBase {
     // Check if we are homing 
     if (!isHoming) {
       // Run the elevator goal
-      if (currentElevaotrGoal != null) {
-        currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
+      if (currentElevatorGoal != null) {
+        currentElevatorGoalPositionMeters = currentElevatorGoal.getGoalMeters();
         
         // if (atGoal()) {
         //   kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
-        //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
+        //   Logger.recordOutput("Elevator/Goal", currentElevatorGoal.toString() + "HOLDING");
         // } else {
-        if(!currentElevaotrGoal.equals(ElevatorGoal.kStow)) {
+        if(!currentElevatorGoal.equals(ElevatorGoal.kStow)) {
           setPosition(currentElevatorGoalPositionMeters);
           hasStowed = false;
         } else {
@@ -143,10 +143,10 @@ public class Elevator extends SubsystemBase {
             hasStowed = stowDebouncer.calculate(atGoal());
           }
         }
-        //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
+        //   Logger.recordOutput("Elevator/Goal", currentElevatorGoal);
         // }
         // setPosition(currentElevatorGoalPositionMeters);
-        Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
+        Logger.recordOutput("Elevator/Goal", currentElevatorGoal);
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
       } else {
