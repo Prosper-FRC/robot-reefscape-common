@@ -61,7 +61,6 @@ public class ElevatorConstants {
    * this number cannot be 0 */
   public static final int kLinearFilterSampleCount = 5;
   public static final int kAmpFilterThreshold = 40;
-  public static final boolean kHomeWithCurrent = false;
 
   public static final double kMaxPositionMeters = 1.655;
   public static final double kMinPositionMeters = 0.0;

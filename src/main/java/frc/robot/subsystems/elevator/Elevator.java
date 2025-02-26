@@ -115,21 +115,12 @@ public class Elevator extends SubsystemBase {
 
     double elevatorAverageCurrentAmps = kHomingFilterAmps.calculate(kInputs.statorCurrentAmps);
 
-    // Check if we are homing 
     if (!isHoming) {
       // Run the elevator goal
       if (currentElevaotrGoal != null) {
         currentElevatorGoalPositionMeters = currentElevaotrGoal.getGoalMeters();
         
-        // if (atGoal()) {
-        //   kHardware.setVoltage(ElevatorConstants.kElevatorGains.g() - 0.05);
-        //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal.toString() + "HOLDING");
-        // } else {
         setPosition(currentElevatorGoalPositionMeters);
-        //   Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
-        // }
-
-        // setPosition(currentElevatorGoalPositionMeters);
         Logger.recordOutput("Elevator/Goal", currentElevaotrGoal);
 
         kVisualizer.setGoalLine(currentElevatorGoalPositionMeters, atGoal());
@@ -149,50 +140,7 @@ public class Elevator extends SubsystemBase {
         // Do nothing if limits are not reached
       }
     } else {
-      // If we are homing...
-      if (RobotBase.isReal()) {
-        if (kSensorInputs.isConnected) {
-          // If the magnetic sensor is activated, we've completed homing
-          if (kSensorInputs.isActivated || (ElevatorConstants.kHomeWithCurrent && (
-              elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold))) {
-            resetPosition();
-            stop();
-            hasHomed = true;
-            isHoming = false;
-          } else {
-          // Otherwise, continue to run the elevator downwards
-            kHardware.setVoltage(-2.0);
-            hasHomed = false;
-            isHoming = true;
-          }
-        } else {
-          // Default to home with current, ignoring the constant if the mag sensor is disconnected
-          // If the current amps is hitting the threshold
-          if (elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold) {
-            resetPosition();
-            stop();
-            hasHomed = true;
-            isHoming = false;
-          } else {
-          // Otherwise, continue to run the elevator downwards
-            kHardware.setVoltage(-2.0);
-            hasHomed = false;
-            isHoming = true;
-          }
-        }
-      } else {
-        // If we're in sim, simulate via button that can be toggled on dashboard
-        if (simulatedHomingSensorActivator.get()) {
-          resetPosition();
-          stop();
-          hasHomed = true;
-          isHoming = false;
-        } else {
-          kHardware.setVoltage(-2.0);
-          hasHomed = false;
-          isHoming = true;
-        }
-      }
+      hasHomed = elevatorAverageCurrentAmps > ElevatorConstants.kAmpFilterThreshold;
     }
 
     Logger.recordOutput("Elevator/isHoming", isHoming);
@@ -288,19 +236,10 @@ public class Elevator extends SubsystemBase {
     setGoal(null);
   }
 
-  /** Cancels the homing sequence */
-  public void cancelHoming() {
+  /** Stops the homing sequence */
+  public void stopHoming() {
     isHoming = false;
-  }
-
-  /**
-   * Check if the elevator has completed its homing routine, note that this will reset 
-   * when the homing sequence is recalled
-   * 
-   * @return If the elevator has completed homing
-   */
-  public boolean hasHomed() {
-    return hasHomed;
+    hasHomed = false;
   }
 
   /**
@@ -345,5 +284,15 @@ public class Elevator extends SubsystemBase {
   @AutoLogOutput(key = "Elevator/Feedback/GoalMeters")
   public double getPositionGoalMeters() {
     return currentElevatorGoalPositionMeters;
+  }
+
+
+  /**
+   * Used during the homing sequences
+   * 
+   * @return If the elevator has homed or not
+   */
+  public boolean hasHomed() {
+    return hasHomed;
   }
 }
