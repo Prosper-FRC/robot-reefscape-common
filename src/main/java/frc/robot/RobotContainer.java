@@ -7,7 +7,9 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -270,11 +272,37 @@ public class RobotContainer {
         robotDrive.setDriveState(DriveState.STOP);
     }
 
-    private void configureStateTriggers() {
+ private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+
+        new Trigger(DriverStation::isEnabled)
+            .onTrue(
+                Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100, 
+                    GradientType.kContinuous, 
+                    Color.kLightBlue, 
+                    Color.kMediumBlue, 
+                    Color.kDarkBlue)));
+
+        new Trigger(intake::detectedGamepiece)
+        .whileTrue(
+            Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                0.5, 
+                Color.kRed)))
+        .whileFalse(
+            Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100,                     
+                    GradientType.kContinuous, 
+                    Color.kLightBlue, 
+                    Color.kMediumBlue, 
+                    Color.kDarkBlue)));
+        
     }
 
     private Command rumbleCommand() {
