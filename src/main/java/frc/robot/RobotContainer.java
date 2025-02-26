@@ -60,6 +60,7 @@ import static frc.robot.subsystems.drive.DriveConstants.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -71,7 +72,7 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
-    // private final LED ledRight;
+    private final LED ledRight;
     // private final LED ledLeft;
     
     // Define other utility classes
@@ -145,7 +146,7 @@ public class RobotContainer {
                         ClimbConstants.kMotorGains, 
                         ClimbConstants.kStatusSignalUpdateFrequency));
 
-                // ledRight = new LED(LEDConstants.kRightLED);
+                ledRight = new LED(LEDConstants.kRightLED);
                 // ledLeft = new LED(LEDConstants.kLeftLED);
                 break;
             case SIM:
@@ -182,7 +183,7 @@ public class RobotContainer {
                         ClimbConstants.kLeadMotorHardware,
                         ClimbConstants.kSimulationConfiguration,
                         ClimbConstants.kMotorGains));
-                // ledRight = new LED(LEDConstants.kRightLED);
+                ledRight = new LED(LEDConstants.kRightLED);
                 // ledLeft = new LED(LEDConstants.kLeftLED);
                 break;
             default:
@@ -203,7 +204,7 @@ public class RobotContainer {
                     new DutyCycleEncoderIO(){}, 
                     new ClimbIO[]{new ClimbIO(){}});
 
-                // ledRight = new LED(LEDConstants.kRightLED);
+                ledRight = new LED(LEDConstants.kRightLED);
                 // ledLeft = new LED(LEDConstants.kLeftLED);
 
                 break;
@@ -272,9 +273,9 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
-        // new Trigger(DriverStation::isEnabled)
-        //         .onTrue(
-        //             Commands.runOnce(() -> ledRight.setGradientAnimation(100, GradientType.kContinuous , Color.kAliceBlue, Color.kBlue, Color.kViolet)));
+        new Trigger(DriverStation::isEnabled)
+                .onTrue(
+                    Commands.runOnce(() -> ledRight.setGradientAnimation(100, GradientType.kContinuous , Color.kAliceBlue, Color.kBlue, Color.kViolet)));
 
         // new Trigger(DriverStation::isEnabled)
         //     .onTrue(
@@ -292,14 +293,14 @@ public class RobotContainer {
             new HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>>();
         reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kL4Algae));
         reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
-        reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
-        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.custom, ElevatorGoal.kGroundAlgae));
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
+        reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kGroundAlgae));
 
         ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
         positionButtons.add(operatorController.y());
         positionButtons.add(operatorController.b());
-        positionButtons.add(operatorController.a());
         positionButtons.add(operatorController.x());
+        positionButtons.add(operatorController.a());
 
         // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
@@ -315,6 +316,7 @@ public class RobotContainer {
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
+
 
         if (useCompetitionBindings) {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -393,23 +395,23 @@ public class RobotContainer {
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
     
-            // driverController.x()
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            driverController.x()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
-            // new Trigger(()-> driverController.getHID().getPOV() != -1)
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            new Trigger(()-> driverController.getHID().getPOV() != -1)
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // driverController.b()
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            driverController.b()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // driverController.a()
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            driverController.a()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             operatorController.povLeft()
                 .whileTrue(
@@ -480,5 +482,9 @@ public class RobotContainer {
 
     public EventLoop getTeleopEventLoop() {
         return teleopLoop;
+    }
+
+    public void updateVisualizers(){
+        
     }
 }

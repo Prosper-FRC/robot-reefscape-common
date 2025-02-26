@@ -7,5 +7,5 @@ public class LEDConstants {
         int bufferLength) {}
     
     public static final LEDConfig kLeftLED = new LEDConfig(8, 10);
-    public static final LEDConfig kRightLED = new LEDConfig(9, 10);
+    public static final LEDConfig kRightLED = new LEDConfig(9, 67);
 }
