@@ -283,7 +283,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public ElevatorGoal getGoal(){
-    return currentElevaotrGoal;
+    return currentElevatorGoal;
   }
 
   /**
