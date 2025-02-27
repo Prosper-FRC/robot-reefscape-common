@@ -36,9 +36,6 @@ import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
-import frc.robot.subsystems.LED.LED;
-import frc.robot.subsystems.LED.LEDConstants;
-import frc.robot.subsystems.LED.LEDConstants.LEDConfig;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -73,6 +70,7 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 
 public class RobotContainer {
     // Define subsystems
@@ -80,7 +78,6 @@ public class RobotContainer {
     private final Elevator elevator;
     private final Intake intake;
     private final Climb climb;
-    private final LED led;
     
     // Define other utility classes
     private final AutonCommands autonCommands;
@@ -95,6 +92,8 @@ public class RobotContainer {
      please */
 
     private final boolean useCompetitionBindings = true;
+    LED rightLED = new LED(9, 36);
+    //LED leftLED = new LED(8, 36);
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
