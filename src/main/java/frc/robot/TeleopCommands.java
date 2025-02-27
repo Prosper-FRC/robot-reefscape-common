@@ -7,6 +7,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.Climb.ClimbVoltageGoal;
 import frc.robot.utils.debugging.LoggedTunableNumber;
@@ -34,6 +36,7 @@ public class TeleopCommands {
     private final Elevator kElevator;
     private final Intake kIntake;
     private final Climb kClimb;
+    private final LED kLED;
 
     /** 
      * Internal state to decide whether or not to stop the rollers when the intake's 
@@ -57,10 +60,11 @@ public class TeleopCommands {
      * @param intake The intake subsystem intance
      * @param climb The climb subsystem instance
      */
-    public TeleopCommands(Elevator elevator, Intake intake, Climb climb) {
+    public TeleopCommands(Elevator elevator, Intake intake, Climb climb, LED led) {
         kElevator = elevator;
         kIntake = intake;
         kClimb = climb;
+        kLED = led;
     }
 
     /**
@@ -97,10 +101,12 @@ public class TeleopCommands {
             () -> {
                 stopRollers = false;
                 kIntake.setRollerGoal(rollerGoal);
+                kLED.setBlinkAnimation(0.2);
             }, 
             () -> {
                 stopRollers = true;
                 kIntake.stop(stopRollers, stopPivot);
+                kLED.setBreatheAnimation(3.0, Color.kRed);
             },
             kIntake);
     }

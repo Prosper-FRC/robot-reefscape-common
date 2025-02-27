@@ -224,7 +224,7 @@ public class RobotContainer {
         // ex: LEDs = new LEDSubsystem();
 
         // Instantiate your TeleopCommands and AutonCommands classes
-        teleopCommands = new TeleopCommands(elevator, intake, climb);
+        teleopCommands = new TeleopCommands(elevator, intake, climb, led);
         autonCommands = new AutonCommands(robotDrive);
         try {
             autoChooser = new LoggedDashboardChooser<>("Auton Program", autonCommands.getAutoChooser());
@@ -286,27 +286,21 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setGradientAnimation(
-                    100, 
-                    GradientType.kContinuous, 
-                    Color.kLightBlue, 
-                    Color.kMediumBlue, 
-                    Color.kDarkBlue)));
+                led.setBreatheAnimation(
+                    3.0,
+                    Color.kRed)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.5, 
+                0.2, 
                 Color.kRed)))
         .whileFalse(
             Commands.runOnce(() -> 
-                led.setGradientAnimation(
-                    100,                     
-                    GradientType.kContinuous, 
-                    Color.kLightBlue, 
-                    Color.kMediumBlue, 
-                    Color.kDarkBlue)));
+            led.setBreatheAnimation(
+                3.0,
+                Color.kRed)));
         
     }
 
@@ -459,13 +453,38 @@ public class RobotContainer {
                         );
                 }
 
-                if(i == 0 || i == 3){
+                if(i == 0){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
                                 teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
+                                    .onlyWhile(hasGamepieceTrigger.negate())
+                                // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
+                        )
+                        )
+                        .whileFalse(
+                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
+                            .alongWith(
+                                    teleopCommands.runPivotAndStopCommand(PivotGoal.kStowScore)
+                                        // This "onlyWhile" is required so that this command composition ends
+                                        // at some point and frees its resources back to the CommandScheduler
+                                        .onlyWhile(pivotAtGoalTrigger.negate().debounce(0.5)))
+                            .andThen(
+                                teleopCommands.stopRollersCommand()
+                            )
+
+                        );
+                }
+
+                if(i == 3){
+                    // ALGAE - SCORE
+                    algaePickup.and(algaeSelectTrigger)
+                        .whileTrue(
+                        teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .alongWith(
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kNetScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )

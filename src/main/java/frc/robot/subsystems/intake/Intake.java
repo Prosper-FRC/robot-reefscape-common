@@ -46,6 +46,7 @@ public class Intake extends SubsystemBase {
     kIntakeGround(() -> Rotation2d.fromDegrees(-40.0)),
     kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
     kScore(() -> Rotation2d.fromDegrees(40.0)),
+    kNetScore(() -> Rotation2d.fromDegrees(5.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
       new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
