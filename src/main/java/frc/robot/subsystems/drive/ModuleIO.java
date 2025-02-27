@@ -19,7 +19,6 @@ public interface ModuleIO {
 
         public boolean isAzimuthConnected = true;
         public Rotation2d azimuthPosition = new Rotation2d();
-        public Rotation2d azimuthAbsolutePosition = new Rotation2d();
         public Rotation2d azimuthVelocity = new Rotation2d();
         public double azimuthStatorCurrentAmps = 0.0;
         public double azimuthSupplyCurrentAmps = 0.0;
@@ -27,6 +26,9 @@ public interface ModuleIO {
         public double azimuthTemperatureCelsius = 0.0;
         public double azimuthAppliedVolts = 0.0;
         public double azimuthMotorVolts = 0.0;
+
+        public boolean isCancoderConnected = true;
+        public Rotation2d azimuthAbsolutePosition = new Rotation2d();
     }
 
     public default void updateInputs(ModuleInputs inputs) {}
