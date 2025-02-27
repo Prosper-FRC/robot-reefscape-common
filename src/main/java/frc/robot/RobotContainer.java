@@ -355,17 +355,17 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftBumper()
+            operatorController.leftStick()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            driverController.rightBumper()
+            operatorController.rightStick()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
@@ -453,7 +453,7 @@ public class RobotContainer {
                         );
                 }
 
-                if(i == 0){
+                if(i == 3){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
@@ -478,7 +478,7 @@ public class RobotContainer {
                         );
                 }
 
-                if(i == 3){
+                if(i == 0){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(

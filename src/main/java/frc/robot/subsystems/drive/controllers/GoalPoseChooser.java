@@ -27,7 +27,7 @@ public class GoalPoseChooser {
     }
 
     private static Pose2d customGoal = FieldConstants.AL;
-    private static SIDE side = SIDE.LEFT;
+    private static SIDE side = SIDE.RIGHT;
 
     public static Pose2d getGoalPose(CHOOSER_STRATEGY strategy, Pose2d pose) {
         switch(strategy) {
@@ -52,34 +52,34 @@ public class GoalPoseChooser {
         Rotation2d angleFromReefCenter = turnFromReefOrigin(robotPose);
         Pose2d goal;
         if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "A");
+            Logger.recordOutput("Drive/ReefSide", "D");
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.DL;
             } else goal = FieldConstants.DR;
         } else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "B");
+            Logger.recordOutput("Drive/ReefSide", "E");
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.EL;
             } else goal = FieldConstants.ER;
         } else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "C");
+            Logger.recordOutput("Drive/ReefSide", "F");
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.FL;
             } else goal = FieldConstants.FR;
             // Skipped -150 to 150 because the inBetween function miscopes
             // Putting it in else covers the remainder of the hexagon scope
         } else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "E");
+            Logger.recordOutput("Drive/ReefSide", "B");
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.BL;
             } else goal = FieldConstants.BR;
         } else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
-            Logger.recordOutput("Drive/ReefSide", "F");
+            Logger.recordOutput("Drive/ReefSide", "C");
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.CL;
             } else goal = FieldConstants.CR;
         } else {
-            Logger.recordOutput("Drive/ReefSide", "D");
+            Logger.recordOutput("Drive/ReefSide", "A");
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.AL;
             } else goal = FieldConstants.AR;
@@ -107,9 +107,11 @@ public class GoalPoseChooser {
             Math.atan2(
                 robotPose.getY() - reefCenter.getY(), 
                 robotPose.getX() - reefCenter.getX()));
-        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg).times(-1.0);
-        Logger.recordOutput("Drive/GoalPoseAngle", angleFromReefCenter);
-        return angleFromReefCenter;
+
+        Rotation2d finalAngle = angleFromReefCenter.times(-1.0);
+        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) finalAngle = angleFromReefCenter.plus(Rotation2d.k180deg).times(-1.0);
+        Logger.recordOutput("Drive/GoalPoseAngle", finalAngle);
+        return finalAngle;
     }
 
     /* Sets the goal using a command, meant to be used with buttonboard */
