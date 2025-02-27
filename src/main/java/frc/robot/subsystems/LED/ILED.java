@@ -18,7 +18,7 @@ interface ILED{
     
     public void setBlinkAnimation(double blinkRate);
 
-    public void setBreatheAnimation(double timePeriod);
+    public void setBreatheAnimation(double timePeriod, Color color);
 
     public void setBrightness(double percent);
 
