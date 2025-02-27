@@ -38,9 +38,9 @@ public class VisionConstants {
     // Tuned by using AdvantageScope data analysis tool(Normal distribution)
     /* https://docs.google.com/document/d/16ryTjwguRXpwBKdGc8rs4iRQL18iNsfMrIzfY3cchzU/edit?usp=sharing */
     public static final Vector<N3> kSingleStdDevs = (RobotBase.isReal()) ?
-        VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
+        VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.23, 0.23, 5.0);
     public static final Vector<N3> kMultiStdDevs = (RobotBase.isReal()) ?
-        VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.01, 0.01, 5.0);
+        VecBuilder.fill(0.274375, 0.274375, 5.0) : VecBuilder.fill(0.23, 0.23, 5.0);
 
     public static final double kAmbiguityThreshold = (RobotBase.isReal()) ? 0.2 : 1.0;
 
