@@ -67,7 +67,7 @@ public class SwerveUtils {
             ff.robotRelativeForcesYNewtons()[i]);
 
         // NEWTONS -> GEARBOX TORQUE -> MOTOR TORQUE
-        double driveMotorTorque = choreoLinearForceNewtons / (kWheelRadiusMeters * kDriveMotorGearing);
+        double driveMotorTorque = (choreoLinearForceNewtons * kWheelRadiusMeters) / kDriveMotorGearing;
         double driveMotorAmperage = kKrakenFOCModel.getCurrent(driveMotorTorque);
 
         return driveMotorAmperage;

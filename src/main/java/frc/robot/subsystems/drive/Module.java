@@ -65,7 +65,7 @@ public class Module {
             if(amperageFeedforward != null) {
                 double ffOutput = driveFF.calculate(velocitySetpointMPS, amperageFeedforward);
 
-                // Logger.recordOutput("Drive/"+kModuleName+"/AmperageFeedforward", amperageFeedforward);
+                Logger.recordOutput("Drive/"+kModuleName+"/AmperageFeedforward", amperageFeedforward);
                 // Logger.recordOutput("Drive/"+kModuleName+"/ffOutput", ffOutput);
 
                 io.setDriveVelocity(velocitySetpointMPS, ffOutput);
