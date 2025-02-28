@@ -183,7 +183,7 @@ public class AutonCommands {
      * and upon finishing then the nextAuto is scheduled
     */
     public PathPlannerAuto intakeCoralPath(String name, PathPlannerAuto nextAuto) {
-        PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
+        PathPlannerAuto auto = nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeCoralCommand(), nextAuto);
         // auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IL).getTranslation(), kCoralIntakeTriggerDistanceMeters.get()).or(
         //     auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IR).getTranslation(), kCoralIntakeTriggerDistanceMeters.get())
         // ).whileTrue(
@@ -218,7 +218,7 @@ public class AutonCommands {
 
         firstAuto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
 
-        new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
+        // new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
 
         return firstAuto;
     }
@@ -226,9 +226,9 @@ public class AutonCommands {
     public PathPlannerAuto nextPath(String name, BooleanSupplier conditionSupplier, Command nextCommand, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = new PathPlannerAuto(followChoreoPath(name));
 
-        auto.condition(conditionSupplier).onTrue(nextCommand);
+        auto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
 
-        new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
+        // new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
 
         return auto;
     }
@@ -263,7 +263,7 @@ public class AutonCommands {
                 (interrupted) -> {
                     mIntake.stop(true, false);
                 }, 
-                () -> !getHasPiece().getAsBoolean(),
+                () -> false,
                 virtualIntake)
                 .withTimeout(kScoreCoralTimeoutSeconds),
             new FunctionalCommand(
@@ -304,8 +304,8 @@ public class AutonCommands {
     }
 
     public Command intakeCoralCommand() {
-        return Commands.runOnce(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))
-        ;
+        return Commands.run(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), mIntake)
+            .onlyWhile(() -> getHasPiece().getAsBoolean());
         // return new SequentialCommandGroup(
         //     Commands.runEnd(
         //         () -> mElevator.setGoal(ElevatorGoal.kIntake), 
@@ -337,7 +337,7 @@ public class AutonCommands {
     }
 
     public BooleanSupplier getHasPiece() {
-        return () -> mIntake.detectedGamepiece();
+        return () -> !mIntake.detectedGamepiece();
     }
 
     public BooleanSupplier getElevatorAtGoal() {
