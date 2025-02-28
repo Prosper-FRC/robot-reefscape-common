@@ -101,12 +101,12 @@ public class TeleopCommands {
             () -> {
                 stopRollers = false;
                 kIntake.setRollerGoal(rollerGoal);
-                kLED.setBlinkAnimation(0.2);
+                //kLED.setBlinkAnimation(0.2);
             }, 
             () -> {
                 stopRollers = true;
                 kIntake.stop(stopRollers, stopPivot);
-                kLED.setBreatheAnimation(3.0, Color.kRed);
+                //kLED.setBreatheAnimation(3.0, Color.kRed);
             },
             kIntake);
     }

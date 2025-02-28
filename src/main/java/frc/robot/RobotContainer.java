@@ -85,6 +85,9 @@ public class RobotContainer {
     // Define other utility classes
     private final AutonCommands autonCommands;
     private final TeleopCommands teleopCommands;
+
+    private static final int kLeftAlign = 9;
+    private static final int kRightAlign = 10; 
     
     private LoggedDashboardChooser<Command> autoChooser;
     
@@ -362,10 +365,10 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            operatorController.leftStick()
+            operatorController.button(kLeftAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            operatorController.rightStick()
+            operatorController.button(kRightAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE

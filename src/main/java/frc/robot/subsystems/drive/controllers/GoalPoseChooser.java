@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive.controllers;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,6 +28,7 @@ public class GoalPoseChooser {
     }
 
     private static Pose2d customGoal = FieldConstants.AL;
+    // @AutoLogOutput(key="GoalPoseChooser/Side")
     private static SIDE side = SIDE.RIGHT;
 
     public static Pose2d getGoalPose(CHOOSER_STRATEGY strategy, Pose2d pose) {
@@ -49,7 +51,7 @@ public class GoalPoseChooser {
      * We got the left or right side of the side we are closest
      */
     public static Pose2d getReefHexagonalPose(Pose2d robotPose) {
-        Rotation2d angleFromReefCenter = turnFromReefOrigin(robotPose);
+        Rotation2d angleFromReefCenter = turnFromReefOriginForHexagon(robotPose);
         Pose2d goal;
         if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "D");
@@ -84,9 +86,13 @@ public class GoalPoseChooser {
                 goal = FieldConstants.AL;
             } else goal = FieldConstants.AR;
         }
-        Logger.recordOutput("Drive/SelectedSide", side);
+        // Logger.recordOutput("Drive/SelectedSide", side);
 
         return AllianceFlipUtil.apply(goal);
+    }
+
+    public static void updateSideStuff() {
+        Logger.recordOutput("Drive/SelectedSide", side);
     }
 
     public static Pose2d getIntakePose(Pose2d robotPose) {
@@ -101,7 +107,7 @@ public class GoalPoseChooser {
     }
 
     /* Accoumts for rotation from reef, and offsets for red-side logic */
-    public static Rotation2d turnFromReefOrigin(Pose2d robotPose) {
+    public static Rotation2d turnFromReefOriginForHexagon(Pose2d robotPose) {
         Pose2d reefCenter = AllianceFlipUtil.apply(FieldConstants.kReefCenter);
         Rotation2d angleFromReefCenter = Rotation2d.fromRadians(
             Math.atan2(
@@ -112,6 +118,18 @@ public class GoalPoseChooser {
         if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) finalAngle = angleFromReefCenter.plus(Rotation2d.k180deg).times(-1.0);
         Logger.recordOutput("Drive/GoalPoseAngle", finalAngle);
         return finalAngle;
+    }
+
+    /* Accoumts for rotation from reef, and offsets for red-side logic */
+    public static Rotation2d turnFromReefOrigin(Pose2d robotPose) {
+        Pose2d reefCenter = AllianceFlipUtil.apply(FieldConstants.kReefCenter);
+        Rotation2d angleFromReefCenter = Rotation2d.fromRadians(
+            Math.atan2(
+                robotPose.getY() - reefCenter.getY(), 
+                robotPose.getX() - reefCenter.getX()));
+        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg);
+        Logger.recordOutput("Drive/GoalPoseAngle", angleFromReefCenter);
+        return angleFromReefCenter;
     }
 
     /* Sets the goal using a command, meant to be used with buttonboard */

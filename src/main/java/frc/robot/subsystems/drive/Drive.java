@@ -223,6 +223,7 @@ public class Drive extends SubsystemBase {
         /* Updating Controllers */
         headingController.updateHeadingController();
         autoAlignController.updateAlignmentControllers();
+        GoalPoseChooser.updateSideStuff();
 
         ///////////////////// SETTING DESIRED SPEEDS FROM DRIVE STATE \\\\\\\\\\\\\\\\\\
         ChassisSpeeds teleopSpeeds = teleopController.computeChassiSpeeds(
