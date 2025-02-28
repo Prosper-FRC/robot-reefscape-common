@@ -228,7 +228,7 @@ public class RobotContainer {
 
         // Instantiate your TeleopCommands and AutonCommands classes
         teleopCommands = new TeleopCommands(elevator, intake, climb, led);
-        autonCommands = new AutonCommands(robotDrive);
+        autonCommands = new AutonCommands(robotDrive, elevator, intake);
         try {
             autoChooser = new LoggedDashboardChooser<>("Auton Program", autonCommands.getAutoChooser());
             // Fill instant command with whatever your initial action is
