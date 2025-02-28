@@ -99,9 +99,6 @@ public class Climb extends SubsystemBase {
       Logger.recordOutput("Climb/VoltageGoal", "NONE");
     }
 
-    // Continuously check if climb has moved beyond its limitations, note
-    // that we only need to compare the left voltage as that is the lead
-    // motor
     // if (!kDisableLimits.get()) {
     //   if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
     //       && kInputs[0].appliedVoltage > 0.0) {
@@ -143,19 +140,25 @@ public class Climb extends SubsystemBase {
     //   if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
     //       && voltage > 0) {
     //     return;
-    //   } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
+    //   } 
+      
+    //   else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
     //       && voltage < 0) {
     //     return;
-    //   } else {
+    //   } 
+      
+    //   else {
     //     for (ClimbIO io : kHardware) {
     //       io.setVoltage(voltage);
     //     }
     //   }
-    // } else {
-      for (ClimbIO io : kHardware) {
-        io.setVoltage(voltage);
-      }
-    //}
+    // } 
+    
+    // else {
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(voltage);
+    }
+    // }
   }
 
   /** Stops the mechanism */
