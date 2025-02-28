@@ -358,7 +358,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
