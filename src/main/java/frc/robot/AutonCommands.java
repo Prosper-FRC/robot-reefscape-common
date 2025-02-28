@@ -316,8 +316,10 @@ public class AutonCommands {
     // }
 
     public Command intakeCoralCommand() {
-        return Commands.run(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), mIntake)
-            .onlyWhile(() -> getHasPiece().getAsBoolean());
+        return Commands.startEnd(
+            () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
+            () -> mIntake.stop(true, false), 
+            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
         // return new SequentialCommandGroup(
         //     Commands.runEnd(
         //         () -> mElevator.setGoal(ElevatorGoal.kIntake), 
