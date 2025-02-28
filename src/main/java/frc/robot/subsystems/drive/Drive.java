@@ -240,7 +240,7 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = teleopController.computeSniperPOVChassisSpeeds(getPoseEstimate().getRotation());
                 break;
             case PROCESSOR_HEADING_ALIGN:
-                goalRotation = AllianceFlipUtil.apply(Rotation2d.fromDegrees(-90.0));
+                goalRotation = AllianceFlipUtil.apply(Rotation2d.fromDegrees(90.0));
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
