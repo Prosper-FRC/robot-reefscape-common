@@ -202,6 +202,12 @@ public class Intake extends SubsystemBase {
       // Do nothing if limits are not reached
     }
 
+    if (rollerGoal != null) {
+      if (detectedGamepiece() && (rollerGoal.equals(RollerGoal.kIntakeAlgae) || rollerGoal.equals(RollerGoal.kIntakeCoral))) {
+        stop(true, false);
+      }
+    }
+
     // This says that if the value is changed in the advantageScope tool,
     // Then we change the values in the code. Saves deploy time.
     // More found in prerequisites slide

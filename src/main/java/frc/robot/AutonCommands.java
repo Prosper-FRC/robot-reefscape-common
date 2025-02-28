@@ -9,13 +9,26 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.TimeUnit;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Drive.DriveState;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.RollerGoal;
+import frc.robot.utils.VirtualSubsystem;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.math.AllianceFlipUtil;
 
@@ -25,13 +38,24 @@ public class AutonCommands {
     public static final LoggedTunableNumber kAlgaeIntakeTriggerDistanceMeters = 
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
+    private final double kElevatorPositionTimeoutSeconds = 2.5;
+    private final double kScoreCoralTimeoutSeconds = 0.75;
+    private final double kIntakeCoralTimeoutSeconds = 2.5;
+
     private SendableChooser<Command> autoChooser;
 
     private Drive robotDrive;
+    private Elevator mElevator;
+    private Intake mIntake;
 
-    public AutonCommands(Drive robotDrive) {
+    private VirtualSubsystem virtualElevator= new VirtualSubsystem();
+    private VirtualSubsystem virtualIntake= new VirtualSubsystem();
+
+    public AutonCommands(Drive robotDrive, Elevator elevator, Intake intake) {
         // store subsystems
         this.robotDrive = robotDrive;
+        mElevator = elevator;
+        mIntake = intake;
 
         autoChooser = new SendableChooser<>();
 
@@ -130,11 +154,11 @@ public class AutonCommands {
      * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
     */
     public PathPlannerAuto intakeFirstAlgaePath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
-        PathPlannerAuto auto = firstPath(name, startingRotation, getHasPiece(), intakeCoralCommand(), nextAuto);
+        PathPlannerAuto auto = firstPath(name, startingRotation, getHasPiece(), intakeAlgaeCommand(), nextAuto);
         auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get()).or(
             auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get())
         ).whileTrue(
-            intakeCoralCommand() );
+            intakeAlgaeCommand() );
         return auto;
     }
 
@@ -160,10 +184,10 @@ public class AutonCommands {
     */
     public PathPlannerAuto intakeCoralPath(String name, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
-        auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IL).getTranslation(), kCoralIntakeTriggerDistanceMeters.get()).or(
-            auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IR).getTranslation(), kCoralIntakeTriggerDistanceMeters.get())
-        ).whileTrue(
-            intakeAlgaeCommand() );
+        // auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IL).getTranslation(), kCoralIntakeTriggerDistanceMeters.get()).or(
+        //     auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IR).getTranslation(), kCoralIntakeTriggerDistanceMeters.get())
+        // ).whileTrue(
+        //     intakeCoralCommand() );
         return auto;
     }
 
@@ -180,11 +204,11 @@ public class AutonCommands {
      * and upon finishing then the nextAuto is scheduled
     */
     public PathPlannerAuto intakeAlgaePath(String name, PathPlannerAuto nextAuto) {
-        PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeCoralCommand(), nextAuto);
+        PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeAlgaeCommand(), nextAuto);
         auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get()).or(
             auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get())
         ).whileTrue(
-            intakeCoralCommand() );
+            intakeAlgaeCommand() );
         return auto;
     }
 
@@ -192,7 +216,9 @@ public class AutonCommands {
     public PathPlannerAuto firstPath(String name, Rotation2d startingRotation, BooleanSupplier conditionSupplier, Command nextCommand, PathPlannerAuto nextAuto) {
         PathPlannerAuto firstAuto = new PathPlannerAuto(followFirstChoreoPath(name, startingRotation));
 
-        firstAuto.condition(conditionSupplier).onTrue(nextCommand.andThen(nextAutoChecker(nextAuto)));
+        firstAuto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
+
+        new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
 
         return firstAuto;
     }
@@ -200,7 +226,9 @@ public class AutonCommands {
     public PathPlannerAuto nextPath(String name, BooleanSupplier conditionSupplier, Command nextCommand, PathPlannerAuto nextAuto) {
         PathPlannerAuto auto = new PathPlannerAuto(followChoreoPath(name));
 
-        auto.condition(conditionSupplier).onTrue(nextCommand.andThen(nextAutoChecker(nextAuto)));
+        auto.condition(conditionSupplier).onTrue(nextCommand);
+
+        new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
 
         return auto;
     }
@@ -215,11 +243,89 @@ public class AutonCommands {
 
     ///////////////// SUPERSTRUCTURE COMMANDS AND DATA \\\\\\\\\\\\\\\\\\\\\
     public Command scoreCoralCommand() {
-        return new PrintCommand("Score Coral");
+        Command command = new SequentialCommandGroup(
+            new FunctionalCommand(
+                () -> {
+                    mElevator.setGoal(ElevatorGoal.kL3Coral);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mElevator.setPosition(mElevator.getPositionMeters());
+                }, 
+                getElevatorAtGoal(),
+                virtualElevator)
+                .withTimeout(kElevatorPositionTimeoutSeconds),
+            new FunctionalCommand(
+                () -> {
+                    mIntake.setRollerGoal(RollerGoal.kScoreCoral);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mIntake.stop(true, false);
+                }, 
+                () -> !getHasPiece().getAsBoolean(),
+                virtualIntake)
+                .withTimeout(kScoreCoralTimeoutSeconds),
+            new FunctionalCommand(
+                () -> {
+                    mElevator.setGoal(ElevatorGoal.kStow);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mElevator.stop();
+                }, 
+                getElevatorAtGoal(),
+                virtualElevator)
+                .withTimeout(kElevatorPositionTimeoutSeconds)
+        );
+
+        return command;
+    
+        // return new SequentialCommandGroup(
+        //     Commands.runEnd(
+        //         () -> mElevator.setGoal(ElevatorGoal.kL4Coral), 
+        //         () -> mElevator.setPosition(mElevator.getPositionMeters()), 
+        //         mElevator)
+        //         .until(getElevatorAtGoal())
+        //         .withTimeout(kElevatorPositionTimeoutSeconds),
+        //     Commands.startEnd(
+        //         () -> mIntake.setRollerGoal(RollerGoal.kScoreCoral), 
+        //         () -> mIntake.stop(true, false), 
+        //         mIntake)
+        //         .until(() -> !getHasPiece().getAsBoolean())
+        //         .withTimeout(kScoreCoralTimeoutSeconds),
+        //     Commands.runEnd(
+        //         () -> mElevator.setGoal(ElevatorGoal.kStow), 
+        //         () -> mElevator.stop(), 
+        //         mElevator)
+        //         .until(getElevatorAtGoal())
+        //         .withTimeout(kElevatorPositionTimeoutSeconds)
+        // );
     }
 
     public Command intakeCoralCommand() {
-        return new PrintCommand("intake Coral");
+        return Commands.runOnce(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))
+        ;
+        // return new SequentialCommandGroup(
+        //     Commands.runEnd(
+        //         () -> mElevator.setGoal(ElevatorGoal.kIntake), 
+        //         () -> mElevator.setPosition(mElevator.getPositionMeters()), 
+        //         mElevator)
+        //         .until(getElevatorAtGoal())
+        //         .withTimeout(kElevatorPositionTimeoutSeconds),
+        //     Commands.startEnd(
+        //         () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
+        //         () -> mIntake.stop(true, false), 
+        //         mIntake)
+        //         .until(getHasPiece())
+        //         .withTimeout(kIntakeCoralTimeoutSeconds),
+        //     Commands.runEnd(
+        //         () -> mElevator.setGoal(ElevatorGoal.kStow), 
+        //         () -> mElevator.stop(), 
+        //         mElevator)
+        //         .until(getElevatorAtGoal())
+        //         .withTimeout(kElevatorPositionTimeoutSeconds)
+        // );
     }
 
     public Command scoreAlgaeCommand() {
@@ -231,7 +337,11 @@ public class AutonCommands {
     }
 
     public BooleanSupplier getHasPiece() {
-        return () -> false;
+        return () -> mIntake.detectedGamepiece();
+    }
+
+    public BooleanSupplier getElevatorAtGoal() {
+        return () -> mElevator.atGoal();
     }
 
     ///////////////// PATH CREATION LOGIC \\\\\\\\\\\\\\\\\\\\\\
