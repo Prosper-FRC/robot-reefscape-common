@@ -352,8 +352,19 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+            // driverController.a()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+
+            driverController.a().and(leftAutoAlignTrigger)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
+                .andThen(robotDrive.setDriveStateCommand(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.a().and(rightAutoAlignTrigger)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
+                .andThen(robotDrive.setDriveStateCommand(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
@@ -363,12 +374,6 @@ public class RobotContainer {
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            operatorController.button(kLeftAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
-
-            operatorController.button(kRightAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
