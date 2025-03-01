@@ -352,9 +352,9 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // driverController.a()
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            driverController.a()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
@@ -566,7 +566,7 @@ public class RobotContainer {
             operatorController.rightStick()
                 .onTrue(
                     Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
-                    .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate()))));
+                    .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
