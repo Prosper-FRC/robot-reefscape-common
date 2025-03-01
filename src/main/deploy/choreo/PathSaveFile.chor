@@ -4,11 +4,25 @@
  "type":"Swerve",
  "variables":{
   "expressions":{
+   "maxAccel":{
+    "dimension":"LinAcc",
+    "var":{
+     "exp":"10 m / s ^ 2",
+     "val":10.0
+    }
+   },
    "maxAngAccel":{
     "dimension":"AngAcc",
     "var":{
      "exp":"1880 deg / s ^ 2",
      "val":32.81218993749339
+    }
+   },
+   "maxV":{
+    "dimension":"LinVel",
+    "var":{
+     "exp":"3.5 m / s",
+     "val":3.5
     }
    }
   },

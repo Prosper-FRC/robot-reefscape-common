@@ -62,6 +62,12 @@ public class AutonCommands {
             intakeCoralCommand());
 
         tryToAddPathToChooser(
+            "CriticalTest", 
+            scoreFirstCoralPath("S_SL_CR_C", 
+            intakeCoralPath("I_CR_IL_C", 
+            scoreCoralPath("S_IL_BL_C", null))));
+
+        tryToAddPathToChooser(
             "FirstCoralTest",
             scoreFirstCoralPath("FirstTest", 
             intakeCoralPath("SecondTest",
