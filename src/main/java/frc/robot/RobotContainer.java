@@ -340,6 +340,8 @@ public class RobotContainer {
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
+        Trigger leftAutoAlignTrigger = driverController.leftTrigger(0.5, teleopLoop);
+        Trigger rightAutoAlignTrigger = driverController.rightTrigger(0.5, teleopLoop);
 
         if (useCompetitionBindings) {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -350,9 +352,9 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.a()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
@@ -362,11 +364,21 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftBumper()
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
+            driverController.a().and(leftAutoAlignTrigger)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.rightBumper()
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
+            driverController.a().and(rightAutoAlignTrigger)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            // driverController.leftBumper()
+            //     .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
+
+            // driverController.rightBumper()
+            //     .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
