@@ -157,8 +157,8 @@ public class GoalPoseChooser {
         Logger.recordOutput(tunablePose, pose);
     }
 
-    public static void setWorkingPose(Pose2d pose) {
-        setPose(tunablePose, side, DriverStation.getAlliance().get(), pose);
+    public static void setWorkingPose(Pose2d pose, Alliance alliance) {
+        setPose(tunablePose, side, alliance, pose);
     }
 
     public static Pose2d getIntakePose(Pose2d robotPose) {
