@@ -568,10 +568,10 @@ public class RobotContainer {
             operatorController.leftStick()
                 .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
 
-            operatorController.rightStick()
-                .onTrue(
-                    Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
-                    .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
+            // operatorController.rightStick()
+            //     .onTrue(
+            //         Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
+            //         .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
