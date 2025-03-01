@@ -316,10 +316,10 @@ public class RobotContainer {
     private void configureButtonBindings() {
         HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>> reefPositions = 
             new HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>>();
-        reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kL4Algae));
+        reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kBarge));
         reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
         reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
-        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kGroundAlgae));
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kProcessor));
 
         ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
         positionButtons.add(operatorController.y());
@@ -474,7 +474,7 @@ public class RobotContainer {
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )
@@ -499,7 +499,7 @@ public class RobotContainer {
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kNetScore)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )

@@ -47,8 +47,8 @@ public class DriveConstants {
 
     public static final boolean kDoExtraLogging = false;
 
-    public static final PIDConstants kPPTranslationPID = new PIDConstants(5.00, 0.0, 0.0);
-    public static final PIDConstants kPPRotationPID = new PIDConstants(5.00, 0.0, 0.0);
+    public static final PIDConstants kPPTranslationPID = new PIDConstants(4.75, 0.0, 0.0);
+    public static final PIDConstants kPPRotationPID = new PIDConstants(4.75, 0.0, 0.0);
 
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
     /* GENERAL SWERVE MODULE CONSTANTS */
@@ -96,14 +96,14 @@ public class DriveConstants {
             13, 
             23, 
             33,
-            Rotation2d.fromRotations(-0.043945));
+            Rotation2d.fromRotations(-0.018799));
 
     public static final ModuleHardwareConfig kBackRightHardware =
         new ModuleHardwareConfig(
             14, 
             24, 
             34,
-            Rotation2d.fromRotations(-0.090576));
+            Rotation2d.fromRotations(-0.068115));
 
     public static record ModuleHardwareConfig(
         int driveID, int azimuthID, int encoderID, Rotation2d offset) {}
