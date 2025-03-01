@@ -286,21 +286,27 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setBreatheAnimation(
-                    3.0,
-                    Color.kRed)));
+                led.setGradientAnimation(
+                    100,
+                    GradientType.kContinuous,
+                    Color.kLightBlue,
+                    Color.kMediumBlue,
+                    Color.kDarkBlue)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.2, 
+                0.1, 
                 Color.kRed)))
         .whileFalse(
             Commands.runOnce(() -> 
-            led.setBreatheAnimation(
-                3.0,
-                Color.kRed)));
+            led.setGradientAnimation(
+                100, 
+                GradientType.kContinuous, 
+                Color.kLightBlue, 
+                Color.kMediumBlue, 
+                Color.kDarkBlue)));
         
     }
 
