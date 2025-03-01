@@ -54,30 +54,6 @@ public class AllianceFlipUtil {
     }
   }
 
-  public static Rotation2d apply(Rotation2d rotation, boolean flip) {
-    if (flip) {
-      return new Rotation2d(-rotation.getCos(), -rotation.getSin());
-    } else {
-      return rotation;
-    }
-  }
-
-  public static Translation2d apply(Translation2d translation, boolean flip) {
-    if (flip) {
-      return new Translation2d(apply(translation.getX()), Constants.kFieldWidthMeters - translation.getY());
-    } else {
-      return translation;
-    }
-  }
-
-  public static Pose2d apply(Pose2d pose, boolean flip) {
-    if (flip) {
-      return new Pose2d(apply(pose.getTranslation(), flip), apply(pose.getRotation(), flip));
-    } else {
-      return pose;
-    }
-  }
-
   public static Translation3d apply(Translation3d translation3d) {
     if (shouldFlip()) {
       return new Translation3d(
