@@ -286,27 +286,21 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setGradientAnimation(
-                    100,
-                    GradientType.kContinuous,
-                    Color.kLightBlue,
-                    Color.kMediumBlue,
-                    Color.kDarkBlue)));
+                led.setBreatheAnimation(
+                    3.0,
+                    Color.kRed)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.1, 
+                0.2, 
                 Color.kRed)))
         .whileFalse(
             Commands.runOnce(() -> 
-            led.setGradientAnimation(
-                100, 
-                GradientType.kContinuous, 
-                Color.kLightBlue, 
-                Color.kMediumBlue, 
-                Color.kDarkBlue)));
+            led.setBreatheAnimation(
+                3.0,
+                Color.kRed)));
         
     }
 
@@ -370,10 +364,10 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftBumper()
+            operatorController.button(kLeftAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            driverController.rightBumper()
+            operatorController.button(kRightAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
@@ -566,8 +560,13 @@ public class RobotContainer {
             //         teleopCommands.stopRollersAndPivotCommand()
             //     );
 
-            operatorController.rightStick()
+            operatorController.leftStick()
                 .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
+
+            operatorController.rightStick()
+                .onTrue(
+                    Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
+                    .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate()))));
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
