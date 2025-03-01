@@ -3,7 +3,15 @@
  "version":1,
  "type":"Swerve",
  "variables":{
-  "expressions":{},
+  "expressions":{
+   "maxAngAccel":{
+    "dimension":"AngAcc",
+    "var":{
+     "exp":"1880 deg / s ^ 2",
+     "val":32.81218993749339
+    }
+   }
+  },
   "poses":{
    "AL":{
     "x":{
@@ -329,8 +337,8 @@
    "val":607.3745796940267
   },
   "tmax":{
-   "exp":"1.4 N * m",
-   "val":1.4
+   "exp":"1.71 N * m",
+   "val":1.71
   },
   "cof":{
    "exp":"1.2",

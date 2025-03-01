@@ -10,8 +10,6 @@ import static frc.robot.subsystems.drive.DriveConstants.kMaxLinearSpeedMPS;
 
 import java.util.function.DoubleSupplier;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 

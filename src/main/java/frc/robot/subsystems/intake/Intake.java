@@ -23,6 +23,7 @@ public class Intake extends SubsystemBase {
     kIntakeCoral(() -> 2.0),
     kIntakeAlgae(() -> -5.0),
     kScoreCoral(() -> -4.0),
+    kAutonScoreCoral(() -> 4.0),
     kScoreAlgae(() -> -5.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Intake/Feedback/RollerSetpointVolts", 0.0));
@@ -43,10 +44,10 @@ public class Intake extends SubsystemBase {
     kStowScore(() -> Rotation2d.fromDegrees(64.0)),
     kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
     kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
-    kIntakeGround(() -> Rotation2d.fromDegrees(-40.0)),
+    kIntakeGround(() -> Rotation2d.fromDegrees(-27.5)),
     kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
     kScore(() -> Rotation2d.fromDegrees(40.0)),
-    kNetScore(() -> Rotation2d.fromDegrees(5.0)),
+    kNetScore(() -> Rotation2d.fromDegrees(50.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(() -> Rotation2d.fromDegrees(
       new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
@@ -200,6 +201,12 @@ public class Intake extends SubsystemBase {
       stop(false, true);
     } else {
       // Do nothing if limits are not reached
+    }
+
+    if (rollerGoal != null) {
+      if (detectedGamepiece() && (rollerGoal.equals(RollerGoal.kIntakeAlgae) || rollerGoal.equals(RollerGoal.kIntakeCoral))) {
+        stop(true, false);
+      }
     }
 
     // This says that if the value is changed in the advantageScope tool,
