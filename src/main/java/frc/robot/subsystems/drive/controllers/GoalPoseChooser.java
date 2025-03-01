@@ -97,14 +97,6 @@ public class GoalPoseChooser {
         Logger.recordOutput("Drive/SelectedSide", side);
     }
 
-    public static void recordWorkingPose(Pose2d pose) {
-        Logger.recordOutput(tunablePose, pose);
-    }
-
-    public static void setWorkingPose(Pose2d pose) {
-        setPose(tunablePose, side, DriverStation.getAlliance().get(), pose);
-    }
-
     public static Pose2d getIntakePose(Pose2d robotPose) {
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)) {
             return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL).plus(new Transform2d(0, 0, Rotation2d.k180deg));

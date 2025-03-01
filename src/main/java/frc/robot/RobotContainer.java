@@ -567,13 +567,9 @@ public class RobotContainer {
             //     );
 
             operatorController.rightStick()
-<<<<<<< HEAD
                 .onTrue(
                     Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
                     .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
-=======
-                .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
->>>>>>> parent of 5aa75a1 (Merge pull request #62 from Prosper-FRC/dev/drive-to-pose)
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
