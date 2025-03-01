@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase {
     kStowScore(() -> Rotation2d.fromDegrees(64.0)),
     kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
     kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
-    kIntakeGround(() -> Rotation2d.fromDegrees(-40.0)),
+    kIntakeGround(() -> Rotation2d.fromDegrees(-27.5)),
     kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
     kScore(() -> Rotation2d.fromDegrees(40.0)),
     kBargeScore(() -> Rotation2d.fromDegrees(12.0)),
@@ -201,6 +201,12 @@ public class Intake extends SubsystemBase {
       stop(false, true);
     } else {
       // Do nothing if limits are not reached
+    }
+
+    if (rollerGoal != null) {
+      if (detectedGamepiece() && (rollerGoal.equals(RollerGoal.kIntakeAlgae) || rollerGoal.equals(RollerGoal.kIntakeCoral))) {
+        stop(true, false);
+      }
     }
 
     // This says that if the value is changed in the advantageScope tool,

@@ -82,6 +82,9 @@ public class RobotContainer {
     // Define other utility classes
     private final AutonCommands autonCommands;
     private final TeleopCommands teleopCommands;
+
+    private static final int kLeftAlign = 9;
+    private static final int kRightAlign = 10; 
     
     private LoggedDashboardChooser<Command> autoChooser;
     
@@ -283,27 +286,21 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setGradientAnimation(
-                    100,
-                    GradientType.kContinuous,
-                    Color.kLightBlue,
-                    Color.kMediumBlue,
-                    Color.kDarkBlue)));
+                led.setBreatheAnimation(
+                    3.0,
+                    Color.kRed)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.1, 
+                0.2, 
                 Color.kRed)))
         .whileFalse(
             Commands.runOnce(() -> 
-            led.setGradientAnimation(
-                100, 
-                GradientType.kContinuous, 
-                Color.kLightBlue, 
-                Color.kMediumBlue, 
-                Color.kDarkBlue)));
+            led.setBreatheAnimation(
+                3.0,
+                Color.kRed)));
         
     }
 
@@ -360,28 +357,18 @@ public class RobotContainer {
             //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.PROCESSOR_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a().and(leftAutoAlignTrigger)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
-                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            operatorController.button(kLeftAlign)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            driverController.a().and(rightAutoAlignTrigger)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
-                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            // driverController.leftBumper()
-            //     .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
-
-            // driverController.rightBumper()
-            //     .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
+            operatorController.button(kRightAlign)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
@@ -468,7 +455,7 @@ public class RobotContainer {
                         );
                 }
 
-                if(i == 0){
+                if(i == 3){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
@@ -493,7 +480,7 @@ public class RobotContainer {
                         );
                 }
 
-                if(i == 3){
+                if(i == 0){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
@@ -573,8 +560,13 @@ public class RobotContainer {
             //         teleopCommands.stopRollersAndPivotCommand()
             //     );
 
-            operatorController.rightStick()
+            operatorController.leftStick()
                 .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
+
+            operatorController.rightStick()
+                .onTrue(
+                    Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
+                    .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate()))));
         } 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));

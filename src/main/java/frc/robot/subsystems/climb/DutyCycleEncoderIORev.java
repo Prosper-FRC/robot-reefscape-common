@@ -35,4 +35,8 @@ public class DutyCycleEncoderIORev implements DutyCycleEncoderIO {
     inputs.frequencyHz = kEncoder.getFrequency();
     inputs.dutyCycleReading = kEncoder.get();
   }
+
+//   public void getPosition() {
+//     kEncoder.
+//   }
 }

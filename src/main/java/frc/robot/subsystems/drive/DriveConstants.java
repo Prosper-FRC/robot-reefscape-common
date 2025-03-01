@@ -82,14 +82,14 @@ public class DriveConstants {
             11, 
             21, 
             31,
-            Rotation2d.fromRotations(0.405518));
+            Rotation2d.fromRotations(0.406494));
 
     public static final ModuleHardwareConfig kFrontRightHardware =
         new ModuleHardwareConfig(
             12, 
             22, 
             32, 
-            Rotation2d.fromRotations(0.081299));
+            Rotation2d.fromRotations(0.081055));
 
     public static final ModuleHardwareConfig kBackLeftHardware =
         new ModuleHardwareConfig(

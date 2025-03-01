@@ -1,9 +1,13 @@
 package frc.robot.subsystems.drive.controllers;
 
+import java.util.HashMap;
+
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +31,13 @@ public class GoalPoseChooser {
     }
 
     private static Pose2d customGoal = FieldConstants.AL;
-    private static SIDE side = SIDE.LEFT;
+    // @AutoLogOutput(key="GoalPoseChooser/Side")
+    private static SIDE side = SIDE.RIGHT;
+
+    private static HashMap<String, Pair<Pose2d, Pose2d>> blueAllianceReefGoals;
+    private static HashMap<String, Pair<Pose2d, Pose2d>> redAllianceReefGoals;
+
+    private static String tunablePose = "Drive/GoalPoseChooser/";
 
     public static Pose2d getGoalPose(CHOOSER_STRATEGY strategy, Pose2d pose) {
         switch(strategy) {
@@ -49,55 +59,130 @@ public class GoalPoseChooser {
      * We got the left or right side of the side we are closest
      */
     public static Pose2d getReefHexagonalPose(Pose2d robotPose) {
-        Rotation2d angleFromReefCenter = turnFromReefOrigin(robotPose);
+        Rotation2d angleFromReefCenter = turnFromReefOriginForHexagon(robotPose);
         Pose2d goal;
+        String letterSide = "NONE";
+        // if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
+        //     Logger.recordOutput("Drive/ReefSide", "D");
+        //     letterSide = "D";
+        //     if(side.equals(SIDE.LEFT)) {
+        //         goal = FieldConstants.DL;
+        //     } else goal = FieldConstants.DR;
+        // } else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
+        //     Logger.recordOutput("Drive/ReefSide", "E");
+        //     letterSide = "E";
+        //     if(side.equals(SIDE.LEFT)) {
+        //         goal = FieldConstants.EL;
+        //     } else goal = FieldConstants.ER;
+        // } else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
+        //     Logger.recordOutput("Drive/ReefSide", "F");
+        //     letterSide = "F";
+        //     if(side.equals(SIDE.LEFT)) {
+        //         goal = FieldConstants.FL;
+        //     } else goal = FieldConstants.FR;
+        //     // Skipped -150 to 150 because the inBetween function miscopes
+        //     // Putting it in else covers the remainder of the hexagon scope
+        // } else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
+        //     Logger.recordOutput("Drive/ReefSide", "B");
+        //     letterSide = "B";
+        //     if(side.equals(SIDE.LEFT)) {
+        //         goal = FieldConstants.BL;
+        //     } else goal = FieldConstants.BR;
+        // } else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
+        //     Logger.recordOutput("Drive/ReefSide", "C");
+        //     letterSide = "C";
+        //     if(side.equals(SIDE.LEFT)) {
+        //         goal = FieldConstants.CL;
+        //     } else goal = FieldConstants.CR;
+        // } else {
+        //     Logger.recordOutput("Drive/ReefSide", "A");
+        //     letterSide = "A";
+        //     if(side.equals(SIDE.LEFT)) {
+        //         goal = FieldConstants.AL;
+        //     } else goal = FieldConstants.AR;
+        // }
         if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "A");
-            if(side.equals(SIDE.LEFT)) {
-                goal = FieldConstants.DL;
-            } else goal = FieldConstants.DR;
+            Logger.recordOutput("Drive/ReefSide", "D");
+            letterSide = "D";
+            // if(side.equals(SIDE.LEFT)) {
+            //     goal = FieldConstants.DL;
+            // } else goal = FieldConstants.DR;
         } else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "B");
-            if(side.equals(SIDE.LEFT)) {
-                goal = FieldConstants.EL;
-            } else goal = FieldConstants.ER;
+            Logger.recordOutput("Drive/ReefSide", "E");
+            letterSide = "E";
+            // if(side.equals(SIDE.LEFT)) {
+            //     goal = FieldConstants.EL;
+            // } else goal = FieldConstants.ER;
         } else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "C");
-            if(side.equals(SIDE.LEFT)) {
-                goal = FieldConstants.FL;
-            } else goal = FieldConstants.FR;
+            Logger.recordOutput("Drive/ReefSide", "F");
+            letterSide = "F";
+            // if(side.equals(SIDE.LEFT)) {
+            //     goal = FieldConstants.FL;
+            // } else goal = FieldConstants.FR;
             // Skipped -150 to 150 because the inBetween function miscopes
             // Putting it in else covers the remainder of the hexagon scope
         } else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
-            Logger.recordOutput("Drive/ReefSide", "E");
-            if(side.equals(SIDE.LEFT)) {
-                goal = FieldConstants.BL;
-            } else goal = FieldConstants.BR;
+            Logger.recordOutput("Drive/ReefSide", "B");
+            letterSide = "B";
+            // if(side.equals(SIDE.LEFT)) {
+            //     goal = FieldConstants.BL;
+            // } else goal = FieldConstants.BR;
         } else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
-            Logger.recordOutput("Drive/ReefSide", "F");
-            if(side.equals(SIDE.LEFT)) {
-                goal = FieldConstants.CL;
-            } else goal = FieldConstants.CR;
+            Logger.recordOutput("Drive/ReefSide", "C");
+            letterSide = "C";
+            // if(side.equals(SIDE.LEFT)) {
+            //     goal = FieldConstants.CL;
+            // } else goal = FieldConstants.CR;
         } else {
-            Logger.recordOutput("Drive/ReefSide", "D");
-            if(side.equals(SIDE.LEFT)) {
-                goal = FieldConstants.AL;
-            } else goal = FieldConstants.AR;
+            Logger.recordOutput("Drive/ReefSide", "A");
+            letterSide = "A";
+            // if(side.equals(SIDE.LEFT)) {
+            //     goal = FieldConstants.AL;
+            // } else goal = FieldConstants.AR;
         }
-        Logger.recordOutput("Drive/SelectedSide", side);
+        goal = getPose(letterSide, side, DriverStation.getAlliance().get());
+
+        // Logger.recordOutput("Drive/SelectedSide", side);
+        tunablePose = "Drive/GoalPoseChooser/".concat(side.toString()).concat(letterSide);
 
         return AllianceFlipUtil.apply(goal);
     }
 
+    public static void updateSideStuff() {
+        Logger.recordOutput("Drive/SelectedSide", side);
+    }
+
+    public static void recordWorkingPose(Pose2d pose) {
+        Logger.recordOutput(tunablePose, pose);
+    }
+
+    public static void setWorkingPose(Pose2d pose) {
+        setPose(tunablePose, side, DriverStation.getAlliance().get(), pose);
+    }
+
     public static Pose2d getIntakePose(Pose2d robotPose) {
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL);
-        } else return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IL : FieldConstants.IR);
+            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL).plus(new Transform2d(0, 0, Rotation2d.k180deg));
+        } else return (AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IL : FieldConstants.IR));
     }
 
     /* DO NOT USE X COORDINATE, REPLACE y holonomic speeds with driver controller when using this! */
     public static Pose2d getNetPose(Pose2d robotPose) {
         return AllianceFlipUtil.apply(new Pose2d(FieldConstants.kXNetLineMeters, 0.0, Rotation2d.kZero));
+    }
+
+    /* Accoumts for rotation from reef, and offsets for red-side logic */
+    public static Rotation2d turnFromReefOriginForHexagon(Pose2d robotPose) {
+        Pose2d reefCenter = AllianceFlipUtil.apply(FieldConstants.kReefCenter);
+        Rotation2d angleFromReefCenter = Rotation2d.fromRadians(
+            Math.atan2(
+                robotPose.getY() - reefCenter.getY(), 
+                robotPose.getX() - reefCenter.getX()));
+
+        Rotation2d finalAngle = angleFromReefCenter.times(-1.0);
+        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) finalAngle = angleFromReefCenter.plus(Rotation2d.k180deg).times(-1.0);
+        Logger.recordOutput("Drive/GoalPoseAngle", finalAngle);
+        return finalAngle;
     }
 
     /* Accoumts for rotation from reef, and offsets for red-side logic */
@@ -107,7 +192,7 @@ public class GoalPoseChooser {
             Math.atan2(
                 robotPose.getY() - reefCenter.getY(), 
                 robotPose.getX() - reefCenter.getX()));
-        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg).times(-1.0);
+        if(DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red)) angleFromReefCenter = angleFromReefCenter.plus(Rotation2d.k180deg);
         Logger.recordOutput("Drive/GoalPoseAngle", angleFromReefCenter);
         return angleFromReefCenter;
     }
@@ -123,5 +208,76 @@ public class GoalPoseChooser {
 
     private static boolean inBetween(double min, double max, double val) {
         return (val > min) && (val < max);
+    }
+
+    private static void configurePoses() {
+        if (blueAllianceReefGoals == null) {
+            blueAllianceReefGoals = new HashMap<String, Pair<Pose2d, Pose2d>>();
+
+            blueAllianceReefGoals.put("A", new Pair<Pose2d,Pose2d>(FieldConstants.AL, FieldConstants.AR));
+            blueAllianceReefGoals.put("B", new Pair<Pose2d,Pose2d>(FieldConstants.BL, FieldConstants.BR));
+            blueAllianceReefGoals.put("C", new Pair<Pose2d,Pose2d>(FieldConstants.CL, FieldConstants.CR));
+            blueAllianceReefGoals.put("D", new Pair<Pose2d,Pose2d>(FieldConstants.DL, FieldConstants.DR));
+            blueAllianceReefGoals.put("E", new Pair<Pose2d,Pose2d>(FieldConstants.EL, FieldConstants.ER));
+            blueAllianceReefGoals.put("F", new Pair<Pose2d,Pose2d>(FieldConstants.FL, FieldConstants.FR));
+        }
+        if (redAllianceReefGoals == null) {
+            redAllianceReefGoals = new HashMap<String, Pair<Pose2d, Pose2d>>();
+
+            redAllianceReefGoals.put("A", new Pair<Pose2d,Pose2d>(
+                AllianceFlipUtil.apply(FieldConstants.AL, true), 
+                AllianceFlipUtil.apply(FieldConstants.AR, true)));
+            redAllianceReefGoals.put("B", new Pair<Pose2d,Pose2d>(
+                AllianceFlipUtil.apply(FieldConstants.BL, true), 
+                AllianceFlipUtil.apply(FieldConstants.BR, true)));
+            redAllianceReefGoals.put("C", new Pair<Pose2d,Pose2d>(
+                AllianceFlipUtil.apply(FieldConstants.CL, true), 
+                AllianceFlipUtil.apply(FieldConstants.CR, true)));
+            redAllianceReefGoals.put("D", new Pair<Pose2d,Pose2d>(
+                AllianceFlipUtil.apply(FieldConstants.DL, true), 
+                AllianceFlipUtil.apply(FieldConstants.DR, true)));
+            redAllianceReefGoals.put("E", new Pair<Pose2d,Pose2d>(
+                AllianceFlipUtil.apply(FieldConstants.EL, true), 
+                AllianceFlipUtil.apply(FieldConstants.ER, true)));
+            redAllianceReefGoals.put("F", new Pair<Pose2d,Pose2d>(
+                AllianceFlipUtil.apply(FieldConstants.FL, true), 
+                AllianceFlipUtil.apply(FieldConstants.FR, true)));
+        }
+    }
+
+    private static Pose2d getPose(String letterSide, SIDE side, Alliance alliance) {
+        configurePoses();
+
+        if (alliance.equals(Alliance.Blue)) {
+            if (side == SIDE.LEFT) {
+                return blueAllianceReefGoals.get(letterSide).getFirst();
+            } else {
+                return blueAllianceReefGoals.get(letterSide).getSecond();
+            }
+        } else {
+            if (side == SIDE.LEFT) {
+                return redAllianceReefGoals.get(letterSide).getFirst();
+            } else {
+                return redAllianceReefGoals.get(letterSide).getSecond();
+            }
+        }
+    }
+
+    public static void setPose(String letterSide, SIDE side, Alliance alliance, Pose2d pose) {
+        configurePoses();
+
+        if (alliance.equals(Alliance.Blue)) {
+            if (side == SIDE.LEFT) {
+                blueAllianceReefGoals.put(letterSide, new Pair<Pose2d,Pose2d>(pose, blueAllianceReefGoals.get(letterSide).getSecond()));
+            } else {
+                blueAllianceReefGoals.put(letterSide, new Pair<Pose2d,Pose2d>(blueAllianceReefGoals.get(letterSide).getFirst(), pose));
+            }
+        } else {
+            if (side == SIDE.LEFT) {
+                redAllianceReefGoals.put(letterSide, new Pair<Pose2d,Pose2d>(pose, redAllianceReefGoals.get(letterSide).getSecond()));
+            } else {
+                redAllianceReefGoals.put(letterSide, new Pair<Pose2d,Pose2d>(redAllianceReefGoals.get(letterSide).getFirst(), pose));
+            }
+        }
     }
 }
