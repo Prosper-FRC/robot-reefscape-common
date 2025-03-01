@@ -147,7 +147,7 @@ public class ClimbConstants {
     0.002); // Std devs
 
   public static final DutyCycleConfiguration kDutyCycleConfiguration = new DutyCycleConfiguration(
-    0,
+    9,
     960,
     0.0,
     1.0);
