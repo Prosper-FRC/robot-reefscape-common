@@ -21,7 +21,6 @@
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"16.54 m", "val":16.54}, "h":{"exp":"8.21 m", "val":8.21}}}, "enabled":true},
-    {"from":"first", "to":"last", "data":{"type":"MaxAcceleration", "props":{"max":{"exp":"5 m / s ^ 2", "val":5.0}}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"MaxVelocity", "props":{"max":{"exp":"3 m / s", "val":3.0}}}, "enabled":true}],
   "targetDt":{
    "exp":"0.05 s",

@@ -4,7 +4,6 @@
 
 package frc.robot;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
@@ -22,7 +21,6 @@ import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
-import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -38,7 +36,6 @@ import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.LED.LEDConstants;
-import frc.robot.subsystems.LED.LEDConstants.LEDConfig;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -289,21 +286,27 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setBreatheAnimation(
-                    3.0,
-                    Color.kRed)));
+                led.setGradientAnimation(
+                    100,
+                    GradientType.kContinuous,
+                    Color.kLightBlue,
+                    Color.kMediumBlue,
+                    Color.kDarkBlue)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.2, 
+                0.1, 
                 Color.kRed)))
         .whileFalse(
             Commands.runOnce(() -> 
-            led.setBreatheAnimation(
-                3.0,
-                Color.kRed)));
+            led.setGradientAnimation(
+                100, 
+                GradientType.kContinuous, 
+                Color.kLightBlue, 
+                Color.kMediumBlue, 
+                Color.kDarkBlue)));
         
     }
 
@@ -343,6 +346,8 @@ public class RobotContainer {
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
+        Trigger leftAutoAlignTrigger = driverController.leftTrigger(0.5, teleopLoop);
+        Trigger rightAutoAlignTrigger = driverController.rightTrigger(0.5, teleopLoop);
 
         if (useCompetitionBindings) {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -353,9 +358,9 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.a()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
@@ -365,10 +370,10 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            operatorController.button(kLeftAlign)
+            driverController.leftBumper()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            operatorController.button(kRightAlign)
+            driverController.rightBumper()
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE

@@ -60,6 +60,14 @@ public class AutonCommands {
         autoChooser = new SendableChooser<>();
 
         tryToAddPathToChooser(
+            "ScoreCoralTest", 
+            scoreCoralCommand());
+
+        tryToAddPathToChooser(
+            "IntakeCoralTest", 
+            intakeCoralCommand());
+
+        tryToAddPathToChooser(
             "FirstCoralTest",
             scoreFirstCoralPath("FirstTest", 
             intakeCoralPath("SecondTest",
@@ -257,7 +265,7 @@ public class AutonCommands {
                 .withTimeout(kElevatorPositionTimeoutSeconds),
             new FunctionalCommand(
                 () -> {
-                    mIntake.setRollerGoal(RollerGoal.kScoreCoral);
+                    mIntake.setRollerGoal(RollerGoal.kAutonScoreCoral);
                 }, 
                 () -> {}, 
                 (interrupted) -> {
@@ -303,9 +311,15 @@ public class AutonCommands {
         // );
     }
 
+    // public Command intakeCoralCmd(){
+    //     return Commands.run(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), mIntake).onlyIf(() -> );
+    // }
+
     public Command intakeCoralCommand() {
-        return Commands.run(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), mIntake)
-            .onlyWhile(() -> getHasPiece().getAsBoolean());
+        return Commands.startEnd(
+            () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
+            () -> mIntake.stop(true, false), 
+            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
         // return new SequentialCommandGroup(
         //     Commands.runEnd(
         //         () -> mElevator.setGoal(ElevatorGoal.kIntake), 
