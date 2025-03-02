@@ -85,21 +85,23 @@ public class AutonCommands {
             "FirstAlgaeTest", 
             intakeFirstAlgaePath("FirstTest", 
             intakeAlgaePath("SecondTest",
-            scoreAlgaePath("ThirdTest", 
-            null
-        ))));
-
-        tryToAddPathToChooser(
-            "RightCoral", 
-            scoreFirstCoralPath("S_SR_EL_C", 
-            intakeCoralPath("I_EL_IR_C", 
-            scoreCoralPath("S_IR_FR_C", 
-            intakeCoralPath("I_FR_IR_C", 
+            scoreAlgaePath("I_FR_IR_C", 
             scoreCoralPath("S_IR_FL_C", 
             intakeCoralPath("I_FL_IR_C", 
             scoreCoralPath("S_IR_AR_C", 
             intakeCoralPath("I_AR_IR_C", 
-            null)))))))));
+            null))))))));
+
+        tryToAddPathToChooser(
+            "RightCoral", 
+            scoreFirstCoralPath("S_SR_EL_C", 
+            intakeCoralPath("I_EL_IR_C",
+            scoreCoralPath("S_IR_FR_C", 
+            intakeCoralPath("I_FR_IR_C",
+            scoreCoralPath("S_IR_FL_C",
+            intakeCoralPath("I_FL_IR_C", 
+            scoreCoralPath("S_IR_AR_C",
+            null))))))));
 
         tryToAddPathToChooser(
             "LeftCoral", 

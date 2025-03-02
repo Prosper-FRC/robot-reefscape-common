@@ -279,28 +279,34 @@ public class RobotContainer {
 
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
-        new Trigger(DriverStation::isEnabled)
-            .onTrue(
-                Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+        // new Trigger(DriverStation::isEnabled)
+        //     .onTrue(
+        //         Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setBreatheAnimation(
-                    3.0,
-                    Color.kRed)));
+                led.setGradientAnimation(
+                    100,
+                    GradientType.kContinuous,
+                    Color.kLightBlue,
+                    Color.kMediumBlue,
+                    Color.kDarkBlue)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.2, 
+                0.1, 
                 Color.kRed)))
         .whileFalse(
             Commands.runOnce(() -> 
-            led.setBreatheAnimation(
-                3.0,
-                Color.kRed)));
+            led.setGradientAnimation(
+                100,
+                GradientType.kContinuous,
+                Color.kLightBlue,
+                Color.kMediumBlue,
+                Color.kDarkBlue)));
         
     }
 
@@ -359,12 +365,12 @@ public class RobotContainer {
 
             driverController.a().and(leftAutoAlignTrigger)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
-                .andThen(robotDrive.setDriveStateCommand(DriveState.DRIVE_TO_REEF)))
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a().and(rightAutoAlignTrigger)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
-                .andThen(robotDrive.setDriveStateCommand(DriveState.DRIVE_TO_REEF)))
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
