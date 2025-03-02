@@ -80,15 +80,11 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-<<<<<<< HEAD
-        mRobotContainer.startLED();
-=======
 
         // Some visualizers need to interop and share data between one another
         // periodically, thus this method must be called periodically
         mRobotContainer.updateVisualizers();
         //mRobotContainer.getTeleopEventLoop().poll();
->>>>>>> dev/merged
     }
 
     // ==================== Disabled ====================

@@ -4,7 +4,6 @@
 
 package frc.robot;
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
@@ -22,7 +21,6 @@ import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.elevator.MagneticSensorIO;
-import frc.robot.subsystems.elevator.MagneticSensorIORev;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -36,6 +34,8 @@ import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
+import frc.robot.subsystems.LED.LED;
+import frc.robot.subsystems.LED.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIO;
@@ -70,7 +70,7 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.utils.debugging.LoggedTunableNumber;
+
 
 public class RobotContainer {
     // Define subsystems
@@ -92,8 +92,7 @@ public class RobotContainer {
      please */
 
     private final boolean useCompetitionBindings = true;
-    LED rightLED = new LED(9, 36);
-    //LED leftLED = new LED(8, 36);
+    LED led = new LED(LEDConstants.kLED);
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
