@@ -579,6 +579,7 @@ public class RobotContainer {
             //         Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
             //         .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
         } 
+
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
     

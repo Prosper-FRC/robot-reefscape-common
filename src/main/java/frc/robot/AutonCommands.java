@@ -9,9 +9,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.TimeUnit;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,9 +16,6 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Drive.DriveState;
 import frc.robot.subsystems.elevator.Elevator;
@@ -296,58 +290,13 @@ public class AutonCommands {
         );
 
         return command;
-    
-        // return new SequentialCommandGroup(
-        //     Commands.runEnd(
-        //         () -> mElevator.setGoal(ElevatorGoal.kL4Coral), 
-        //         () -> mElevator.setPosition(mElevator.getPositionMeters()), 
-        //         mElevator)
-        //         .until(getElevatorAtGoal())
-        //         .withTimeout(kElevatorPositionTimeoutSeconds),
-        //     Commands.startEnd(
-        //         () -> mIntake.setRollerGoal(RollerGoal.kScoreCoral), 
-        //         () -> mIntake.stop(true, false), 
-        //         mIntake)
-        //         .until(() -> !getHasPiece().getAsBoolean())
-        //         .withTimeout(kScoreCoralTimeoutSeconds),
-        //     Commands.runEnd(
-        //         () -> mElevator.setGoal(ElevatorGoal.kStow), 
-        //         () -> mElevator.stop(), 
-        //         mElevator)
-        //         .until(getElevatorAtGoal())
-        //         .withTimeout(kElevatorPositionTimeoutSeconds)
-        // );
     }
-
-    // public Command intakeCoralCmd(){
-    //     return Commands.run(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), mIntake).onlyIf(() -> );
-    // }
 
     public Command intakeCoralCommand() {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
             () -> mIntake.stop(true, false), 
             mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
-        // return new SequentialCommandGroup(
-        //     Commands.runEnd(
-        //         () -> mElevator.setGoal(ElevatorGoal.kIntake), 
-        //         () -> mElevator.setPosition(mElevator.getPositionMeters()), 
-        //         mElevator)
-        //         .until(getElevatorAtGoal())
-        //         .withTimeout(kElevatorPositionTimeoutSeconds),
-        //     Commands.startEnd(
-        //         () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
-        //         () -> mIntake.stop(true, false), 
-        //         mIntake)
-        //         .until(getHasPiece())
-        //         .withTimeout(kIntakeCoralTimeoutSeconds),
-        //     Commands.runEnd(
-        //         () -> mElevator.setGoal(ElevatorGoal.kStow), 
-        //         () -> mElevator.stop(), 
-        //         mElevator)
-        //         .until(getElevatorAtGoal())
-        //         .withTimeout(kElevatorPositionTimeoutSeconds)
-        // );
     }
 
     public Command scoreAlgaeCommand() {
