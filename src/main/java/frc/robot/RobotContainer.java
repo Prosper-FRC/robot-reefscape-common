@@ -137,19 +137,6 @@ public class RobotContainer {
                         IntakeConstants.kPivotMotorConfiguration,
                         IntakeConstants.kPivotGains,
                         IntakeConstants.kStatusSignalUpdateFrequencyHz));
-
-                // robotDrive = new Drive( new Module[] {
-                //     new Module("FL", new ModuleIO() {}),
-                //     new Module("FR", new ModuleIO() {}),
-                //     new Module("BL", new ModuleIO() {}),
-                //     new Module("BR", new ModuleIO() {})
-                // }, new GyroIO() {}, new Vision(new CameraIO[] {
-                //     new CameraIO() {}, new CameraIO() {}
-                // }));
-
-                // elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
-            
-                // intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIORev(
@@ -237,14 +224,6 @@ public class RobotContainer {
         }
 
         robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
-        // elevator.setDefaultCommand(Commands.run(() -> elevator.setGoal(ElevatorGoal.kStow), elevator));
-        // intake.setDefaultCommand(
-        //     Commands.run(
-        //         () -> {
-        //             intake.setPivotGoal(PivotGoal.kStow);
-        //             intake.stop(true, false);
-        //         }, 
-        //         intake));
 
         // Pass subsystems to classes that need them for configuration
         robotDrive.acceptJoystickInputs(
@@ -294,19 +273,19 @@ public class RobotContainer {
                     Color.kDarkBlue)));
 
         new Trigger(intake::detectedGamepiece)
-        .whileTrue(
-            Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                0.1, 
-                Color.kRed)))
-        .whileFalse(
-            Commands.runOnce(() -> 
-            led.setGradientAnimation(
-                100,
-                GradientType.kContinuous,
-                Color.kLightBlue,
-                Color.kMediumBlue,
-                Color.kDarkBlue)));
+            .whileTrue(
+                Commands.runOnce(() -> 
+                    led.setSolidBlinkAnimation(
+                    0.1, 
+                    Color.kRed)))
+            .whileFalse(
+                Commands.runOnce(() -> 
+                led.setGradientAnimation(
+                    100,
+                    GradientType.kContinuous,
+                    Color.kLightBlue,
+                    Color.kMediumBlue,
+                    Color.kDarkBlue)));
         
     }
 
@@ -357,11 +336,6 @@ public class RobotContainer {
             new Trigger(()-> driverController.getHID().getPOV() != -1)
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            // driverController.a()
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
 
             driverController.a().and(leftAutoAlignTrigger)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
@@ -517,24 +491,6 @@ public class RobotContainer {
                 }
             }
 
-            // // ELEVATOR - UP
-            // operatorController.povUp()
-            //     .whileTrue(
-            //         teleopCommands.runTunableVoltage()
-            //     )
-            //     .whileFalse(
-            //         teleopCommands.stopElevatorCommand()
-            //     );
-
-            // // ELEVATOR - DOWN
-            // operatorController.povDown()
-            //     .whileTrue(
-            //         teleopCommands.runElevatorVoltage(-3.0)
-            //     )
-            //     .whileFalse(
-            //         teleopCommands.stopElevatorCommand()
-            //     );
-
             // CLIMB - GRAB
             operatorController.povLeft()
                 .whileTrue(
@@ -553,31 +509,10 @@ public class RobotContainer {
                     teleopCommands.stopClimbCommand()
                 );
 
-            // PIVOT - OUT
-            // operatorController.povLeft()
-            //     .whileTrue(
-            //         teleopCommands.runPivotAndRollersVoltage(3.0, -3.0, confirmScoreTrigger)
-            //     )
-            //     .whileFalse(
-            //         teleopCommands.stopRollersAndPivotCommand()
-            //     );
-                
-            // // PIVOT - IN
-            // operatorController.povRight()
-            //     .whileTrue(
-            //         teleopCommands.runPivotAndRollersVoltage(-3.0, -3.0, confirmScoreTrigger)
-            //     )
-            //     .whileFalse(
-            //         teleopCommands.stopRollersAndPivotCommand()
-            //     );
 
             operatorController.leftStick()
                 .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
 
-            // operatorController.rightStick()
-            //     .onTrue(
-            //         Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
-            //         .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
         } 
 
         else {
