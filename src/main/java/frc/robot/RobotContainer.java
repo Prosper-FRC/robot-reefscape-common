@@ -288,19 +288,19 @@ public class RobotContainer {
                 Commands.runOnce(() -> 
                 led.setBreatheAnimation(
                     3.0,
-                    Color.kRed)));
+                    Color.kGreen)));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                 0.2, 
-                Color.kRed)))
+                Color.kWhiteSmoke)))
         .whileFalse(
             Commands.runOnce(() -> 
             led.setBreatheAnimation(
                 3.0,
-                Color.kRed)));
+                Color.kGreen)));
         
     }
 
@@ -455,13 +455,14 @@ public class RobotContainer {
                         );
                 }
 
+                // L1
                 if(i == 3){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )
@@ -480,13 +481,14 @@ public class RobotContainer {
                         );
                 }
 
+                // BARGE
                 if(i == 0){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )

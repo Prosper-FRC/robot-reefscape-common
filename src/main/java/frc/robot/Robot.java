@@ -75,6 +75,19 @@ public class Robot extends LoggedRobot {
         mRobotContainer = new RobotContainer();
 
         PathfindingCommand.warmupCommand().schedule();
+
+        Logger.recordOutput("GoalPose/AL", FieldConstants.AL);
+        Logger.recordOutput("GoalPose/AR", FieldConstants.AR);
+        Logger.recordOutput("GoalPose/BL", FieldConstants.BL);
+        Logger.recordOutput("GoalPose/BR", FieldConstants.BR);
+        Logger.recordOutput("GoalPose/CL", FieldConstants.CL);
+        Logger.recordOutput("GoalPose/CR", FieldConstants.CR);
+        Logger.recordOutput("GoalPose/DL", FieldConstants.DL);
+        Logger.recordOutput("GoalPose/DR", FieldConstants.DR);
+        Logger.recordOutput("GoalPose/EL", FieldConstants.EL);
+        Logger.recordOutput("GoalPose/ER", FieldConstants.ER);
+        Logger.recordOutput("GoalPose/FL", FieldConstants.FL);
+        Logger.recordOutput("GoalPose/FR", FieldConstants.FR);
     }
 
     @Override
