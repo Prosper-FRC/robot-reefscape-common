@@ -253,6 +253,8 @@ public class RobotContainer {
             () -> - driverController.getRightX(),
             () -> driverController.getHID().getPOV());
 
+        led.defaultAnimation();
+
         // Create any Dashboard choosers (LoggedDashboardChooser, etc)
 
         // Configure controls (drivebase suppliers, DriverStation triggers, Button and other Controller bindings)
@@ -286,21 +288,29 @@ public class RobotContainer {
         new Trigger(DriverStation::isEnabled)
             .onTrue(
                 Commands.runOnce(() -> 
-                led.setBreatheAnimation(
-                    3.0,
-                    Color.kGreen)));
+                    led.defaultAnimation()));
 
         new Trigger(intake::detectedGamepiece)
         .whileTrue(
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                0.2, 
-                Color.kWhiteSmoke)))
+                0.1, 
+                Color.kLavenderBlush)))
         .whileFalse(
             Commands.runOnce(() -> 
-            led.setBreatheAnimation(
-                3.0,
-                Color.kGreen)));
+                led.defaultAnimation()));
+
+        new Trigger(() -> robotDrive.getDriveToPoseTolerance())
+            .onTrue(Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                    0.1, Color.kBlanchedAlmond))
+                .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
+
+        new Trigger(() -> elevator.atGoal())
+            .onTrue(Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                    0.1, Color.kAqua))
+                    .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
         
     }
 

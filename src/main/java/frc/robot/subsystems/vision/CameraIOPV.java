@@ -45,7 +45,7 @@ public class CameraIOPV implements CameraIO {
         PhotonCamera.setVersionCheckEnabled(false);
 
         poseEstimator = new PhotonPoseEstimator(
-            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), 
+            AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark), 
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraTransform);
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
 
@@ -53,7 +53,7 @@ public class CameraIOPV implements CameraIO {
             // Create the vision system simulation which handles cameras and targets on the field.
             visionSim = new VisionSystemSim("main");
             // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
-            visionSim.addAprilTags(AprilTagFields.k2025Reefscape.loadAprilTagLayoutField());
+            visionSim.addAprilTags(AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark));
             // Create simulated camera properties. These can be set to mimic your actual camera.
             var cameraProp = new SimCameraProperties();
             cameraProp.setCalibration(960, 720, kOV2311DiagonalCameraFOV);

@@ -548,4 +548,8 @@ public class Drive extends SubsystemBase {
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {
         teleopController.acceptJoystickInputs(xSupplier, ySupplier, thetaSupplier, povSupplierDegrees);
     }
+
+    public boolean getDriveToPoseTolerance() {
+        return autoAlignController.atGoal();
+    }
 }
