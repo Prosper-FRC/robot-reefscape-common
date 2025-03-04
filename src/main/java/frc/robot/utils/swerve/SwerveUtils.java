@@ -124,4 +124,8 @@ public class SwerveUtils {
             new SwerveModuleState(), new SwerveModuleState()
         };
     }
+
+    public static double getTorqueOfKrakenDriveMotor(double amps) {
+        return kKrakenFOCModel.getTorque(amps);
+    }
 }
