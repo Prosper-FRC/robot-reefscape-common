@@ -82,9 +82,6 @@ public class RobotContainer {
     // Define other utility classes
     private final AutonCommands autonCommands;
     private final TeleopCommands teleopCommands;
-
-    private static final int kLeftAlign = 9;
-    private static final int kRightAlign = 10; 
     
     private LoggedDashboardChooser<Command> autoChooser;
     
@@ -258,9 +255,9 @@ public class RobotContainer {
 
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
-        // new Trigger(DriverStation::isEnabled)
-        //     .onTrue(
-        //         Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+        new Trigger(DriverStation::isEnabled)
+            .onTrue(
+            Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
