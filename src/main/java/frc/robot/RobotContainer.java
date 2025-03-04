@@ -229,6 +229,8 @@ public class RobotContainer {
             () -> - driverController.getRightX(),
             () -> driverController.getHID().getPOV());
 
+        led.defaultAnimation();
+
         // Create any Dashboard choosers (LoggedDashboardChooser, etc)
 
         // Configure controls (drivebase suppliers, DriverStation triggers, Button and other Controller bindings)
@@ -437,13 +439,14 @@ public class RobotContainer {
                         );
                 }
 
+                // L1
                 if(i == 3){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )
@@ -462,13 +465,14 @@ public class RobotContainer {
                         );
                 }
 
+                // BARGE
                 if(i == 0){
                     // ALGAE - SCORE
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
                                 // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kProcessor))
                         )
@@ -514,10 +518,15 @@ public class RobotContainer {
 
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
-    
+
             driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
+                .onTrue(robotDrive.setDriveStateCommand(DriveState.SYSID_CHARACTERIZATION).andThen(Commands.run(() -> 
+                    robotDrive.runMOICharacterization(20), robotDrive)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            // driverController.x()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed

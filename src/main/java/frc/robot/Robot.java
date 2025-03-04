@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.math.AllianceFlipUtil;
+
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -75,6 +77,8 @@ public class Robot extends LoggedRobot {
         mRobotContainer = new RobotContainer();
 
         PathfindingCommand.warmupCommand().schedule();
+
+
     }
 
     @Override
@@ -85,6 +89,32 @@ public class Robot extends LoggedRobot {
         // periodically, thus this method must be called periodically
         mRobotContainer.updateVisualizers();
         //mRobotContainer.getTeleopEventLoop().poll();
+
+        Logger.recordOutput("GoalPose/B/AL", FieldConstants.AL);
+        Logger.recordOutput("GoalPose/B/AR", FieldConstants.AR);
+        Logger.recordOutput("GoalPose/B/BL", FieldConstants.BL);
+        Logger.recordOutput("GoalPose/B/BR", FieldConstants.BR);
+        Logger.recordOutput("GoalPose/B/CL", FieldConstants.CL);
+        Logger.recordOutput("GoalPose/B/CR", FieldConstants.CR);
+        Logger.recordOutput("GoalPose/B/DL", FieldConstants.DL);
+        Logger.recordOutput("GoalPose/B/DR", FieldConstants.DR);
+        Logger.recordOutput("GoalPose/B/EL", FieldConstants.EL);
+        Logger.recordOutput("GoalPose/B/ER", FieldConstants.ER);
+        Logger.recordOutput("GoalPose/B/FL", FieldConstants.FL);
+        Logger.recordOutput("GoalPose/B/FR", FieldConstants.FR);
+
+        Logger.recordOutput("GoalPose/R/AL", AllianceFlipUtil.apply(FieldConstants.AL));
+        Logger.recordOutput("GoalPose/R/AR", AllianceFlipUtil.apply(FieldConstants.AR));
+        Logger.recordOutput("GoalPose/R/BL", AllianceFlipUtil.apply(FieldConstants.BL));
+        Logger.recordOutput("GoalPose/R/BR", AllianceFlipUtil.apply(FieldConstants.BR));
+        Logger.recordOutput("GoalPose/R/CL", AllianceFlipUtil.apply(FieldConstants.CL));
+        Logger.recordOutput("GoalPose/R/CR", AllianceFlipUtil.apply(FieldConstants.CR));
+        Logger.recordOutput("GoalPose/R/DL", AllianceFlipUtil.apply(FieldConstants.DL));
+        Logger.recordOutput("GoalPose/R/DR", AllianceFlipUtil.apply(FieldConstants.DR));
+        Logger.recordOutput("GoalPose/R/EL", AllianceFlipUtil.apply(FieldConstants.EL));
+        Logger.recordOutput("GoalPose/R/ER", AllianceFlipUtil.apply(FieldConstants.ER));
+        Logger.recordOutput("GoalPose/R/FL", AllianceFlipUtil.apply(FieldConstants.FL));
+        Logger.recordOutput("GoalPose/R/FR", AllianceFlipUtil.apply(FieldConstants.FR));
     }
 
     // ==================== Disabled ====================

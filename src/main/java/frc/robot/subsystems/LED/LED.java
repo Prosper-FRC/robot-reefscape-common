@@ -55,6 +55,15 @@ public class LED extends SubsystemBase implements ILED {
         m_eyePosition += m_scanDirection;
   }
 
+    public void defaultAnimation() {
+        setGradientAnimation(
+                100,
+                GradientType.kContinuous,
+                Color.kSeaGreen,
+                Color.kLimeGreen,
+                Color.kGreen);
+    }
+
     // Low level method, use only for custom LED animations
     public void setSingleRGB(int index, int r, int g, int b){
         m_ledBuffer.setRGB(index,r,g,b);

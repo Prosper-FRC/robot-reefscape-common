@@ -481,6 +481,23 @@ public class Drive extends SubsystemBase {
         modules[3].runCharacterization(-volts, Rotation2d.fromDegrees(-45.0));
     }
 
+    public void runMOICharacterization(double amps) {
+        setDriveState(DriveState.SYSID_CHARACTERIZATION);
+        modules[0].setDriveAmperage(amps);
+        modules[1].setDriveAmperage(-amps);
+        modules[2].setDriveAmperage(amps);
+        modules[3].setDriveAmperage(-amps);
+
+        modules[0].setDesiredRotation(Rotation2d.fromDegrees(-45.0));
+        modules[1].setDesiredRotation(Rotation2d.fromDegrees(45.0));
+        modules[2].setDesiredRotation(Rotation2d.fromDegrees(45.0));
+        modules[3].setDesiredRotation(Rotation2d.fromDegrees(-45.0));
+
+        Logger.recordOutput("Drive/MOI/RadiansVelocity", modules[0].getInputs().driveVelocityMPS / DriveConstants.kDrivebaseRadiusMeters);
+        Logger.recordOutput("Drive/MOI/DriveTorqueNM", 
+            (SwerveUtils.getTorqueOfKrakenDriveMotor(modules[0].getInputs().driveTorqueCurrentAmps) * kDriveMotorGearing / kWheelRadiusMeters) * kDrivebaseRadiusMeters);
+    }
+
     ///////////////////////// GETTERS \\\\\\\\\\\\\\\\\\\\\\\\
     @AutoLogOutput(key = "Drive/Swerve/MeasuredStates")
     public SwerveModuleState[] getModuleStates() {
@@ -530,5 +547,9 @@ public class Drive extends SubsystemBase {
 
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {
         teleopController.acceptJoystickInputs(xSupplier, ySupplier, thetaSupplier, povSupplierDegrees);
+    }
+
+    public boolean getDriveToPoseTolerance() {
+        return autoAlignController.atGoal();
     }
 }
