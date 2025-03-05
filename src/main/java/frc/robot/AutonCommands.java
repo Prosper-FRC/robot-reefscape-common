@@ -260,7 +260,7 @@ public class AutonCommands {
         Command command = new SequentialCommandGroup(
             new FunctionalCommand(
                 () -> {
-                    mElevator.setGoal(ElevatorGoal.kL3Coral);
+                    mElevator.setGoal(ElevatorGoal.kL4Coral);
                 }, 
                 () -> {}, 
                 (interrupted) -> {

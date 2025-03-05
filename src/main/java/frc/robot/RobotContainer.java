@@ -295,7 +295,7 @@ public class RobotContainer {
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                 0.1, 
-                Color.kLavenderBlush)))
+                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
         .whileFalse(
             Commands.runOnce(() -> 
                 led.defaultAnimation()));
@@ -304,13 +304,13 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                     0.1, Color.kBlanchedAlmond))
-                .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
+                .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
 
         new Trigger(() -> elevator.atGoal())
             .onTrue(Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                     0.1, Color.kAqua))
-                    .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
+                    .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
         
     }
 
