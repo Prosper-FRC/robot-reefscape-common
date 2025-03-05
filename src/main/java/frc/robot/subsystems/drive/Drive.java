@@ -549,6 +549,18 @@ public class Drive extends SubsystemBase {
         teleopController.acceptJoystickInputs(xSupplier, ySupplier, thetaSupplier, povSupplierDegrees);
     }
 
+    public boolean atGoal(){
+        return autoAlignController.atGoal();
+    }
+
+    public boolean notAtGoal(){
+        if(autoAlignController.atGoal()){
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean getDriveToPoseTolerance() {
         return autoAlignController.atGoal();
     }
