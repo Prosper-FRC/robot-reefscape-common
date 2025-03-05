@@ -290,44 +290,27 @@ public class RobotContainer {
                 Commands.runOnce(() -> 
                     led.defaultAnimation()));
 
-        // new Trigger(intake::detectedGamepiece)
-        // .whileTrue(
-        //     Commands.runOnce(() -> 
-        //         led.setSolidBlinkAnimation(
-        //         0.1, 
-        //         Color.kLavenderBlush)))
-        // .whileFalse(
-        //     Commands.runOnce(() -> 
-        //         led.defaultAnimation()));
+        new Trigger(intake::detectedGamepiece)
+        .whileTrue(
+            Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                0.1, 
+                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
+        .whileFalse(
+            Commands.runOnce(() -> 
+                led.defaultAnimation()));
 
         new Trigger(() -> robotDrive.getDriveToPoseTolerance())
             .onTrue(Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                     0.1, Color.kBlanchedAlmond))
-                .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
+                .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
 
         new Trigger(() -> elevator.atGoal())
             .onTrue(Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
-                    0.1, Color.kGreen))
-                    .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
-       
-        // If elevator is not idle (ergo driver cannot drive), set LEDs green, otherwise default to purple gradient
-       new Trigger(() -> (elevator.getPositionMeters() != ElevatorConstants.kMinPositionMeters))
-            .onTrue(Commands.runOnce(() ->
-                led.setGreen())
-                    .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
-        
-        // If aligned to Apriltag, set LEDs blue
-        new Trigger(() -> (elevator.getPositionMeters() != ElevatorConstants.kMinPositionMeters))
-            .onTrue(Commands.runOnce(() ->
-                led.setGreen())
-                    .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
-
-        new Trigger(() -> (elevator.getPositionMeters() != ElevatorConstants.kMinPositionMeters))
-            .onTrue(Commands.runOnce(() ->
-                led.setGreen())
-                    .andThen(Commands.waitSeconds(2.0), Commands.runOnce(() -> led.defaultAnimation())));
+                    0.1, Color.kAqua))
+                    .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
         
     }
 
@@ -391,10 +374,10 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftTrigger()
+            operatorController.button(kLeftAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
 
-            driverController.rightTrigger()
+            operatorController.button(kRightAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
 
             //TEMPORARY SCORE
