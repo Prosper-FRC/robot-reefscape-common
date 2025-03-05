@@ -60,6 +60,7 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.Drive.DriveState;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
+import frc.robot.subsystems.drive.controllers.HolonomicController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
@@ -259,7 +260,7 @@ public class RobotContainer {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
         new Trigger(DriverStation::isEnabled)
             .onTrue(
-            Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+            Commands.runOnce(() -> robotDrive.resetModulesEncoders(), led));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
@@ -269,14 +270,32 @@ public class RobotContainer {
                     GradientType.kContinuous,
                     Color.kLightBlue,
                     Color.kMediumBlue,
-                    Color.kDarkBlue)));
+                    Color.kDarkBlue), 
+                    led));
 
-        new Trigger(intake::detectedGamepiece)
+        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal)
+            .whileTrue(
+                Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                    0.1, 
+                    Color.kRed),
+                    led))
+            .whileFalse(Commands.runOnce(() -> 
+            led.setGradientAnimation(
+                100,
+                GradientType.kContinuous,
+                Color.kLightBlue,
+                Color.kMediumBlue,
+                Color.kDarkBlue),
+                led));
+
+        new Trigger(intake::detectedGamepiece).and(robotDrive::atGoal)
             .whileTrue(
                 Commands.runOnce(() -> 
                     led.setSolidBlinkAnimation(
                     0.1, 
-                    Color.kRed)))
+                    Color.kGreen),
+                    led))
             .whileFalse(
                 Commands.runOnce(() -> 
                 led.setGradientAnimation(
@@ -284,7 +303,10 @@ public class RobotContainer {
                     GradientType.kContinuous,
                     Color.kLightBlue,
                     Color.kMediumBlue,
-                    Color.kDarkBlue)));
+                    Color.kDarkBlue),
+                    led));
+
+        
         
     }
 
