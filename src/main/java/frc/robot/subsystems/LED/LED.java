@@ -59,9 +59,17 @@ public class LED extends SubsystemBase implements ILED {
         setGradientAnimation(
                 100,
                 GradientType.kContinuous,
-                Color.kSeaGreen,
-                Color.kLimeGreen,
-                Color.kGreen);
+                Color.kLightBlue,
+                Color.kMediumBlue,
+                Color.kDarkBlue);
+    }
+
+    public void alignedAnimation() {
+        setSolidBlinkAnimation(0.1, Color.kGreen);
+    }
+
+    public void intakedAnimation() {
+        setSolidBlinkAnimation(0.1, Color.kRed);
     }
 
     // Low level method, use only for custom LED animations
