@@ -64,7 +64,7 @@ public class ClimbConstants {
   ) {}
 
   public static final Rotation2d kMinPosition = Rotation2d.fromDegrees(38); // -1.586 and -1.907
-  public static final Rotation2d kMaxPosition = Rotation2d.fromDegrees(165);
+  public static final Rotation2d kMaxPosition = Rotation2d.fromDegrees(360);
   public static final Rotation2d kClimbInPosition = Rotation2d.fromDegrees(-1.044);
 
   public static final Rotation2d kPositionOffset = Rotation2d.fromRotations(0.198);
