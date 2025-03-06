@@ -11,7 +11,9 @@ public final class Constants {
         REPLAY
     }
 
-    public static final Mode kCurrentMode = RobotBase.isReal() ? Mode.REAL : Mode.SIM;
+    public static final Mode kCurrentMode = 
+    // Mode.REPLAY;
+    RobotBase.isReal() ? Mode.REAL : Mode.SIM;
     // Set Tuning to true during development, false during competition
     public static final boolean kTuningMode = true;
 
