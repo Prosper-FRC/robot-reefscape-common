@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
-import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
 import frc.robot.subsystems.drive.controllers.HolonomicController;
 
@@ -318,21 +317,30 @@ public class Drive extends SubsystemBase {
         driveState = state;
         switch(driveState) {
             case PROCESSOR_HEADING_ALIGN:
-                headingController.reset(robotRotation, gyroInputs.yawVelocityPS);            
+                headingController.reset(getPoseEstimate().getRotation(), gyroInputs.yawVelocityPS);            
                 break;
             case REEF_HEADING_ALIGN:
-                headingController.reset(robotRotation, gyroInputs.yawVelocityPS);
+                headingController.reset(getPoseEstimate().getRotation(), gyroInputs.yawVelocityPS);
                 break;
             case DRIVE_TO_REEF:
-                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                autoAlignController.reset(
+                    getPoseEstimate(),
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
                 break;
             case DRIVE_TO_INTAKE:
-                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                autoAlignController.reset(
+                    getPoseEstimate(), 
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kIntake, getPoseEstimate());
                 break;
             case DRIVE_TO_NET:
-                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                autoAlignController.reset(
+                    getPoseEstimate(), 
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kNet, getPoseEstimate());
                 break;
             default:
