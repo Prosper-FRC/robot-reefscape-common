@@ -265,11 +265,11 @@ public class RobotContainer {
             .onTrue(
                 Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal).and(DriverStation::isEnabled)
+        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal)
             .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(intake::detectedGamepiece).and(robotDrive::atGoal).and(DriverStation::isEnabled)
+        new Trigger(intake::detectedGamepiece).and(robotDrive::atGoal)
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
    
