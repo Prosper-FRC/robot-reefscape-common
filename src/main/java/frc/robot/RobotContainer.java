@@ -374,11 +374,15 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            operatorController.button(kLeftAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
+            driverController.button(kLeftAlign)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
+                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            operatorController.button(kRightAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
+            driverController.button(kRightAlign)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
+                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
@@ -408,8 +412,8 @@ public class RobotContainer {
                 .whileTrue(
                     teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeGround)
                     .onlyWhile(hasGamepieceTrigger.negate())
-                         .andThen(
-                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
+                         .alongWith(
+                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kGroundAlgae)
                             // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )
                 )
