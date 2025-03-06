@@ -20,7 +20,7 @@ public class ManualTeleopController {
     public static final LoggedTunableNumber linearDeadBand =
         new LoggedTunableNumber("Drive/Teleop/Deadband", 0.075);
     public static final LoggedTunableNumber linearInputsExponent =
-        new LoggedTunableNumber("Drive/Teleop/LinearInputsExponent", 2);
+        new LoggedTunableNumber("Drive/Teleop/LinearInputsExponent", 3);
     public static final LoggedTunableNumber rotationScalar =
         new LoggedTunableNumber("Drive/Teleop/RotationScalar", 0.5);
     public static final LoggedTunableNumber rotationInputsExponent =
