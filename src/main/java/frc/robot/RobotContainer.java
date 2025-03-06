@@ -295,23 +295,25 @@ public class RobotContainer {
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                 0.1, 
-                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
+                Color.kLightGray)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
         .whileFalse(
             Commands.runOnce(() -> 
                 led.defaultAnimation()));
 
         new Trigger(() -> robotDrive.getDriveToPoseTolerance())
             .onTrue(Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                    0.1, Color.kBlanchedAlmond))
+                led.setBlue())
                 .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
 
         new Trigger(() -> elevator.atGoal())
             .onTrue(Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                    0.1, Color.kAqua))
+                led.setGreen())
                     .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
         
+        new Trigger(() -> ((climb.getPosition().getDegrees()) == (ClimbConstants.kMinPosition.getDegrees())))
+            .onTrue(Commands.runOnce(() ->
+                led.setRed())
+                    .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
     }
 
     private Command rumbleCommand() {
@@ -408,8 +410,8 @@ public class RobotContainer {
                 .whileTrue(
                     teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeGround)
                     .onlyWhile(hasGamepieceTrigger.negate())
-                         .andThen(
-                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
+                         .alongWith(
+                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kGroundAlgae)
                             // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )
                 )
