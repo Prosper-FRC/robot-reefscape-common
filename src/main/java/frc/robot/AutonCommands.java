@@ -54,29 +54,25 @@ public class AutonCommands {
         autoChooser = new SendableChooser<>();
 
         tryToAddPathToChooser(
-            "ScoreCoralTest", 
+            "OnePieceStationary", 
             scoreCoralCommand());
-
-        tryToAddPathToChooser(
-            "IntakeCoralTest", 
-            intakeCoralCommand());
 
         tryToAddPathToChooser(
             "CriticalTest", 
             scoreFirstCoralPath("S_SL_CR_C", 
             intakeCoralPath("I_CR_IL_C", 
-            scoreCoralPath("S_IL_BL_C", null))));
+            scoreCoralPath("S_IL_BL_C", 
+            null))));
 
         tryToAddPathToChooser(
             "FirstCoralTest",
             scoreFirstCoralPath("FirstTest", 
             intakeCoralPath("SecondTest",
             scoreCoralPath("ThirdTest", 
-            null
-        ))));
+            null))));
 
         tryToAddPathToChooser(
-            "FirstAlgaeTest", 
+            "FirstAlgaeTest(DONTUSE)", 
             intakeFirstAlgaePath("FirstTest", 
             intakeAlgaePath("SecondTest",
             scoreAlgaePath("I_FR_IR_C", 
@@ -110,14 +106,14 @@ public class AutonCommands {
             null)))))))));
 
         tryToAddPathToChooser(
-            "Algae", 
+            "Algae(DONTUSE)", 
             intakeFirstAlgaePath("I_SM_DM_A",
             scoreAlgaePath("S_DM_P_A", 
             intakeAlgaePath("I_P_EM_A", 
             scoreAlgaePath("S_EM_P_A", 
             null)))));
 
-        autoChooser.setDefaultOption("Mobility", backUpAuton());
+        autoChooser.setDefaultOption("Stationary", backUpAuton());
     }
 
     ///////////////// PATH CHAINING LOGIC \\\\\\\\\\\\\\\\\\\\\\
