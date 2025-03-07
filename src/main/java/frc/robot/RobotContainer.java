@@ -323,12 +323,12 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a().and(leftAutoAlignTrigger)
+            leftAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
                 .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a().and(rightAutoAlignTrigger)
+            rightAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
                 .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
