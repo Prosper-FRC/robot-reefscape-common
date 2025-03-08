@@ -47,7 +47,7 @@ public class DriveConstants {
 
     public static final boolean kDoExtraLogging = false;
 
-    public static final PIDConstants kPPTranslationPID = new PIDConstants(6.25, 0.0, 0.0);
+    public static final PIDConstants kPPTranslationPID = new PIDConstants(4.25, 0.0, 0.0);
     public static final PIDConstants kPPRotationPID = new PIDConstants(4.75, 0.0, 0.0);
 
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
