@@ -391,7 +391,7 @@ public class RobotContainer {
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(algaeSelectTrigger)
-                .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(3.0)))
+                .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(6.0)))
                 .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
 
             // CORAL - INTAKE
