@@ -11,11 +11,11 @@
      "val":3.141592653589793
     }
    },
-   "maxAccel":{
+   "maxA":{
     "dimension":"LinAcc",
     "var":{
-     "exp":"10 m / s ^ 2",
-     "val":10.0
+     "exp":"2.75 m / s ^ 2",
+     "val":2.75
     }
    },
    "maxAngAccel":{
