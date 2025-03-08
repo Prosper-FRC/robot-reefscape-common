@@ -98,7 +98,7 @@ public class GoalPoseChooser {
 
     public static Pose2d getIntakePose(Pose2d robotPose) {
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL).plus(new Transform2d(0, 0, Rotation2d.k180deg));
+            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IR : FieldConstants.IL);
         } else return (AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.IL : FieldConstants.IR));
     }
 
