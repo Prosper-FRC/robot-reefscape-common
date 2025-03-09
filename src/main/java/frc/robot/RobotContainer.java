@@ -267,7 +267,7 @@ public class RobotContainer {
             .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(intake::detectedGamepiece).and(robotDrive::atGoal)
+        new Trigger(elevator::atGoal)
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
    
@@ -336,7 +336,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             //TEMPORARY SCORE
@@ -375,8 +375,11 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopRollersCommand()
                         .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup))
-                        .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow))
-                );
+                        .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)));
+
+                // .whileFalse(teleopCommands.stopRollersCommand()
+                //     .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup))
+                //     .andThen(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)));
 
             // SCORE CORAL AND PICKUP ALGAE
             for (int i = 0; i < positionButtons.size(); i++) {
