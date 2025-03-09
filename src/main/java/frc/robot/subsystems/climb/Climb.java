@@ -141,21 +141,24 @@ public class Climb extends SubsystemBase {
     // Notice how we are not checking if position control is running, it is up 
     // to the caller to check for this before calling this method (I recommend 
     // calling this subsystem's stop() method after completing any action)
-    if (!kDisableLimits.get()) {
-      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-          && kInputs[0].appliedVoltage > 0.0) {
-        stop();
-      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
-          && kInputs[0].appliedVoltage < 0.0) {
-        stop();
-      } else {
-        for (ClimbIO io : kHardware) {
-          io.setVoltage(voltage);
-        }
+    // if (!kDisableLimits.get()) {
+    //   if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+    //       && kInputs[0].appliedVoltage > 0.0) {
+    //     stop();
+    //   } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
+    //       && kInputs[0].appliedVoltage < 0.0) {
+    //     stop();
+    //   } else {
+    //     for (ClimbIO io : kHardware) {
+    //       io.setVoltage(voltage);
+    //     }
+    //   }
+    // }
+
+      for (ClimbIO io : kHardware) {
+        io.setVoltage(voltage);  
       }
-    }
-    
-  }
+  }  
 
   /** Stops the mechanism */
   public void stop() {
