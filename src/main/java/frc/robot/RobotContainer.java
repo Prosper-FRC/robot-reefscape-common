@@ -339,6 +339,14 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+            driverController.rightBumper()
+            .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
+            .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+
+            driverController.leftBumper()
+            .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
+            .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
                 .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(6.0)))
@@ -372,6 +380,7 @@ public class RobotContainer {
                             // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )
                 )
+
                 .whileFalse(
                     teleopCommands.stopRollersCommand()
                         .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup))
@@ -498,9 +507,9 @@ public class RobotContainer {
                     teleopCommands.stopClimbCommand()
                 );
 
-
-            operatorController.leftStick()
-                .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
+  
+            // operatorController.leftStick()
+            //     .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
 
         } 
 
