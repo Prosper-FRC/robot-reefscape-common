@@ -96,13 +96,9 @@ public class GoalPoseChooser {
     }
 
     public static Pose2d getIntakePose(Pose2d robotPose) {
-        
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)) {
-            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.B_IR : FieldConstants.B_IL).plus(new Transform2d(0, 0, Rotation2d.k180deg));
-        } 
-        
-        
-        else return (AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.R_IL : FieldConstants.R_IR).plus(new Transform2d(0, 0, Rotation2d.k180deg)));
+            return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.B_IR : FieldConstants.B_IL);
+        } else return (robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.R_IL : FieldConstants.R_IR;
     }
 
     /* DO NOT USE X COORDINATE, REPLACE y holonomic speeds with driver controller when using this! */
