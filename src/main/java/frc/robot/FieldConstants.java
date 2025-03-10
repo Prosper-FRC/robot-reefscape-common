@@ -24,9 +24,9 @@ public class FieldConstants {
     public static final Pose2d EM = new Pose2d(5.13, 2.90, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d ER = new Pose2d(5.05, 2.88, Rotation2d.fromDegrees(-60.0));
     
-    public static final Pose2d B_IL = new Pose2d(1.632, 7.42, Rotation2d.fromRadians(2.20).plus(Rotation2d.k180deg));
-    public static final Pose2d B_IR = new Pose2d(1.31, 0.95, Rotation2d.fromRadians(-2.20).plus(Rotation2d.k180deg));
+    public static final Pose2d B_IL = new Pose2d(1.59, 7.47, Rotation2d.fromRadians(2.20));
+    public static final Pose2d B_IR = new Pose2d(1.24, 0.85, Rotation2d.fromRadians(-2.20));
 
-    public static final Pose2d R_IL = new Pose2d(1.632, 7.42, Rotation2d.fromRadians(2.20).plus(Rotation2d.k180deg));
-    public static final Pose2d R_IR = new Pose2d(1.31, 0.95, Rotation2d.fromRadians(-2.20).plus(Rotation2d.k180deg));
+    public static final Pose2d R_IL = new Pose2d(16.07, 0.71, Rotation2d.fromRadians(2.20).plus(Rotation2d.k180deg));
+    public static final Pose2d R_IR = new Pose2d(16.33, 7.17, Rotation2d.fromRadians(-2.20).plus(Rotation2d.k180deg));
 }
