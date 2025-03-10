@@ -576,8 +576,8 @@ public class RobotContainer {
             //         teleopCommands.stopRollersAndPivotCommand()
             //     );
 
-            operatorController.leftStick()
-                .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
+            // operatorController.leftStick()
+            //     .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
 
             // operatorController.rightStick()
             //     .onTrue(
