@@ -76,9 +76,6 @@ public class ClimbConstants {
   public static final ClimbHardware kLeadMotorHardware = new ClimbHardware(
     40, // CAN ID
     kGearing); // Gear ratio
-  public static final ClimbHardware kFollowerMotorHardware = new ClimbHardware(
-    0, // CAN ID
-    kGearing); // Gear ratio
 
   public static final ClimbGains kMotorGains =  
     switch (Constants.kCurrentMode) {
@@ -119,15 +116,6 @@ public class ClimbConstants {
 
   public static final ClimbTalonFXConfiguration kLeadMotorConfiguration = new ClimbTalonFXConfiguration(
     false, // Invert
-    true, // Enable stator current limiting
-    true, // Enable supply current limiting
-    60.0, // Stator limit
-    50.0, // Supply limit
-    12.0, // Peak forward voltage
-    -12.0, // Peak reverse voltage
-    NeutralModeValue.Brake); // Idle mode
-  public static final ClimbTalonFXConfiguration kFollowMotorConfiguration = new ClimbTalonFXConfiguration(
-    true, // Invert
     true, // Enable stator current limiting
     true, // Enable supply current limiting
     60.0, // Stator limit
