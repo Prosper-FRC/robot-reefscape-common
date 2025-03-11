@@ -92,8 +92,6 @@ public class Climb extends SubsystemBase {
       stop();
     }
 
-  // softLimits();
-
     if (voltageGoal != null) {
       setVoltage(voltageGoal.getGoalVoltage());
       Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
@@ -170,29 +168,6 @@ public class Climb extends SubsystemBase {
   public void resetPosition() {
     for (ClimbIO io : kHardware) {
       io.resetPosition();
-    }
-  }
-
-  public void toMaxSetpoint() {
-     //while (getPosition().getRadians() < ClimbConstants.kMaxPosition.getRotations()) {
-      setGoalVoltage(ClimbVoltageGoal.kGrab);
-    // }
-
-    
-    //stop();
-  }
-
-  public void softLimits() {
-    if ((kAbsoluteEncoderInputs.dutyCycleReading > ClimbConstants.kMaxPosition.getRotations())) {
-      stop();
-    }
-    else {
-      setVoltage(voltageGoal.getGoalVoltage());
-      Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
-    }
-
-    if (kAbsoluteEncoderInputs.dutyCycleReading < ClimbConstants.kMinPosition.getRotations()) {
-      stop();
     }
   }
 
