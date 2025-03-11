@@ -103,15 +103,17 @@ public class Climb extends SubsystemBase {
     // that we only need to compare the left voltage as that is the lead
     // motor
     if (!kDisableLimits.get()) {
-      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-          && kInputs[0].appliedVoltage < 0.0) {
-        stop();
-      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
+      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees()
           && kInputs[0].appliedVoltage > 0.0) {
+        stop();
+      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
+          && kInputs[0].appliedVoltage < 0.0) {
         stop();
       } else {
         // Do nothing if limits are not reached
       }
+    } else {
+      // Do nothing if limits are disabled
     }
 
     // The visualizer needs to be periodically fed the current position of the mechanism
@@ -140,19 +142,22 @@ public class Climb extends SubsystemBase {
     // to the caller to check for this before calling this method (I recommend 
     // calling this subsystem's stop() method after completing any action)
     if (!kDisableLimits.get()) {
-      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-          && kInputs[0].appliedVoltage > 0.0) {
-        stop();
-      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
-          && kInputs[0].appliedVoltage < 0.0) {
-        stop();
+      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees()
+          && voltage > 0.0) {
+        return;
+      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees()
+          && voltage < 0.0) {
+        return;
       } else {
         for (ClimbIO io : kHardware) {
           io.setVoltage(voltage);
         }
       }
+    } else {
+      for (ClimbIO io : kHardware) {
+        io.setVoltage(voltage);
+      }
     }
-    
   }
 
   /** Stops the mechanism */
