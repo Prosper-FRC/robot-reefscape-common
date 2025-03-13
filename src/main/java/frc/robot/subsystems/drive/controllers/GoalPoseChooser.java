@@ -23,6 +23,7 @@ public class GoalPoseChooser {
         kReefHexagonal,
         kCustom,
         kIntake,
+        kAlgae,
         kNet
     }
 
@@ -40,6 +41,8 @@ public class GoalPoseChooser {
                 return new Pose2d(2.0, 1.0, Rotation2d.fromDegrees(60));
             case kReefHexagonal:
                 return getReefHexagonalPose(pose);
+            case kAlgae:
+                return getAlgaeAlignmentPose(pose);
             case kCustom:
                 return customGoal;
             case kIntake:
@@ -159,41 +162,56 @@ public class GoalPoseChooser {
         return angleFromReefCenter;
     }
 
-    /* Algae align math */
-    public static double findDistanceFromIntersection(int reefAngle, Pose2d robotPose) {
-        // To find slope of the line
-        double m = Math.tan(reefAngle);
 
+    public static Pose2d getAlgaeAlignmentPose(Pose2d robotPose) {
+        Rotation2d angleFromReefCenter = turnFromReefOrigin(robotPose);
+        Rotation2d lineRotation;
+        if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
+            lineRotation = new Rotation2d();
+        } else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
+            lineRotation = Rotation2d.fromDegrees(60.0);
+        } else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
+            lineRotation =  Rotation2d.fromDegrees(120.0);
+            // Skipped -150 to 150 because the inBetween function miscopes
+            // Putting it in else covers the remainder of the hexagon scope
+        } else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
+            lineRotation = Rotation2d.fromDegrees(-120.0);
+        } else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
+            lineRotation = Rotation2d.fromDegrees(-60.0);
+        } else {
+            lineRotation = Rotation2d.fromDegrees(180.0);
+        }
+
+        double y = findDistanceFromIntersection(lineRotation, robotPose);
+
+        return new Pose2d(0.0, y, getReefHexagonalPose(robotPose).getRotation());
+    }
+
+    /* Algae align math */
+    public static double findDistanceFromIntersection(Rotation2d angle, Pose2d robotPose) {
+        double m = angle.getTan();
         // Poses of center of reef 
         // TODO: Update with values from Choreo later
-        double xVal = 0.0;
-        double yVal = 0.0;
+        double xVal = AllianceFlipUtil.apply(FieldConstants.kReefCenter).getX();
+        double yVal = AllianceFlipUtil.apply(FieldConstants.kReefCenter).getY();
 
         // Robot poses
         double xPose = robotPose.getX();
         double yPose = robotPose.getY();
 
-
-        // Point slope form: m (x - xVal) - (y - yVal)
-        double equationOfReefLine = (-m * xPose) + (yPose) + (m * (xVal - yVal));
         double A = - m;
-        double C = m * (xVal - yVal);
+        double B = 1.0;
+        double C = m * xVal - yVal;
 
         // Plugging in constants A, B (which will always be 1) and C from standard form into equation
         // for calculating distance from a point to line
+        // No math.abs() so  line has direction for PID
         double distanceOfP =
-        (Math.abs((A * xPose) + yPose + C)) /
-        Math.sqrt(Math.pow(A, 2) + 1);
-
-     //   double perpBisector = // do i just flip the x and y of the equationOfReefLine? cus that would yield the line of the perp bisector
-
-        // PIDController pid = new PIDController(A, C, distanceOfP);
-        // pid.calculate(robotPose.getX(), distanceOfP);
+            ((A * xPose) + B * yPose + C)
+                / Math.hypot(A, B);
 
         return distanceOfP;
     }
-
-
 
     /* Sets the goal using a command, meant to be used with buttonboard */
     public static Command setGoalCommand(Pose2d goalPose) {

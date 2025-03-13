@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.controllers.HeadingController;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
@@ -266,7 +267,16 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
             case DRIVE_TO_ALGAE:
-                desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                if(AllianceFlipUtil.shouldFlip()) forwardJoy *= -1;
+                desiredSpeeds = new ChassisSpeeds(
+                    /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                    forwardJoy,
+                    algaeAlignSpeeds.vyMetersPerSecond,
+                    algaeAlignSpeeds.omegaRadiansPerSecond
+                );
                 break;
             case DRIVE_TO_NET:
                 ChassisSpeeds autoAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());;

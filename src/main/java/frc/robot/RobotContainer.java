@@ -363,7 +363,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
