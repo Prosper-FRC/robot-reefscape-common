@@ -384,6 +384,11 @@ public class RobotContainer {
                     .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+            driverController.leftBumper()
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.MIDDLE)    
+                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
                 .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(6.0)))

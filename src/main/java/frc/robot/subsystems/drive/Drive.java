@@ -63,6 +63,7 @@ public class Drive extends SubsystemBase {
         REEF_HEADING_ALIGN,
         DRIVE_TO_REEF,
         DRIVE_TO_INTAKE,
+        DRIVE_TO_ALGAE,
         DRIVE_TO_NET,
         AUTON, 
         STOP,
@@ -264,6 +265,9 @@ public class Drive extends SubsystemBase {
             case DRIVE_TO_INTAKE:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
+            case DRIVE_TO_ALGAE:
+                desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                break;
             case DRIVE_TO_NET:
                 ChassisSpeeds autoAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());;
                 desiredSpeeds = new ChassisSpeeds(
@@ -335,6 +339,14 @@ public class Drive extends SubsystemBase {
                     ChassisSpeeds.fromRobotRelativeSpeeds(
                         getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kIntake, getPoseEstimate());
+                break;
+            case DRIVE_TO_ALGAE:
+                autoAlignController.reset(
+                    getPoseEstimate(),
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), 
+                        getPoseEstimate().getRotation()));
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
                 break;
             case DRIVE_TO_NET:
                 autoAlignController.reset(
