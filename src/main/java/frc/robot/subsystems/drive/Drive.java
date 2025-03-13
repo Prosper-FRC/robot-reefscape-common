@@ -61,9 +61,10 @@ public class Drive extends SubsystemBase {
         PROCESSOR_HEADING_ALIGN,
         INTAKE_HEADING_ALIGN,
         REEF_HEADING_ALIGN,
-        DRIVE_TO_REEF,
+        DRIVE_TO_CORAL,
+        DRIVE_TO_ALGAE,
         DRIVE_TO_INTAKE,
-        DRIVE_TO_NET,
+        DRIVE_TO_BARGE,
         AUTON, 
         STOP,
         // TESTS
@@ -258,13 +259,21 @@ public class Drive extends SubsystemBase {
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
                 break;
-            case DRIVE_TO_REEF:
+            case DRIVE_TO_CORAL:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                break;
+            case DRIVE_TO_ALGAE:
+                ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                desiredSpeeds = new ChassisSpeeds(
+                    teleopSpeeds.vxMetersPerSecond,
+                    algaeAlignSpeeds.vyMetersPerSecond,
+                    algaeAlignSpeeds.omegaRadiansPerSecond
+                );
                 break;
             case DRIVE_TO_INTAKE:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
-            case DRIVE_TO_NET:
+            case DRIVE_TO_BARGE:
                 ChassisSpeeds autoAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());;
                 desiredSpeeds = new ChassisSpeeds(
                     autoAlignSpeeds.vxMetersPerSecond,
@@ -322,7 +331,14 @@ public class Drive extends SubsystemBase {
             case REEF_HEADING_ALIGN:
                 headingController.reset(getPoseEstimate().getRotation(), gyroInputs.yawVelocityPS);
                 break;
-            case DRIVE_TO_REEF:
+            case DRIVE_TO_CORAL:
+                autoAlignController.reset(
+                    getPoseEstimate(),
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
+                goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
+                break;
+            case DRIVE_TO_ALGAE:
                 autoAlignController.reset(
                     getPoseEstimate(),
                     ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -336,7 +352,7 @@ public class Drive extends SubsystemBase {
                         getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kIntake, getPoseEstimate());
                 break;
-            case DRIVE_TO_NET:
+            case DRIVE_TO_BARGE:
                 autoAlignController.reset(
                     getPoseEstimate(), 
                     ChassisSpeeds.fromRobotRelativeSpeeds(
@@ -426,7 +442,9 @@ public class Drive extends SubsystemBase {
             case AUTON:
                 /* No need to optimize for Choreo, as it handles it under the hood */
                 return SwerveUtils.convertChoreoNewtonsToAmps(currentState, pathPlanningFF, i);
-            case DRIVE_TO_REEF:           
+            case DRIVE_TO_CORAL:           
+                return SwerveUtils.optimizeTorque(unoptimizedState, optimizedState, pathPlanningFF.torqueCurrentsAmps()[i], i);
+            case DRIVE_TO_ALGAE:           
                 return SwerveUtils.optimizeTorque(unoptimizedState, optimizedState, pathPlanningFF.torqueCurrentsAmps()[i], i);
             default:
                 return 0.0;
