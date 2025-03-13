@@ -323,29 +323,36 @@ public class RobotContainer {
 
             leftAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
-                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             rightAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
-                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+            driverController.a()
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.ALGAE)
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.rightBumper()
-            .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
-            .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+            // BOI ignore ts //
+            // driverController.rightBumper()
+            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
+            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
 
-            driverController.leftBumper()
-            .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
-            .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+            // driverController.leftBumper()
+            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
+            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
@@ -536,7 +543,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             operatorController.povLeft()
