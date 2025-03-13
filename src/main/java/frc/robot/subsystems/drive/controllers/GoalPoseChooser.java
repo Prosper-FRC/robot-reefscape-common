@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive.controllers;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.utils.math.AllianceFlipUtil;
 
 /* Chooses pose based of strategy and psoe */ 
@@ -132,6 +134,42 @@ public class GoalPoseChooser {
         Logger.recordOutput("Drive/GoalPoseAngle", angleFromReefCenter);
         return angleFromReefCenter;
     }
+
+    /* Algae align math */
+    public static double findDistanceFromIntersection(int reefAngle, Pose2d robotPose) {
+        // To find slope of the line
+        double m = Math.tan(reefAngle);
+
+        // Poses of center of reef 
+        // TODO: Update with values from Choreo later
+        double xVal = 0.0;
+        double yVal = 0.0;
+
+        // Robot poses
+        double xPose = robotPose.getX();
+        double yPose = robotPose.getY();
+
+
+        // Point slope form: m (x - xVal) - (y - yVal)
+        double equationOfReefLine = (-m * xPose) + (yPose) + (m * (xVal - yVal));
+        double A = - m;
+        double C = m * (xVal - yVal);
+
+        // Plugging in constants A, B (which will always be 1) and C from standard form into equation
+        // for calculating distance from a point to line
+        double distanceOfP =
+        (Math.abs((A * xPose) + yPose + C)) /
+        Math.sqrt(Math.pow(A, 2) + 1);
+
+        double perpBisector = // do i just flip the x and y of the equationOfReefLine? cus that would yield the line of the perp bisector
+
+        // PIDController pid = new PIDController(A, C, distanceOfP);
+        // pid.calculate(robotPose.getX(), distanceOfP);
+
+        return distanceOfP;
+    }
+
+
 
     /* Sets the goal using a command, meant to be used with buttonboard */
     public static Command setGoalCommand(Pose2d goalPose) {
