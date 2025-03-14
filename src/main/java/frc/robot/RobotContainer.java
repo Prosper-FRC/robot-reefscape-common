@@ -295,25 +295,23 @@ public class RobotContainer {
             Commands.runOnce(() -> 
                 led.setSolidBlinkAnimation(
                 0.1, 
-                Color.kLightGray)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
+                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
         .whileFalse(
             Commands.runOnce(() -> 
                 led.defaultAnimation()));
 
         new Trigger(() -> robotDrive.getDriveToPoseTolerance())
             .onTrue(Commands.runOnce(() -> 
-                led.setBlue())
+                led.setSolidBlinkAnimation(
+                    0.1, Color.kBlanchedAlmond))
                 .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
 
         new Trigger(() -> elevator.atGoal())
             .onTrue(Commands.runOnce(() -> 
-                led.setGreen())
+                led.setSolidBlinkAnimation(
+                    0.1, Color.kAqua))
                     .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
         
-        new Trigger(() -> ((climb.getPosition().getDegrees()) == (ClimbConstants.kMinPosition.getDegrees())))
-            .onTrue(Commands.runOnce(() ->
-                led.setRed())
-                    .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
     }
 
     private Command rumbleCommand() {
@@ -376,12 +374,12 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftTrigger()
+            driverController.button(kLeftAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
                     .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.rightTrigger()
+            driverController.button(kRightAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
                     .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));

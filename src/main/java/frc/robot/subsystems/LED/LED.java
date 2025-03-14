@@ -59,9 +59,9 @@ public class LED extends SubsystemBase implements ILED {
         setGradientAnimation(
                 100,
                 GradientType.kContinuous,
-                Color.kBlueViolet,
-                Color.kMediumPurple,
-                Color.kLavenderBlush);
+                Color.kSeaGreen,
+                Color.kLimeGreen,
+                Color.kGreen);
     }
 
     // Low level method, use only for custom LED animations
@@ -73,27 +73,6 @@ public class LED extends SubsystemBase implements ILED {
     public void setSolidColor(int r, int g, int b){
         pattern = LEDPattern.solid(new Color(r, g, b));
     }
-
-    // Sets LED green for when elevator is not in idle position:
-    public void setGreen() {
-        setSolidColor(26, 148, 49);
-    }
-
-    // Sets LED blue for when robot is aligned to reef:
-    public void setBlue() {
-        setSolidColor(15, 82, 186);
-    }
-
-    // Sets LED red for when robot has successfully reached the climb setpoint (so robot has successfully climbed)
-    public void setRed() {
-        setSolidColor(219, 0, 0);
-    }
-
-    // Sets LED purple for when elevator is in idle position 
-    public void setPurple() {
-        setSolidColor(162, 25, 255);
-    }
-
 
     // Sets rainbow LED color
     public void setRainbowAnimation(int saturation, int brightness){
