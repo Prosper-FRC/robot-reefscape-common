@@ -131,7 +131,7 @@ public class Climb extends SubsystemBase {
 
   public void setVoltageOut() {
     for (ClimbIO io : kHardware) {
-      io.setVoltage(-45.0);
+      io.setVoltage(-12.0);
     }
   }
 
