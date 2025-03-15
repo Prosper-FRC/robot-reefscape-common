@@ -540,6 +540,7 @@ public class RobotContainer {
             //         teleopCommands.stopElevatorCommand()
             //     );
 
+            /* 
             // CLIMB - GRAB
             operatorController.povLeft()
                 .whileTrue(
@@ -557,7 +558,24 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
+                */
 
+            // CLIMB 
+            operatorController.povRight()
+                .whileTrue(
+                    new InstantCommand(() -> climb.setVoltageOut())
+                )
+                .whileFalse(
+                    teleopCommands.stopClimbCommand()
+                );
+                
+            operatorController.povLeft()
+                .whileTrue(
+                    new InstantCommand(() -> climb.setVoltageIn())
+                )
+                .whileFalse(
+                    teleopCommands.stopClimbCommand()
+                );
             // PIVOT - OUT
             // operatorController.povLeft()
             //     .whileTrue(
