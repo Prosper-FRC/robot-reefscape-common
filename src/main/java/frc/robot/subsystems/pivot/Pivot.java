@@ -96,17 +96,51 @@ public class Pivot extends SubsystemBase {
     }
 
     if (pivotGoal != null) {
-      // set pivot position
-      // log pivot goal value
+      setPivotPosition(pivotGoal.getGoalPosition());
+      Logger.recordOutput("Pivot/PivotGoalValue", pivotGoal.getGoalPosition());
+      Logger.recordOutput("Pivot/PivotGoal", pivotGoal);
     } else {
-      // log pivot goal value as "NONE"
+      Logger.recordOutput("Pivot/PivotGoal", "NONE");
     }
 
-    // run soft limit checks
+    // Check if pivot is attempting to move beyond its limitations
+    if (getPivotPosition().getDegrees() > PivotConstants.kMaxPivotPosition.getDegrees() 
+        && kPivotInputs.appliedVoltage > 0.0) {
+      stop();
+    } else if (getPivotPosition().getDegrees() < PivotConstants.kMinPivotPosition.getDegrees() 
+        && kPivotInputs.appliedVoltage < 0.0) {
+      stop();
+    } else {
+      // Do nothing if limits are not reached
+    }
 
-    // update tunables
+    // This says that if the value is changed in the advantageScope tool,
+    // Then we change the values in the code. Saves deploy time.
+    // More found in prerequisites slide
+    LoggedTunableNumber.ifChanged(
+      hashCode(),
+      () -> {
+        kPivotHardware.setGains(
+            kP.get(), kI.get(), kD.get(), kS.get(), kG.get(), kV.get(), kA.get());
+      },
+      kP,
+      kI,
+      kD,
+      kS,
+      kV,
+      kA,
+      kG);
+    LoggedTunableNumber.ifChanged(
+        hashCode(),
+        () -> {
+          kPivotHardware.setMotionMagicConstraints(kMaxVelocity.get(), kMaxAcceleration.get());
+        },
+        kMaxVelocity,
+        kMaxAcceleration);
 
-    // update visualizer
+    // The visualizer needs to be periodically fed the current position of the mechanism;
+    // Invert cause the pivot is flipped on the robot relative to its coordinate field
+    kPivotVisualizer.updatePosition(getPivotPosition().times(-1.0));
   }
 
   /**
