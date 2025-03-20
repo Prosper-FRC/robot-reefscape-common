@@ -6,6 +6,7 @@ package frc.robot.subsystems.pivot;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.visualizers.PivotVisualizer;
 
@@ -87,8 +89,10 @@ public class Pivot extends SubsystemBase {
     kPivotHardware.updateInputs(kPivotInputs);
     Logger.processInputs("Pivot/Inputs", kPivotInputs);
 
+    // Stop and clear goal if disabled. Used if copilot is still pressing button to command
+    // intake when the disabled key is pressed
     if (DriverStation.isDisabled()) {
-      // call stop method
+      stop();
     }
 
     if (pivotGoal != null) {
@@ -103,5 +107,80 @@ public class Pivot extends SubsystemBase {
     // update tunables
 
     // update visualizer
+  }
+
+  /**
+   * Sets the voltage goal of the pivo mechanism, logic runs in subsystem periodic method
+   * 
+   * @param desiredGoal The desired voltage goal
+   */
+  public void setPivotGoal(PivotGoal desiredGoal) {
+    pivotGoal = desiredGoal;
+  }
+
+  /** 
+   * Stops the motor and sets the desired goal to null so it does not attempt to go 
+   * to a setpoint after method is invoked 
+   */
+  public void stop() {
+    pivotGoal = null;
+    kPivotHardware.stop();
+  }
+
+  /**
+   * Sets the voltage of the pivot motor
+   * 
+   * @param voltage
+   */
+  public void setPivotVoltage(double voltage) {
+    kPivotHardware.setVoltage(voltage);
+  }
+
+  /**
+   * Sets the desired angular position of the pivot mechanism
+   * 
+   * @param position
+   */
+  public void setPivotPosition(Rotation2d position) {
+    kPivotHardware.setPosition(position);
+  }
+
+  /**
+   * Sets the vertical position of the mechanism on the visuzlier, useful as the
+   * pivot moves with the elevator
+   * 
+   * @param positionMeters
+   */
+  public void setVisualizerVerticalPosition(double positionMeters) {
+    kPivotVisualizer.setRootVerticalPositionMeters(positionMeters);
+  }
+  
+  /**
+   * Compute the error based off of our current position and current goal
+   * 
+   * @return The computed error in degrees
+   */
+  @AutoLogOutput(key = "Pivot/Feedback/ErrorDegrees")
+  public double getPivotErrorDegrees() {
+    if (pivotGoal != null && getPivotPosition() != null) {
+      return pivotGoal.getGoalPosition().getDegrees() - getPivotPosition().getDegrees();
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * @return If the pivot is at its desired goal yet
+   */
+  @AutoLogOutput(key = "Pivot/Feedback/AtGoal")
+  public boolean pivotAtGoal() {
+    return Math.abs(getPivotErrorDegrees()) < IntakeConstants.kPivotPositionTolerance.getDegrees();
+  }
+
+  /**
+   * @return The position of the pivot
+   */
+  public Rotation2d getPivotPosition() {
+    return kPivotInputs.position;
   }
 }
