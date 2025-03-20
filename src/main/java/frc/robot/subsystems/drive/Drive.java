@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drive;
 
 import static frc.robot.subsystems.drive.DriveConstants.*;
+import static frc.robot.FieldConstants.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.controllers.HeadingController;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
@@ -580,6 +582,11 @@ public class Drive extends SubsystemBase {
         /* Accounts for angle wrapping issues with rotation 2D error */
         return GeomUtil.getSmallestChangeInRotation(robotRotation, goalRotation).getDegrees() 
             < HeadingController.toleranceDegrees.get();
+    }
+
+    @AutoLogOutput(key = "Drive/Odometry/DistanceFromReef")
+    public double distanceFromReefCenter(){
+        return getPoseEstimate().getTranslation().getDistance(kReefCenter.getTranslation());
     }
 
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {

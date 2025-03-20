@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Drive.DriveState;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.intake.Intake;
@@ -32,8 +34,12 @@ public class AutonCommands {
     public static final LoggedTunableNumber kAlgaeIntakeTriggerDistanceMeters = 
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
-    private final double kElevatorPositionTimeoutSeconds = 2.5;
+    private final double kElevatorPositionTimeoutSeconds = 0.5;
     private final double kScoreCoralTimeoutSeconds = 0.75;
+
+    // private final double kElevatorPositionTimeoutSeconds = 2.5;
+    // private final double kScoreCoralTimeoutSeconds = 0.75;
+
     private final double kIntakeCoralTimeoutSeconds = 2.5;
 
     private SendableChooser<Command> autoChooser;
@@ -82,6 +88,7 @@ public class AutonCommands {
             intakeCoralPath("I_AR_IR_C", 
             null))))))));
 
+            // Auto Align testing
         tryToAddPathToChooser(
             "RightCoral", 
             scoreFirstCoralPath("S_SR_EL_C", 
@@ -143,16 +150,22 @@ public class AutonCommands {
      * The first path of the robot, sets pose and rotation of robot 
      * Upon finishing will  score a coral, and have the trigger schedule the nextAuto
     */
-    public PathPlannerAuto scoreFirstCoralPath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
-        return firstPath(name, startingRotation, () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto);
+    public Command scoreFirstCoralPath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
+        return new SequentialCommandGroup(
+            GoalPoseChooser.setSideCommand(getSide(name)),
+            firstPath(name, startingRotation, () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto),
+            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL));
     }
 
     /* 
      * The first path of the robot, sets pose and rotation of robot 
      * Upon finishing will  score a coral, and have the trigger schedule the nextAuto
     */
-    public PathPlannerAuto scoreFirstCoralPath(String name, PathPlannerAuto nextAuto) {
-        return firstPath(name, new Rotation2d(), () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto);
+    public Command scoreFirstCoralPath(String name, Command nextAuto) {
+        return new SequentialCommandGroup(
+            GoalPoseChooser.setSideCommand(getSide(name)),
+            firstPath(name, new Rotation2d(), () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto),
+            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL));
     }
 
     /* 
@@ -172,7 +185,7 @@ public class AutonCommands {
      * The first path of the robot, sets pose and rotation of robot 
      * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
     */
-    public PathPlannerAuto intakeFirstAlgaePath(String name, PathPlannerAuto nextAuto) {
+    public PathPlannerAuto intakeFirstAlgaePath(String name, Command nextAuto) {
         return firstPath(name, new Rotation2d(), () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
     }
 
@@ -180,36 +193,39 @@ public class AutonCommands {
      * Upon finishing will score the named path, the coral will be scored
      * and then the trigger schedules the nextAuto
     */
-    public PathPlannerAuto scoreCoralPath(String name, PathPlannerAuto nextAuto) {
-        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto);
+    public Command scoreCoralPath(String name, Command nextAuto) {
+        return new SequentialCommandGroup(
+            GoalPoseChooser.setSideCommand(getSide(name)),
+            nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto),
+            GoalPoseChooser.setSideCommand(SIDE.LEFT),
+            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL));
     }
 
     /* 
      * Upon finishing will score the named path, the coral intake sequence will be started
      * and upon finishing then the nextAuto is scheduled
     */
-    public PathPlannerAuto intakeCoralPath(String name, PathPlannerAuto nextAuto) {
-        PathPlannerAuto auto = nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeCoralCommand(), nextAuto);
-        // auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IL).getTranslation(), kCoralIntakeTriggerDistanceMeters.get()).or(
-        //     auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.IR).getTranslation(), kCoralIntakeTriggerDistanceMeters.get())
-        // ).whileTrue(
-        //     intakeCoralCommand() );
-        return auto;
+    public Command intakeCoralPath(String name, Command nextAuto) {
+        return new SequentialCommandGroup(
+            nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeCoralCommand(), nextAuto),
+            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE));
     }
 
     /* 
      * Upon finishing will score the named path, the algae will be scored
      * and then the trigger schedules the nextAuto
     */
-    public PathPlannerAuto scoreAlgaePath(String name, PathPlannerAuto nextAuto) {
-        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
+    public Command scoreAlgaePath(String name, Command nextAuto) {
+        return new SequentialCommandGroup(
+            nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto),
+            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE));
     }
 
     /* 
      * Upon finishing will score the named path, the algae intake sequence will be started
      * and upon finishing then the nextAuto is scheduled
     */
-    public PathPlannerAuto intakeAlgaePath(String name, PathPlannerAuto nextAuto) {
+    public Command intakeAlgaePath(String name, Command nextAuto) {
         PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeAlgaeCommand(), nextAuto);
         auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get()).or(
             auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get())
@@ -219,27 +235,19 @@ public class AutonCommands {
     }
 
     ///////////////// PATH CHAINING LOGIC \\\\\\\\\\\\\\\\\\\\\\
-    public PathPlannerAuto firstPath(String name, Rotation2d startingRotation, BooleanSupplier conditionSupplier, Command nextCommand, PathPlannerAuto nextAuto) {
+    public PathPlannerAuto firstPath(String name, Rotation2d startingRotation, BooleanSupplier conditionSupplier, Command nextCommand, Command nextAuto) {
         PathPlannerAuto firstAuto = new PathPlannerAuto(followFirstChoreoPath(name, startingRotation));
-
         firstAuto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
-
-        // new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
-
         return firstAuto;
     }
 
-    public PathPlannerAuto nextPath(String name, BooleanSupplier conditionSupplier, Command nextCommand, PathPlannerAuto nextAuto) {
+    public PathPlannerAuto nextPath(String name, BooleanSupplier conditionSupplier, Command nextCommand, Command nextAuto) {
         PathPlannerAuto auto = new PathPlannerAuto(followChoreoPath(name));
-
         auto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
-
-        // new Trigger(() -> nextCommand.isFinished()).onTrue(nextAutoChecker(nextAuto));
-
         return auto;
     }
 
-    public Command nextAutoChecker(PathPlannerAuto auto) {
+    public Command nextAutoChecker(Command auto) {
         return (auto == null) ? robotDrive.setDriveStateCommand(Drive.DriveState.STOP) : auto;
     }
 
@@ -342,5 +350,10 @@ public class AutonCommands {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    public SIDE getSide(String name){
+        String n = name.substring(6, 7);
+        return (n.equals("L")) ? SIDE.LEFT : SIDE.RIGHT;
     }
 }
