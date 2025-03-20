@@ -4,19 +4,22 @@ import static frc.robot.subsystems.drive.DriveConstants.kDriveMotorGearing;
 import static frc.robot.subsystems.drive.DriveConstants.kMaxLinearSpeedMPS;
 import static frc.robot.subsystems.drive.DriveConstants.kWheelRadiusMeters;
 
-import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.math.Vector;
 
 import com.pathplanner.lib.util.DriveFeedforwards;
-import frc.robot.utils.ppMath.SwerveSetpoint;
+import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.utils.math.EqualsUtil;
+import frc.robot.utils.ppMath.SwerveSetpoint;
 
 public class SwerveUtils {
     private static final double dt = 0.02;
@@ -47,6 +50,13 @@ public class SwerveUtils {
         return Math.abs(setpoint.speedMetersPerSecond / kMaxLinearSpeedMPS) < kJitterThreshold ? current.angle : setpoint.angle;
     }
 
+
+    public static double projectTorque(SwerveModuleState currentState, Vector<N2> wheelForce) {
+        Vector<N2> wheelDirection = VecBuilder.fill(currentState.angle.getCos(), currentState.angle.getSin());
+        double wheelForceN = wheelForce.dot(wheelDirection);
+        return wheelForceN; 
+    }
+
     // PATHPLANNER TORQUE UTILS \\ 
     /* Torque isn't directionally changed when the velocity flip case happen SwerveModuleState.optimize() */
     public static double optimizeTorque(SwerveModuleState unOptimized, SwerveModuleState optimized, double motorAmperage, int i) {
@@ -61,10 +71,11 @@ public class SwerveUtils {
     }
 
     // ASSUMES THE CHOREO'S MOTOR TORQUE DOESN'T ALREADY EXCEED THE MOTOR'S LIMIT
-    public static double convertChoreoNewtonsToAmps(DriveFeedforwards ff, int i) {
-        double choreoLinearForceNewtons = Math.hypot(
-            ff.robotRelativeForcesXNewtons()[i], 
-            ff.robotRelativeForcesYNewtons()[i]);
+    public static double convertChoreoNewtonsToAmps(SwerveModuleState currentState, DriveFeedforwards ff, int i) {
+        double choreoLinearForceNewtons = projectTorque(currentState, 
+            VecBuilder.fill(
+                ff.robotRelativeForcesXNewtons()[i], 
+                ff.robotRelativeForcesYNewtons()[i]));
 
         // NEWTONS -> GEARBOX TORQUE -> MOTOR TORQUE
         double driveMotorTorque = (choreoLinearForceNewtons * kWheelRadiusMeters) / kDriveMotorGearing;

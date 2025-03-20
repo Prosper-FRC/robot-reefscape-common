@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
-import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
 import frc.robot.subsystems.drive.controllers.HolonomicController;
 
@@ -101,6 +100,8 @@ public class Drive extends SubsystemBase {
     private ChassisSpeeds desiredSpeeds = new ChassisSpeeds();
     private ChassisSpeeds ppDesiredSpeeds = new ChassisSpeeds();
     private DriveFeedforwards pathPlanningFF = DriveFeedforwards.zeros(4);
+
+    private SwerveModuleState[] prevStates = SwerveUtils.zeroStates();
 
     /* CONTROLLERS(are used to set chassis speeds) */
     private ManualTeleopController teleopController = new ManualTeleopController();
@@ -316,21 +317,30 @@ public class Drive extends SubsystemBase {
         driveState = state;
         switch(driveState) {
             case PROCESSOR_HEADING_ALIGN:
-                headingController.reset(robotRotation, gyroInputs.yawVelocityPS);            
+                headingController.reset(getPoseEstimate().getRotation(), gyroInputs.yawVelocityPS);            
                 break;
             case REEF_HEADING_ALIGN:
-                headingController.reset(robotRotation, gyroInputs.yawVelocityPS);
+                headingController.reset(getPoseEstimate().getRotation(), gyroInputs.yawVelocityPS);
                 break;
             case DRIVE_TO_REEF:
-                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                autoAlignController.reset(
+                    getPoseEstimate(),
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
                 break;
             case DRIVE_TO_INTAKE:
-                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                autoAlignController.reset(
+                    getPoseEstimate(), 
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kIntake, getPoseEstimate());
                 break;
             case DRIVE_TO_NET:
-                autoAlignController.reset(getPoseEstimate(), getRobotChassisSpeeds());
+                autoAlignController.reset(
+                    getPoseEstimate(), 
+                    ChassisSpeeds.fromRobotRelativeSpeeds(
+                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kNet, getPoseEstimate());
                 break;
             default:
@@ -374,13 +384,20 @@ public class Drive extends SubsystemBase {
                 /* Feedforward cases based on driveState */
                 /* 0 unless in auto or auto-align */
                 double driveAmps = calculateDriveFeedforward(
-                    unOptimizedSetpointStates[i], setpointStates[i], i);
+                    modules[i].getCurrentState(), unOptimizedSetpointStates[i], setpointStates[i], i);
                 
                 /* 
                  * Multiplies by cos(angleError) to stop the drive from going in the wrong direction
                  * when azimuth angle changes
                  */
                 setpointStates[i].cosineScale(modules[i].getCurrentState().angle);
+
+                double directionOfVelChange = Math.signum(setpointStates[i].speedMetersPerSecond - prevStates[i].speedMetersPerSecond);
+                Logger.recordOutput("Drive/Module/Feedforward/"+i+"/dir", directionOfVelChange);
+                if(driveState.equals(DriveState.AUTON)) {
+                    driveAmps = Math.abs(driveAmps) * Math.signum(directionOfVelChange);
+                }
+
                 optimizedSetpointStates[i] = modules[i].setDesiredStateWithAmpFF(setpointStates[i], driveAmps);
             } else {
                 setpointStates[i] = new SwerveModuleState(
@@ -393,6 +410,8 @@ public class Drive extends SubsystemBase {
                 optimizedSetpointStates[i] = modules[i].setDesiredState(setpointStates[i]);
             }
         }
+
+        prevStates = optimizedSetpointStates;
         
         Logger.recordOutput("Drive/Swerve/Setpoints", unOptimizedSetpointStates);
         Logger.recordOutput("Drive/Swerve/SetpointsOptimized", optimizedSetpointStates);
@@ -402,12 +421,12 @@ public class Drive extends SubsystemBase {
     }
 
     /* Calculates DriveFeedforward based off state */
-    public double calculateDriveFeedforward(SwerveModuleState unoptimizedState, SwerveModuleState optimizedState, int i) {
+    public double calculateDriveFeedforward(SwerveModuleState currentState, SwerveModuleState unoptimizedState, SwerveModuleState optimizedState, int i) {
         switch(driveState) {
             case AUTON:
                 /* No need to optimize for Choreo, as it handles it under the hood */
-                return SwerveUtils.convertChoreoNewtonsToAmps(pathPlanningFF, i);
-            case DRIVE_TO_REEF:
+                return SwerveUtils.convertChoreoNewtonsToAmps(currentState, pathPlanningFF, i);
+            case DRIVE_TO_REEF:           
                 return SwerveUtils.optimizeTorque(unoptimizedState, optimizedState, pathPlanningFF.torqueCurrentsAmps()[i], i);
             default:
                 return 0.0;

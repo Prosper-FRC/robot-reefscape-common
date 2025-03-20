@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.subsystems.elevator.Elevator;
@@ -311,13 +312,47 @@ public class RobotContainer {
                 led.setSolidBlinkAnimation(
                     0.1, Color.kAqua))
                     .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
+
+        // Auto rumble if we are pressing intake button and we already have a gamepiece
+        new Trigger(
+            teleopLoop,
+            intake::detectedGamepiece)
+                .and(operatorController.leftBumper())
+            .onTrue(
+                (rumbleCommandOperator()
+                    .withTimeout(0.5)).alongWith(
+                rumbleCommandDriver()
+                    .withTimeout(0.5)));
+
+        new Trigger(() -> climb.getIfClimbOut())
+            .onTrue(rumbleCommandOperator().withTimeout(0.5));
+
+        
+        new Trigger(() -> climb.getIfClimbIn())
+            .onTrue(
+                new ParallelCommandGroup(
+                    rumbleCommandOperator(),
+                    Commands.runOnce(
+                        () -> led.setRed()).andThen(
+                            Commands.waitSeconds(1.0),
+                            Commands.runOnce(() -> led.defaultAnimation())
+                        )
+                ));
+    
+
         
     }
 
-    private Command rumbleCommand() {
+    private Command rumbleCommandOperator() {
         return Commands.startEnd(
             () -> operatorController.getHID().setRumble(RumbleType.kBothRumble, 1.0), 
             () -> operatorController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
+    }
+
+    private Command rumbleCommandDriver() {
+        return Commands.startEnd(
+            () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1.0), 
+            () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
     }
 
     private void configureButtonBindings() {
@@ -334,15 +369,8 @@ public class RobotContainer {
         positionButtons.add(operatorController.a());
         positionButtons.add(operatorController.x());
 
-        // Auto rumble if we are pressing intake button and we already have a gamepiece
-        new Trigger(
-            teleopLoop,
-            intake::detectedGamepiece)
-                .and(operatorController.leftBumper())
-            .onTrue(
-                rumbleCommand()
-                    .withTimeout(0.5)
-        );
+
+    
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
@@ -371,14 +399,18 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.INTAKE_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            operatorController.button(kLeftAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT));
+            driverController.button(kLeftAlign)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
+                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            operatorController.button(kRightAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT));
+            driverController.button(kRightAlign)
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
+                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
@@ -408,8 +440,8 @@ public class RobotContainer {
                 .whileTrue(
                     teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeGround)
                     .onlyWhile(hasGamepieceTrigger.negate())
-                         .andThen(
-                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL1Coral)
+                         .alongWith(
+                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kGroundAlgae)
                             // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )
                 )
@@ -434,6 +466,15 @@ public class RobotContainer {
                         .andThen(
                             teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
                         )   
+                            .alongWith(
+                                rumbleCommandOperator()
+                                .andThen(
+                                    Commands.waitSeconds(0.25)
+                                )
+                                .andThen(
+                                    rumbleCommandDriver().withTimeout(0.5)
+                                )
+                            )
                     )
                     .whileFalse(
                         teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
@@ -536,6 +577,7 @@ public class RobotContainer {
             //         teleopCommands.stopElevatorCommand()
             //     );
 
+            /* 
             // CLIMB - GRAB
             operatorController.povLeft()
                 .whileTrue(
@@ -553,7 +595,24 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
+                */
 
+            // CLIMB 
+            operatorController.povRight()
+                .whileTrue(
+                    new InstantCommand(() -> climb.setVoltageOut())
+                )
+                .whileFalse(
+                    teleopCommands.stopClimbCommand()
+                );
+                
+            operatorController.povLeft()
+                .whileTrue(
+                    new InstantCommand(() -> climb.setVoltageIn())
+                )
+                .whileFalse(
+                    teleopCommands.stopClimbCommand()
+                );
             // PIVOT - OUT
             // operatorController.povLeft()
             //     .whileTrue(
@@ -572,8 +631,8 @@ public class RobotContainer {
             //         teleopCommands.stopRollersAndPivotCommand()
             //     );
 
-            operatorController.leftStick()
-                .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
+            // operatorController.leftStick()
+            //     .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
 
             // operatorController.rightStick()
             //     .onTrue(

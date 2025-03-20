@@ -92,8 +92,6 @@ public class Climb extends SubsystemBase {
       stop();
     }
 
-  // softLimits();
-
     if (voltageGoal != null) {
       setVoltage(voltageGoal.getGoalVoltage());
       Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
@@ -114,6 +112,9 @@ public class Climb extends SubsystemBase {
       } else {
         // Do nothing if limits are not reached
       }
+
+      getIfClimbIn();
+      getIfClimbOut();
     }
 
     // The visualizer needs to be periodically fed the current position of the mechanism
@@ -129,6 +130,34 @@ public class Climb extends SubsystemBase {
     voltageGoal = desiredGoal;
   }
 
+  public void setVoltageOut() {
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(-12.0);
+    }
+  }
+
+  public void setVoltageIn() {
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(6.0);
+    }
+  }
+
+  public boolean getIfClimbIn() {
+    if (getPosition().getDegrees() == ClimbConstants.kMinPosition.getDegrees()) {
+      return true;
+    }
+
+    else return false;
+  }
+
+  public boolean getIfClimbOut() {
+    if (getPosition().getDegrees() == ClimbConstants.kMaxPosition.getDegrees()) {
+      return true;
+    }
+
+    else return false;
+  }
+
   /**
    * Sets the voltage of the motor. Assumes that positive voltage moves the 
    * motor closer to the maximum possible physical position the mechanism can 
@@ -141,18 +170,22 @@ public class Climb extends SubsystemBase {
     // Notice how we are not checking if position control is running, it is up 
     // to the caller to check for this before calling this method (I recommend 
     // calling this subsystem's stop() method after completing any action)
-    if (!kDisableLimits.get()) {
-      if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
-          && kInputs[0].appliedVoltage > 0.0) {
-        stop();
-      } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
-          && kInputs[0].appliedVoltage < 0.0) {
-        stop();
-      } else {
-        for (ClimbIO io : kHardware) {
-          io.setVoltage(voltage);
-        }
-      }
+    // if (!kDisableLimits.get()) {
+    //   if (getPosition().getDegrees() > ClimbConstants.kMaxPosition.getDegrees() 
+    //       && kInputs[0].appliedVoltage > 0.0) {
+    //     stop();
+    //   } else if (getPosition().getDegrees() < ClimbConstants.kMinPosition.getDegrees() 
+    //       && kInputs[0].appliedVoltage < 0.0) {
+    //     stop();
+    //   } else {
+    //     for (ClimbIO io : kHardware) {
+    //       io.setVoltage(voltage);
+    //     }
+    //   }
+    // }
+
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(voltage);
     }
     
   }
@@ -182,19 +215,6 @@ public class Climb extends SubsystemBase {
     //stop();
   }
 
-  public void softLimits() {
-    if ((kAbsoluteEncoderInputs.dutyCycleReading > ClimbConstants.kMaxPosition.getRotations())) {
-      stop();
-    }
-    else {
-      setVoltage(voltageGoal.getGoalVoltage());
-      Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
-    }
-
-    if (kAbsoluteEncoderInputs.dutyCycleReading < ClimbConstants.kMinPosition.getRotations()) {
-      stop();
-    }
-  }
 
   /**
    * Gets the position of the mechanism. Note that this assumes the caller only
