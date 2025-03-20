@@ -39,29 +39,30 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  /** List of position setpoints for the pivot */
-  public enum PivotGoal {
-    kStowScore(() -> Rotation2d.fromDegrees(64.0)),
-    kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
-    kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
-    kIntakeGround(() -> Rotation2d.fromDegrees(-55.5)),
-    kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
-    kScore(() -> Rotation2d.fromDegrees(40.0)),
-    kBargeScore(() -> Rotation2d.fromDegrees(46.0)),
-    /** Custom setpoint that can be modified over network tables; Useful for debugging */
-    custom(() -> Rotation2d.fromDegrees(
-      new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
-
-    private Supplier<Rotation2d> goalPosition;
-
-    PivotGoal(Supplier<Rotation2d> goalPosition) {
-      this.goalPosition = goalPosition;
+    // TODO Remove this after full extrapolation
+    /** List of position setpoints for the pivot */
+    public enum PivotGoal {
+      kStowScore(() -> Rotation2d.fromDegrees(64.0)),
+      kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
+      kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
+      kIntakeGround(() -> Rotation2d.fromDegrees(-55.5)),
+      kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
+      kScore(() -> Rotation2d.fromDegrees(40.0)),
+      kBargeScore(() -> Rotation2d.fromDegrees(46.0)),
+      /** Custom setpoint that can be modified over network tables; Useful for debugging */
+      custom(() -> Rotation2d.fromDegrees(
+        new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
+  
+      private Supplier<Rotation2d> goalPosition;
+  
+      PivotGoal(Supplier<Rotation2d> goalPosition) {
+        this.goalPosition = goalPosition;
+      }
+  
+      public Rotation2d getGoalPosition() {
+        return this.goalPosition.get();
+      }
     }
-
-    public Rotation2d getGoalPosition() {
-      return this.goalPosition.get();
-    }
-  }
 
   /*
    * TODO At some point this can be moved out in favor of using some form of higher level 
@@ -79,38 +80,12 @@ public class Intake extends SubsystemBase {
   private final SensorIO kSensor;
   private final SensorIOInputsAutoLogged kSensorInputs = new SensorIOInputsAutoLogged();
 
-  private final PivotIO kPivotHardware;
-  private final PivotIOInputsAutoLogged kPivotInputs = new PivotIOInputsAutoLogged();
-
-  private final LoggedTunableNumber kP =
-      new LoggedTunableNumber("Intake/Gains/kP", IntakeConstants.kPivotGains.p());
-  private final LoggedTunableNumber kI =
-      new LoggedTunableNumber("Intake/Gains/kI", IntakeConstants.kPivotGains.i());
-  private final LoggedTunableNumber kD =
-      new LoggedTunableNumber("Intake/Gains/kD", IntakeConstants.kPivotGains.d());
-  private final LoggedTunableNumber kS =
-      new LoggedTunableNumber("Intake/Gains/kS", IntakeConstants.kPivotGains.s());
-  private final LoggedTunableNumber kV =
-      new LoggedTunableNumber("Intake/Gains/kV", IntakeConstants.kPivotGains.v());
-  private final LoggedTunableNumber kA =
-      new LoggedTunableNumber("Intake/Gains/kA", IntakeConstants.kPivotGains.a());
-  private final LoggedTunableNumber kG =
-      new LoggedTunableNumber("Intake/Gains/kG", IntakeConstants.kPivotGains.g());
-  private final LoggedTunableNumber kMaxVelocity =
-      new LoggedTunableNumber(
-          "Intake/MotionMagic/kMaxVelocity", 
-          IntakeConstants.kPivotGains.maxVelocityRotationsPerSecond());
-  private final LoggedTunableNumber kMaxAcceleration =
-      new LoggedTunableNumber(
-          "Intake/MotionMagic/kMaxAcceleration", 
-          IntakeConstants.kPivotGains.maxAccelerationRotationsPerSecondSquared());
-
   private boolean detectedGamepiece = false;
   private LinearFilter ampFilter = LinearFilter.movingAverage(
     IntakeConstants.kLinearFilterSampleCount);
 
   private RollerGoal rollerGoal = null;
-  private PivotGoal pivotGoal = null;
+  private PivotGoal pivotGoal = null; // TODO Remove this after full extrapolation
 
   // The default gamepiece is coral, this is because we will start preloaded with coral and will
   // assume throughout the rest of the code the robot will always default to scoring coral
@@ -123,10 +98,9 @@ public class Intake extends SubsystemBase {
   private final LoggedNetworkBoolean kOverrideDetectGamepiece = 
     new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", false);
 
-  public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
+  public Intake(IntakeIO hardwareIO, SensorIO sensorIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
-    kPivotHardware = pivotHardwareIO;
 
     kPivotVisualizer = new PivotVisualizer(
       "Intake/PivotVisualizer", 
@@ -141,8 +115,6 @@ public class Intake extends SubsystemBase {
     Logger.processInputs("Intake/Inputs/Rollers", kRollerInputs);
     kSensor.updateInputs(kSensorInputs);
     Logger.processInputs("Intake/Inputs/Sensor", kSensorInputs);
-    kPivotHardware.updateInputs(kPivotInputs);
-    Logger.processInputs("Intake/Inputs/Pivot", kPivotInputs);
 
     // Stop and clear goal if disabled. Used if copilot is still pressing button to command
     // intake when the disabled key is pressed
@@ -184,54 +156,12 @@ public class Intake extends SubsystemBase {
     } else {
       Logger.recordOutput("Intake/RollerGoal", "NONE");
     }
-    if (pivotGoal != null) {
-      setPivotPosition(pivotGoal.getGoalPosition());
-      Logger.recordOutput("Intake/PivotGoalValue", pivotGoal.getGoalPosition());
-      Logger.recordOutput("Intake/PivotGoal", pivotGoal);
-    } else {
-      Logger.recordOutput("Intake/PivotGoal", "NONE");
-    }
-
-    // Check if pivot is attempting to move beyond its limitations
-    if (getPivotPosition().getDegrees() > IntakeConstants.kMaxPivotPosition.getDegrees() 
-        && kPivotInputs.appliedVoltage > 0.0) {
-      stop(false, true);
-    } else if (getPivotPosition().getDegrees() < IntakeConstants.kMinPivotPosition.getDegrees() 
-        && kPivotInputs.appliedVoltage < 0.0) {
-      stop(false, true);
-    } else {
-      // Do nothing if limits are not reached
-    }
 
     if (rollerGoal != null) {
       if (detectedGamepiece() && (rollerGoal.equals(RollerGoal.kIntakeAlgae) || rollerGoal.equals(RollerGoal.kIntakeCoral))) {
         stop(true, false);
       }
     }
-
-    // This says that if the value is changed in the advantageScope tool,
-    // Then we change the values in the code. Saves deploy time.
-    // More found in prerequisites slide
-    LoggedTunableNumber.ifChanged(
-      hashCode(),
-      () -> {
-        kPivotHardware.setGains(
-            kP.get(), kI.get(), kD.get(), kS.get(), kG.get(), kV.get(), kA.get());
-      },
-      kP,
-      kI,
-      kD,
-      kS,
-      kV,
-      kA,
-      kG);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        () -> {
-          kPivotHardware.setMotionMagicConstraints(kMaxVelocity.get(), kMaxAcceleration.get());
-        },
-        kMaxVelocity,
-        kMaxAcceleration);
 
     // The visualizer needs to be periodically fed the current position of the mechanism
     kPivotVisualizer.updatePosition(getPivotPosition().times(-1.0));
@@ -276,10 +206,6 @@ public class Intake extends SubsystemBase {
       rollerGoal = null;
       kRollerHardware.stop();
     }
-    if (stopPivot) {
-      pivotGoal = null;
-      kPivotHardware.stop();
-    }
   }
 
   /**
@@ -297,11 +223,11 @@ public class Intake extends SubsystemBase {
    * @param voltage
    */
   public void setPivotVoltage(double voltage) {
-    kPivotHardware.setVoltage(voltage);
+    // TODO Remove this method
   }
 
   public void setPivotPosition(Rotation2d position) {
-    kPivotHardware.setPosition(position);
+    // TODO Remove this method
   }
 
   /**
@@ -333,11 +259,8 @@ public class Intake extends SubsystemBase {
    */
   @AutoLogOutput(key = "Pivot/Feedback/ErrorDegrees")
   public double getPivotErrorDegrees() {
-    if (pivotGoal != null && getPivotPosition() != null) {
-      return pivotGoal.getGoalPosition().getDegrees() - getPivotPosition().getDegrees();
-    } else {
-      return 0.0;
-    }
+    // TODO Remove this method
+    return 0.0;
   }
 
   /**
@@ -352,7 +275,8 @@ public class Intake extends SubsystemBase {
    * @return The position of the pivot
    */
   public Rotation2d getPivotPosition() {
-    return kPivotInputs.position;
+    // TODO Remove this method
+    return new Rotation2d();
   }
 
   public Double getStatorCurrent() {

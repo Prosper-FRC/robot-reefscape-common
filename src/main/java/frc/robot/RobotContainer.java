@@ -6,7 +6,6 @@ package frc.robot;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,10 +27,9 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
-import frc.robot.subsystems.intake.PivotIO;
-import frc.robot.subsystems.intake.PivotIOSim;
-import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
@@ -130,14 +128,9 @@ public class RobotContainer {
                     new IntakeIOTalonFX(
                         IntakeConstants.kIntakeHardware,
                         IntakeConstants.kIntakeMotorConfiguration), 
-                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration),
+                    new SensorIOLaserCAN(IntakeConstants.kSensorConfiguration)
                     // new SensorIO() {},
-                    // new PivotIO(){});
-                    new PivotIOTalonFX(
-                        IntakeConstants.kPivotMotorHardware,
-                        IntakeConstants.kPivotMotorConfiguration,
-                        IntakeConstants.kPivotGains,
-                        IntakeConstants.kStatusSignalUpdateFrequencyHz));
+                    );
 
                 // robotDrive = new Drive( new Module[] {
                 //     new Module("FL", new ModuleIO() {}),
@@ -186,12 +179,7 @@ public class RobotContainer {
                         IntakeConstants.kIntakeHardware, 
                         IntakeConstants.kIntakeSimulationConfiguration, 
                         0.02), 
-                        new SensorIO(){},
-                        new PivotIOSim(
-                            0.02,
-                            IntakeConstants.kPivotMotorHardware,
-                            IntakeConstants.kPivotSimulationConfiguration,
-                            IntakeConstants.kPivotGains));
+                        new SensorIO(){});
 
                 climb = new Climb(
                     new DutyCycleEncoderIO(){},
@@ -213,7 +201,7 @@ public class RobotContainer {
 
                 elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
             
-                intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
+                intake = new Intake(new IntakeIO(){}, new SensorIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIO(){}, 
