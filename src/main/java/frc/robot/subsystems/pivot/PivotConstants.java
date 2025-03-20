@@ -34,7 +34,7 @@ public class PivotConstants {
     double g) {}
 
   public record PivotTalonFXConfiguration(
-   boolean invert,
+    boolean invert,
     boolean enableStatorCurrentLimit,
     boolean enableSupplyCurrentLimit,
     double statorCurrentLimitAmps,
