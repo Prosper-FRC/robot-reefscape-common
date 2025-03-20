@@ -6,14 +6,17 @@ package frc.robot.subsystems.pivot;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.subsystems.intake.IntakeConstants;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.visualizers.PivotVisualizer;
 
-public class Pivot {
+public class Pivot extends SubsystemBase {
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
     kStowScore(() -> Rotation2d.fromDegrees(64.0)),
@@ -77,5 +80,28 @@ public class Pivot {
       PivotConstants.kPivotVisualizerConfiguration, 
       4.0, 
       new Color8Bit(Color.kBlue));
+  }
+
+  @Override
+  public void periodic() {
+    kPivotHardware.updateInputs(kPivotInputs);
+    Logger.processInputs("Pivot/Inputs", kPivotInputs);
+
+    if (DriverStation.isDisabled()) {
+      // call stop method
+    }
+
+    if (pivotGoal != null) {
+      // set pivot position
+      // log pivot goal value
+    } else {
+      // log pivot goal value as "NONE"
+    }
+
+    // run soft limit checks
+
+    // update tunables
+
+    // update visualizer
   }
 }
