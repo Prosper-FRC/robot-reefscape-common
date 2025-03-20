@@ -334,7 +334,8 @@ public class RobotContainer {
         reefPositions.put(operatorController.y(), new Pair<>(ElevatorGoal.kL4Coral, ElevatorGoal.kBarge));
         reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
         reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
-        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kProcessor));
+        // Made setpoint for x custom so elevator can be tweaked //
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.custom, ElevatorGoal.kProcessor));
 
         ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
         positionButtons.add(operatorController.y());
@@ -439,19 +440,38 @@ public class RobotContainer {
                 Trigger algaePickup = positionButtons.get(i);
                 Trigger algaeScore = positionButtons.get(i);
 
-                // CORAL - SCORE
-                button.and(coralSelectTrigger)
+
+                if(i == 3){
+                    // CORAL - L1 SCORE
+                    button.and(coralSelectTrigger)
                     .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getFirst())
                             // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
-                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                            teleopCommands.runRollersWhenConfirmed(RollerGoal.custom, confirmScoreTrigger)
                         )   
                     )
                     .whileFalse(
                         teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
                     );
+                }
+
+                else{
+                    // CORAL - SCORE
+                    button.and(coralSelectTrigger)
+                        .whileTrue(
+                            teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getFirst())
+                                // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
+                                .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
+                            .andThen(
+                                teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                            )   
+                        )
+                        .whileFalse(
+                            teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
+                        );
+                }
 
                 if(i == 1 || i == 2){
 

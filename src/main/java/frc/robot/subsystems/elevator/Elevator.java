@@ -29,19 +29,17 @@ public class Elevator extends SubsystemBase {
     kL1Coral(() -> Units.inchesToMeters(8.0)),
 
     kBarge(() -> Units.inchesToMeters(60.0)),
-
-    
-    kL4Algae(() -> Units.inchesToMeters(60.0)),
     kL3Algae(() -> 0.7 - 0.1),
     kL2Algae(() -> 0.3 - 0.1),
     kProcessor(() -> 0.3 - 0.15),
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
+
     /** Stow the elevator during transit */
     kStow(() -> Units.inchesToMeters(2.0)),
     /** Position for intaking from the coral station */
     kIntake(() -> Units.inchesToMeters(0.0)),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
-    custom(new LoggedTunableNumber("Elevator/Custom", 0.0));
+    custom(new LoggedTunableNumber("Elevator/Custom", Units.inchesToMeters(8.0)));
 
     private DoubleSupplier goalMeters;
 
