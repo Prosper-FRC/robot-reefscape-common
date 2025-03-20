@@ -108,6 +108,11 @@ public class LED extends SubsystemBase implements ILED {
         pattern = pattern.blink(Time.ofBaseUnits(blinkRate, Units.Seconds));
     }
 
+    // Sets LED red for when robot has successfully climbed
+    public void setRed() {
+        setSolidColor(219, 0, 0);
+    }
+
     // Sets the brightness of the LED strip
     public void setBrightness(double percent){
         pattern = pattern.atBrightness(Units.Percent.of(percent));

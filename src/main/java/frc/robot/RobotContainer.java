@@ -312,6 +312,34 @@ public class RobotContainer {
                 led.setSolidBlinkAnimation(
                     0.1, Color.kAqua))
                     .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
+
+        // Auto rumble if we are pressing intake button and we already have a gamepiece
+        new Trigger(
+            teleopLoop,
+            intake::detectedGamepiece)
+                .and(operatorController.leftBumper())
+            .onTrue(
+                (rumbleCommandOperator()
+                    .withTimeout(0.5)).alongWith(
+                rumbleCommandDriver()
+                    .withTimeout(0.5)));
+
+        new Trigger(() -> climb.getIfClimbOut())
+            .onTrue(rumbleCommandOperator().withTimeout(0.5));
+
+        
+        new Trigger(() -> climb.getIfClimbIn())
+            .onTrue(
+                new ParallelCommandGroup(
+                    rumbleCommandOperator(),
+                    Commands.runOnce(
+                        () -> led.setRed()).andThen(
+                            Commands.waitSeconds(1.0),
+                            Commands.runOnce(() -> led.defaultAnimation())
+                        )
+                ));
+    
+
         
     }
 
@@ -327,7 +355,6 @@ public class RobotContainer {
             () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
     }
 
-
     private void configureButtonBindings() {
         HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>> reefPositions = 
             new HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>>();
@@ -342,17 +369,8 @@ public class RobotContainer {
         positionButtons.add(operatorController.a());
         positionButtons.add(operatorController.x());
 
-        // Auto rumble if we are pressing intake button and we already have a gamepiece
-        new Trigger(
-            teleopLoop,
-            intake::detectedGamepiece)
-                .and(operatorController.leftBumper())
-            .onTrue(
-                (rumbleCommandOperator()
-                    .withTimeout(0.5)).alongWith(
-                rumbleCommandDriver()
-                    .withTimeout(0.5))
-                    );
+
+    
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
@@ -448,6 +466,15 @@ public class RobotContainer {
                         .andThen(
                             teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
                         )   
+                            .alongWith(
+                                rumbleCommandOperator()
+                                .andThen(
+                                    Commands.waitSeconds(0.25)
+                                )
+                                .andThen(
+                                    rumbleCommandDriver().withTimeout(0.5)
+                                )
+                            )
                     )
                     .whileFalse(
                         teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
