@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 import frc.robot.subsystems.elevator.Elevator;
@@ -314,11 +315,18 @@ public class RobotContainer {
         
     }
 
-    private Command rumbleCommand() {
+    private Command rumbleCommandOperator() {
         return Commands.startEnd(
             () -> operatorController.getHID().setRumble(RumbleType.kBothRumble, 1.0), 
             () -> operatorController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
     }
+
+    private Command rumbleCommandDriver() {
+        return Commands.startEnd(
+            () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 1.0), 
+            () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
+    }
+
 
     private void configureButtonBindings() {
         HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>> reefPositions = 
@@ -340,9 +348,11 @@ public class RobotContainer {
             intake::detectedGamepiece)
                 .and(operatorController.leftBumper())
             .onTrue(
-                rumbleCommand()
-                    .withTimeout(0.5)
-        );
+                (rumbleCommandOperator()
+                    .withTimeout(0.5)).alongWith(
+                rumbleCommandDriver()
+                    .withTimeout(0.5))
+                    );
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
