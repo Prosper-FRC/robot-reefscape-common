@@ -29,10 +29,13 @@ import frc.robot.subsystems.intake.IntakeIOTalonFX;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
+import frc.robot.subsystems.pivot.PivotIO;
+import frc.robot.subsystems.pivot.PivotIOSim;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
-import frc.robot.subsystems.intake.Intake.PivotGoal;
+import frc.robot.subsystems.pivot.Pivot.PivotGoal;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.LED.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
@@ -74,6 +77,7 @@ public class RobotContainer {
     // Define subsystems
     private final Drive robotDrive;
     private final Elevator elevator;
+    private final Pivot pivot;
     private final Intake intake;
     private final Climb climb;
     private final LED led;
@@ -123,7 +127,14 @@ public class RobotContainer {
                         ElevatorConstants.kElevatorGains),
                     new MagneticSensorIO(){});
                     // new MagneticSensorIORev(ElevatorConstants.kSensorHardware));
-            
+
+                pivot = new Pivot(
+                    new PivotIOTalonFX(
+                        PivotConstants.kPivotMotorHardware, 
+                        PivotConstants.kPivotMotorConfiguration, 
+                        PivotConstants.kPivotGains, 
+                        PivotConstants.kStatusSignalUpdateFrequencyHz));
+
                 intake = new Intake(
                     new IntakeIOTalonFX(
                         IntakeConstants.kIntakeHardware,
@@ -173,6 +184,13 @@ public class RobotContainer {
                     ElevatorConstants.kMaxPositionMeters,
                     0.02),
                     new MagneticSensorIO(){});
+
+                pivot = new Pivot(
+                    new PivotIOSim(
+                        0.02, 
+                        PivotConstants.kPivotMotorHardware, 
+                        PivotConstants.kPivotSimulationConfiguration, 
+                        PivotConstants.kPivotGains));
                     
                 intake = new Intake(
                     new IntakeIOSim(
@@ -200,6 +218,8 @@ public class RobotContainer {
                 }));
 
                 elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
+
+                pivot = new Pivot(new PivotIO(){});
             
                 intake = new Intake(new IntakeIO(){}, new SensorIO(){});
             
@@ -213,7 +233,7 @@ public class RobotContainer {
         // ex: LEDs = new LEDSubsystem();
 
         // Instantiate your TeleopCommands and AutonCommands classes
-        teleopCommands = new TeleopCommands(elevator, intake, climb, led);
+        teleopCommands = new TeleopCommands(elevator, pivot, intake, climb, led);
         autonCommands = new AutonCommands(robotDrive, elevator, intake);
         try {
             autoChooser = new LoggedDashboardChooser<>("Auton Program", autonCommands.getAutoChooser());

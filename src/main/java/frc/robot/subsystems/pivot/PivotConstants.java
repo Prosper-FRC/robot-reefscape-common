@@ -64,6 +64,9 @@ public class PivotConstants {
     58, // CAN ID
     kPivotGearing); // Gear ratio
 
+  /** The frequency that telemetry form the motor is pushed to the CANBus */
+  public static final double kStatusSignalUpdateFrequencyHz = 100.0;
+
   public static final PivotGains kPivotGains =  
     switch (Constants.kCurrentMode) {
       case REAL -> new PivotGains(

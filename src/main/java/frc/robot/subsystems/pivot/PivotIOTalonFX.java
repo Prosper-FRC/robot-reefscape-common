@@ -24,9 +24,9 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.intake.IntakeConstants.PivotGains;
-import frc.robot.subsystems.intake.IntakeConstants.PivotHardware;
-import frc.robot.subsystems.intake.IntakeConstants.PivotTalonFXConfiguration;
+import frc.robot.subsystems.pivot.PivotConstants.PivotGains;
+import frc.robot.subsystems.pivot.PivotConstants.PivotHardware;
+import frc.robot.subsystems.pivot.PivotConstants.PivotTalonFXConfiguration;
 
 public class PivotIOTalonFX implements PivotIO {
   private final TalonFX kMotor;

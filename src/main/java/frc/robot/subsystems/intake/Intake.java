@@ -119,7 +119,7 @@ public class Intake extends SubsystemBase {
     // Stop and clear goal if disabled. Used if copilot is still pressing button to command
     // intake when the disabled key is pressed
     if (DriverStation.isDisabled()) {
-      stop(true, true);
+      stop();
     }
 
     double ampFilterCalculation = ampFilter.calculate(kRollerInputs.statorCurrentAmps);
@@ -159,7 +159,7 @@ public class Intake extends SubsystemBase {
 
     if (rollerGoal != null) {
       if (detectedGamepiece() && (rollerGoal.equals(RollerGoal.kIntakeAlgae) || rollerGoal.equals(RollerGoal.kIntakeCoral))) {
-        stop(true, false);
+          stop();
       }
     }
 
@@ -201,11 +201,9 @@ public class Intake extends SubsystemBase {
   }
 
   /** Stops the motor */
-  public void stop(boolean stopRollers, boolean stopPivot) {
-    if (stopRollers) {
-      rollerGoal = null;
-      kRollerHardware.stop();
-    }
+  public void stop() {
+    rollerGoal = null;
+    kRollerHardware.stop();
   }
 
   /**

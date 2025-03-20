@@ -12,9 +12,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-import frc.robot.subsystems.intake.IntakeConstants.PivotGains;
-import frc.robot.subsystems.intake.IntakeConstants.PivotHardware;
-import frc.robot.subsystems.intake.IntakeConstants.PivotSimulationConfiguration;
+import frc.robot.subsystems.pivot.PivotConstants.PivotGains;
+import frc.robot.subsystems.pivot.PivotConstants.PivotHardware;
+import frc.robot.subsystems.pivot.PivotConstants.PivotSimulationConfiguration;
 
 public class PivotIOSim implements PivotIO {
   private final double kLoopPeriodSec;

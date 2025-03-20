@@ -275,7 +275,7 @@ public class AutonCommands {
                 }, 
                 () -> {}, 
                 (interrupted) -> {
-                    mIntake.stop(true, false);
+                    mIntake.stop();
                 }, 
                 () -> false,
                 virtualIntake)
@@ -324,7 +324,7 @@ public class AutonCommands {
     public Command intakeCoralCommand() {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
-            () -> mIntake.stop(true, false), 
+            () -> mIntake.stop(), 
             mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
         // return new SequentialCommandGroup(
         //     Commands.runEnd(

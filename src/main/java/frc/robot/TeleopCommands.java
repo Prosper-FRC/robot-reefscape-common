@@ -5,9 +5,9 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
-import frc.robot.subsystems.intake.Intake.PivotGoal;
+import frc.robot.subsystems.pivot.Pivot.PivotGoal;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
-import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.subsystems.pivot.Pivot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -31,24 +31,10 @@ import frc.robot.utils.debugging.LoggedTunableNumber;
  */
 public class TeleopCommands {
     private final Elevator kElevator;
+    private final Pivot kPivot;
     private final Intake kIntake;
     private final Climb kClimb;
     private final LED kLED;
-
-    /** 
-     * Internal state to decide whether or not to stop the rollers when the intake's 
-     * stop method is invoked. When creating a command that requires the rollers, this
-     * variable should be set to true when the rollers are running then set to false
-     * when they should no longer run
-     */
-    private boolean stopRollers = false;
-    /** 
-     * Internal state to decide whether or not to stop the algae picker when the intake's 
-     * stop method is invoked. When creating a command that requires the algae picker, this
-     * variable should be set to true when the algae picker is running then set to false
-     * when it should no longer run
-     */
-    private boolean stopPivot = false;
 
     /**
      * Creates a new TeleopCommands factory
@@ -57,8 +43,9 @@ public class TeleopCommands {
      * @param intake The intake subsystem intance
      * @param climb The climb subsystem instance
      */
-    public TeleopCommands(Elevator elevator, Intake intake, Climb climb, LED led) {
+    public TeleopCommands(Elevator elevator, Pivot pivot, Intake intake, Climb climb, LED led) {
         kElevator = elevator;
+        kPivot = pivot;
         kIntake = intake;
         kClimb = climb;
         kLED = led;
@@ -96,14 +83,10 @@ public class TeleopCommands {
     public Command runRollersAndStopCommand(RollerGoal rollerGoal) {
         return Commands.startEnd(
             () -> {
-                stopRollers = false;
                 kIntake.setRollerGoal(rollerGoal);
-                //kLED.setBlinkAnimation(0.2);
             }, 
             () -> {
-                stopRollers = true;
-                kIntake.stop(stopRollers, stopPivot);
-                //kLED.setBreatheAnimation(3.0, Color.kRed);
+                kIntake.stop();
             },
             kIntake);
     }
@@ -118,16 +101,12 @@ public class TeleopCommands {
     public Command runAlgaeAndStopCommand(RollerGoal rollerGoal, PivotGoal pivotGoal){
         return Commands.startEnd(
             () -> {
-                stopRollers = false;
-                stopPivot = false;
-                kIntake.setPivotGoal(pivotGoal);
+                kPivot.setPivotGoal(pivotGoal);
                 kIntake.setRollerGoal(rollerGoal);
             },
             () -> {
-                stopRollers = true;
-                kIntake.stop(stopRollers, stopPivot);
-                stopPivot = false;
-                kIntake.setPivotPosition(kIntake.getPivotPosition());
+                kIntake.stop();
+                kPivot.setPivotPosition(kPivot.getPivotPosition());
             },
             kIntake);     
     }
@@ -180,11 +159,9 @@ public class TeleopCommands {
         return Commands.run(
             () -> {
                 if (confirmScoreTrigger.getAsBoolean()) {
-                    stopRollers = false;
                     kIntake.setRollerGoal(rollerGoal);
                 } else {
-                    stopRollers = true;
-                    kIntake.stop(stopRollers, stopPivot);
+                    kIntake.stop();
                 }
             }, 
             kIntake);
@@ -200,12 +177,10 @@ public class TeleopCommands {
     public Command runPivotAndStopCommand(PivotGoal pivotGoal) {
         return Commands.startEnd(
             ()-> {
-                stopPivot = false;
-                kIntake.setPivotGoal(pivotGoal);
+                kPivot.setPivotGoal(pivotGoal);
             }, 
             () -> {
-                stopPivot = true;
-                kIntake.stop(stopRollers, stopPivot);
+                kPivot.stop();
             }, 
             kIntake);
     }
@@ -220,14 +195,11 @@ public class TeleopCommands {
     public Command runPivotAndStopIntakeCommand(PivotGoal pivotGoal) {
         return Commands.startEnd(
             ()-> {
-                stopPivot = false;
-                stopRollers = false;
-                kIntake.setPivotGoal(pivotGoal);
+                kPivot.setPivotGoal(pivotGoal);
             }, 
             () -> {
-                stopPivot = true;
-                stopRollers = true;
-                kIntake.stop(stopRollers, stopPivot);
+                kPivot.stop();
+                kIntake.stop();
             }, 
             kIntake);
     }
@@ -235,12 +207,10 @@ public class TeleopCommands {
     public Command runPivotAndHoldCommand(PivotGoal pivotGoal) {
         return Commands.startEnd(
             () -> {
-                stopPivot = false;
-                kIntake.setPivotGoal(pivotGoal);
+                kPivot.setPivotGoal(pivotGoal);
             }, 
             () -> {
-                stopPivot = false;
-                kIntake.setPivotPosition(kIntake.getPivotPosition());
+                kPivot.setPivotPosition(kPivot.getPivotPosition());
             }, 
             kIntake);
     }
@@ -253,61 +223,57 @@ public class TeleopCommands {
         Trigger confirmRollerTrigger) {
 
         return new FunctionalCommand(
-            () -> {
-                stopRollers = false;
-                stopPivot = false;
-            },
+            () -> {},
             () -> {
                 if (hasGamepieceTrigger.negate().getAsBoolean()) {
-                    stopPivot = false;
-                    kIntake.setPivotGoal(pivotGoal);
+                    kPivot.setPivotGoal(pivotGoal);
                 } else {
-                    stopPivot = false;
-                    kIntake.setPivotGoal(PivotGoal.kStowScore);
+                    kPivot.setPivotGoal(PivotGoal.kStowScore);
                 }
 
                 if (confirmRollerTrigger.and(pivotAtGoalTrigger).and(hasGamepieceTrigger.negate()).getAsBoolean()) {
-                    stopRollers = false;
                     kIntake.setRollerGoal(rollerGoal);
                 } else {
-                    stopRollers = true;
-                    kIntake.stop(stopRollers, stopPivot);
+                    kIntake.stop();
                 }
             },
             (interrupted) -> {
-                stopPivot = true;
-                stopRollers = true;
-                kIntake.stop(stopRollers, stopPivot);
+                kPivot.stop();
+                kIntake.stop();
             },
             () -> false,
             kIntake);    
     }
 
-    public Command runPivotAndRollersVoltage(double pivotVoltage, double rollerVoltage, Trigger confirmRollerTrigger) {
-        return new FunctionalCommand(
-            () -> {
-                stopRollers = false;
-                stopPivot = false;
-            },
-            () -> {
-                stopPivot = false;
-                kIntake.setPivotVoltage(pivotVoltage);
-                if (confirmRollerTrigger.getAsBoolean()) {
-                    stopRollers = false;
-                    kIntake.setRollerVoltage(rollerVoltage);
-                } else {
-                    stopRollers = true;
-                    kIntake.stop(stopRollers, stopPivot);
-                }
-            },
-            (interrupted) -> {
-                stopRollers = true;
-                stopPivot = true;
-                kIntake.stop(stopRollers, stopPivot);
-            },
-            () -> false,
-            kIntake);    
-        }
+    /*
+     * JD: Commented this out since it was not being used, leaving this in just
+     * in case we need it later, will remove if not used by end of ama
+     */
+    // public Command runPivotAndRollersVoltage(double pivotVoltage, double rollerVoltage, Trigger confirmRollerTrigger) {
+    //     return new FunctionalCommand(
+    //         () -> {
+    //             stopRollers = false;
+    //             stopPivot = false;
+    //         },
+    //         () -> {
+    //             stopPivot = false;
+    //             kIntake.setPivotVoltage(pivotVoltage);
+    //             if (confirmRollerTrigger.getAsBoolean()) {
+    //                 stopRollers = false;
+    //                 kIntake.setRollerVoltage(rollerVoltage);
+    //             } else {
+    //                 stopRollers = true;
+    //                 kIntake.stop(stopRollers, stopPivot);
+    //             }
+    //         },
+    //         (interrupted) -> {
+    //             stopRollers = true;
+    //             stopPivot = true;
+    //             kIntake.stop(stopRollers, stopPivot);
+    //         },
+    //         () -> false,
+    //         kIntake);    
+    //     }
 
     /**
      * Runs the climb at a specified goal voltage and then stops it, this command should be
@@ -324,38 +290,26 @@ public class TeleopCommands {
     }
 
     /**
-     * Stops the intake rollers. This will also stop the algae picker pivot if the
-     * stopPivot variable is set to true
+     * Stops the intake rollers
      * 
      * @return The command to stop the rollers that runs once
      */
     public Command stopRollersCommand() {
-        // Note that the state must be set via command and not in method since the method
-        // only returns an instance of the command and does not run its internal logic
-        return setStopRollersStateCommand(true)
-            .andThen(
-                Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake));
+        return Commands.runOnce(kIntake::stop, kIntake);
     }
 
     /**
-     * Stops the algae picker pivot. This will also stop the rollers if the stopRollers
-     * internal variable is set to true
+     * Stops the algae picker pivot
      * 
      * @return The command to stop the algae picker pivot that runs once
      */
     public Command stopPivotCommand() {
-        // Note that the state must be set via command and not in method since the method
-        // only returns an instance of the command and does not run its internal logic
-        return setStopPivotStateCommand(true)
-            .andThen(
-                Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake));
+        return Commands.runOnce(kPivot::stop, kPivot);
     }
 
     public Command stopRollersAndPivotCommand() {
-        return setStopRollersStateCommand(true)
-            .andThen(setStopPivotStateCommand(true)
-                .andThen(
-                    Commands.runOnce(() -> kIntake.stop(stopRollers, stopPivot), kIntake)));
+        return Commands.runOnce(kPivot::stop, kPivot)
+            .alongWith(Commands.runOnce(kIntake::stop, kIntake));
     }
 
     /**
@@ -385,28 +339,6 @@ public class TeleopCommands {
      */
     public Command selectGamepieceCommand(Gamepiece gamepiece) {
         return Commands.runOnce(() -> kIntake.selectGamepiece(gamepiece), kIntake);
-    }
-
-    /**
-     * Since changing the state requires a command to be scheduled and ran, this method
-     * returns a command to change the rollers state
-     * 
-     * @param stopRollersState The desired state
-     * @return The command to chagne the rollers state
-     */
-    private Command setStopRollersStateCommand(boolean stopRollersState) {
-        return Commands.runOnce(() -> stopRollers = stopRollersState);
-    }
-
-    /**
-     * Since changing the state requires a command to be scheduled and ran, this method
-     * returns a command to change the pivot state
-     * 
-     * @param stopRollersState The desired state
-     * @return The command to chagne the pivot state
-     */
-    private Command setStopPivotStateCommand(boolean stopPivotState) {
-        return Commands.runOnce(() -> stopPivot = stopPivotState);
     }
 
     /*

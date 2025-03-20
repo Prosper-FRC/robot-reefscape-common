@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.visualizers.PivotVisualizer;
 
@@ -208,7 +207,7 @@ public class Pivot extends SubsystemBase {
    */
   @AutoLogOutput(key = "Pivot/Feedback/AtGoal")
   public boolean pivotAtGoal() {
-    return Math.abs(getPivotErrorDegrees()) < IntakeConstants.kPivotPositionTolerance.getDegrees();
+    return Math.abs(getPivotErrorDegrees()) < PivotConstants.kPivotPositionTolerance.getDegrees();
   }
 
   /**
