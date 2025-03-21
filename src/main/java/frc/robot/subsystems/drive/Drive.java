@@ -33,6 +33,7 @@ import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.CHOOSER_STRATEGY;
+import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.drive.controllers.ManualTeleopController;
 import frc.robot.subsystems.drive.controllers.HolonomicController;
 
@@ -264,14 +265,6 @@ public class Drive extends SubsystemBase {
             case DRIVE_TO_CORAL:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
-            case DRIVE_TO_ALGAE:
-                ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
-                desiredSpeeds = new ChassisSpeeds(
-                    teleopSpeeds.vxMetersPerSecond,
-                    algaeAlignSpeeds.vyMetersPerSecond,
-                    algaeAlignSpeeds.omegaRadiansPerSecond
-                );
-                break;
             case DRIVE_TO_INTAKE:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
@@ -281,6 +274,18 @@ public class Drive extends SubsystemBase {
                     autoAlignSpeeds.vxMetersPerSecond,
                     teleopSpeeds.vyMetersPerSecond,
                     autoAlignSpeeds.omegaRadiansPerSecond
+                );
+                break;
+            case DRIVE_TO_ALGAE:
+                ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                if(AllianceFlipUtil.shouldFlip()) forwardJoy *= -1;
+                desiredSpeeds = new ChassisSpeeds(
+                    /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                    forwardJoy,
+                    algaeAlignSpeeds.vyMetersPerSecond,
+                    algaeAlignSpeeds.omegaRadiansPerSecond
                 );
                 break;
             case AUTON:
@@ -341,10 +346,12 @@ public class Drive extends SubsystemBase {
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
                 break;
             case DRIVE_TO_ALGAE:
+                GoalPoseChooser.setSide(SIDE.ALGAE);
                 autoAlignController.reset(
                     getPoseEstimate(),
                     ChassisSpeeds.fromRobotRelativeSpeeds(
-                        getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
+                        getRobotChassisSpeeds(), 
+                        getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kReefHexagonal, getPoseEstimate());
                 break;
             case DRIVE_TO_INTAKE:

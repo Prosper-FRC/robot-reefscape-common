@@ -191,6 +191,10 @@ public class GoalPoseChooser {
         return Commands.runOnce(() -> side = reefSide);
     } 
 
+    public static void setSide(SIDE reefSide) {
+        side = reefSide;
+    } 
+
     private static boolean inBetween(double min, double max, double val) {
         return (val > min) && (val < max);
     }
