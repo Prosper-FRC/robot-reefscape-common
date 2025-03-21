@@ -2,7 +2,6 @@
 package frc.robot.subsystems.intake;
 
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -12,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.utils.visualizers.PivotVisualizer;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
@@ -39,31 +37,6 @@ public class Intake extends SubsystemBase {
     }
   }
 
-    // TODO Remove this after full extrapolation
-    /** List of position setpoints for the pivot */
-    public enum PivotGoal {
-      kStowScore(() -> Rotation2d.fromDegrees(64.0)),
-      kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
-      kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
-      kIntakeGround(() -> Rotation2d.fromDegrees(-55.5)),
-      kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
-      kScore(() -> Rotation2d.fromDegrees(40.0)),
-      kBargeScore(() -> Rotation2d.fromDegrees(46.0)),
-      /** Custom setpoint that can be modified over network tables; Useful for debugging */
-      custom(() -> Rotation2d.fromDegrees(
-        new LoggedTunableNumber("Intake/Feedback/PivotSetpointDegrees", 0.0).get()));
-  
-      private Supplier<Rotation2d> goalPosition;
-  
-      PivotGoal(Supplier<Rotation2d> goalPosition) {
-        this.goalPosition = goalPosition;
-      }
-  
-      public Rotation2d getGoalPosition() {
-        return this.goalPosition.get();
-      }
-    }
-
   /*
    * TODO At some point this can be moved out in favor of using some form of higher level 
    * robot state control
@@ -85,15 +58,11 @@ public class Intake extends SubsystemBase {
     IntakeConstants.kLinearFilterSampleCount);
 
   private RollerGoal rollerGoal = null;
-  private PivotGoal pivotGoal = null; // TODO Remove this after full extrapolation
 
   // The default gamepiece is coral, this is because we will start preloaded with coral and will
   // assume throughout the rest of the code the robot will always default to scoring coral
   @AutoLogOutput(key ="Intake/Gamepiece")
   private Gamepiece selectedGamepiece = Gamepiece.kCoral;
-
-  // Object used to visualize the mechanism over network tables, useful in simulation
-  private final PivotVisualizer kPivotVisualizer;
 
   private final LoggedNetworkBoolean kOverrideDetectGamepiece = 
     new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", false);
@@ -101,12 +70,6 @@ public class Intake extends SubsystemBase {
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
-
-    kPivotVisualizer = new PivotVisualizer(
-      "Intake/PivotVisualizer", 
-      IntakeConstants.kPivotVisualizerConfiguration, 
-      4.0, 
-      new Color8Bit(Color.kBlue));
   }
 
   @Override
@@ -162,9 +125,6 @@ public class Intake extends SubsystemBase {
           stop();
       }
     }
-
-    // The visualizer needs to be periodically fed the current position of the mechanism
-    kPivotVisualizer.updatePosition(getPivotPosition().times(-1.0));
   }
 
   /**
@@ -174,15 +134,6 @@ public class Intake extends SubsystemBase {
    */
   public void setRollerGoal(RollerGoal desiredGoal) {
     rollerGoal = desiredGoal;
-  }
-
-  /**
-   * Sets the voltage goal of the pivo mechanism, logic runs in subsystem periodic method
-   * 
-   * @param desiredGoal The desired voltage goal
-   */
-  public void setPivotGoal(PivotGoal desiredGoal) {
-    pivotGoal = desiredGoal;
   }
 
   /**
@@ -216,29 +167,6 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Sets the voltage of the pivot motor
-   * 
-   * @param voltage
-   */
-  public void setPivotVoltage(double voltage) {
-    // TODO Remove this method
-  }
-
-  public void setPivotPosition(Rotation2d position) {
-    // TODO Remove this method
-  }
-
-  /**
-   * Sets the vertical position of the mechanism on the visuzlier, useful as the
-   * pivot moves with the elevator
-   * 
-   * @param positionMeters
-   */
-  public void setVisualizerVerticalPosition(double positionMeters) {
-    kPivotVisualizer.setRootVerticalPositionMeters(positionMeters);
-  }
-
-  /**
    * The subsystem runs a linear filter that accepts the motor's current and 
    * compares the moving average against a threshold. If that threshold is exceeded, 
    * it is very likely that the motor has a gamepiece (or is jammed)
@@ -248,33 +176,6 @@ public class Intake extends SubsystemBase {
   @AutoLogOutput(key = "Intake/detectedGamepiece")
   public boolean detectedGamepiece() {
     return detectedGamepiece;
-  }
-
-  /**
-   * Compute the error based off of our current position and current goal
-   * 
-   * @return The computed error in degrees
-   */
-  @AutoLogOutput(key = "Pivot/Feedback/ErrorDegrees")
-  public double getPivotErrorDegrees() {
-    // TODO Remove this method
-    return 0.0;
-  }
-
-  /**
-   * @return If the pivot is at its desired goal yet
-   */
-  @AutoLogOutput(key = "Pivot/Feedback/AtGoal")
-  public boolean pivotAtGoal() {
-    return Math.abs(getPivotErrorDegrees()) < IntakeConstants.kPivotPositionTolerance.getDegrees();
-  }
-
-  /**
-   * @return The position of the pivot
-   */
-  public Rotation2d getPivotPosition() {
-    // TODO Remove this method
-    return new Rotation2d();
   }
 
   public Double getStatorCurrent() {

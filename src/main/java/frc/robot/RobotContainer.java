@@ -382,7 +382,7 @@ public class RobotContainer {
 
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
-        Trigger pivotAtGoalTrigger = new Trigger(teleopLoop, intake::pivotAtGoal);
+        Trigger pivotAtGoalTrigger = new Trigger(teleopLoop, pivot::pivotAtGoal);
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
@@ -724,6 +724,6 @@ public class RobotContainer {
     public void updateVisualizers() {
         // Add a fudge factor to make the algae picker visualizer line up with the 
         // elevator better
-        intake.setVisualizerVerticalPosition(elevator.getPositionMeters() + 0.38);
+        pivot.setVisualizerVerticalPosition(elevator.getPositionMeters() + 0.38);
     }
 }
