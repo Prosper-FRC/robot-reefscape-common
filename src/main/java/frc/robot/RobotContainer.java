@@ -469,15 +469,6 @@ public class RobotContainer {
                         .andThen(
                             teleopCommands.runRollersWhenConfirmed(RollerGoal.custom, confirmScoreTrigger)
                         )   
-                            .alongWith(
-                                rumbleCommandOperator()
-                                .andThen(
-                                    Commands.waitSeconds(0.25)
-                                )
-                                .andThen(
-                                    rumbleCommandDriver().withTimeout(0.5)
-                                )
-                            )
                     )
                     .whileFalse(
                         teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)
