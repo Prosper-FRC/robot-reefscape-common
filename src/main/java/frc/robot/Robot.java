@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -113,17 +114,27 @@ public class Robot extends LoggedRobot {
             ),
             // Algae picker
             new Pose3d(
-                0.0,
-                0.0, // This is an axis that will move (vertical)
-                0.0,
+                -0.165,
+                0.215, // This is an axis that will move (vertical) cause elevator
+                0.428,
                 new Rotation3d(
                     0.0, 
-                    0.0, // This is an axis that should move (angularly) 
+                    // This "animates" the angular motion of the algae picker, should be
+                    // removed after debugging
+                    Math.sin(Timer.getTimestamp()) - 1.0, // This is an axis that should move (angularly) 
                     0.0
                 )
             )
         });
     }
+
+/*
+new Rotation3d(
+    0.0, 
+    0.0, // This is an axis that should move (angularly) 
+    0.0
+)
+*/
 
     // ==================== Disabled ====================
     @Override
