@@ -95,6 +95,7 @@ public class Robot extends LoggedRobot {
         Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {
             new Pose3d(),
             new Pose3d(),
+            new Pose3d(),
             new Pose3d()
         });
         Logger.recordOutput("FinalComponentPoses", new Pose3d[] {
@@ -115,13 +116,24 @@ public class Robot extends LoggedRobot {
             // Algae picker
             new Pose3d(
                 -0.165,
-                0.215, // This is an axis that will move (vertical) cause elevator
+                0.215, // This is an axis that will move (vertical) because elevator
                 0.428,
                 new Rotation3d(
                     0.0, 
-                    // This "animates" the angular motion of the algae picker, should be
-                    // removed after debugging
-                    Math.sin(Timer.getTimestamp()) - 1.0, // This is an axis that should move (angularly) 
+                    // This "animates" the angular motion of the algae picker, should be removed after 
+                    // debugging
+                    Math.sin(Timer.getTimestamp()) - 1.0, // This is an axis that will move (angularly) 
+                    0.0
+                )
+            ),
+            // Climb
+            new Pose3d(
+                -0.015,
+                -0.32,
+                0.44,
+                new Rotation3d(
+                    Math.sin(Timer.getTimestamp()) + 1.0, // This is an axis that will move (angularly)  
+                    0.0,
                     0.0
                 )
             )
