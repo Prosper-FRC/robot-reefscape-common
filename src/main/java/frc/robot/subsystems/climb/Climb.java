@@ -92,8 +92,6 @@ public class Climb extends SubsystemBase {
       stop();
     }
 
-  // softLimits();
-
     if (voltageGoal != null) {
       setVoltage(voltageGoal.getGoalVoltage());
       Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
@@ -114,6 +112,9 @@ public class Climb extends SubsystemBase {
       } else {
         // Do nothing if limits are not reached
       }
+
+      getIfClimbIn();
+      getIfClimbOut();
     }
 
     // The visualizer needs to be periodically fed the current position of the mechanism
@@ -127,6 +128,34 @@ public class Climb extends SubsystemBase {
    */
   public void setGoalVoltage(ClimbVoltageGoal desiredGoal) {
     voltageGoal = desiredGoal;
+  }
+
+  public void setVoltageOut() {
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(-12.0);
+    }
+  }
+
+  public void setVoltageIn() {
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(6.0);
+    }
+  }
+
+  public boolean getIfClimbIn() {
+    if (getPosition().getDegrees() == ClimbConstants.kMinPosition.getDegrees()) {
+      return true;
+    }
+
+    else return false;
+  }
+
+  public boolean getIfClimbOut() {
+    if (getPosition().getDegrees() == ClimbConstants.kMaxPosition.getDegrees()) {
+      return true;
+    }
+
+    else return false;
   }
 
   /**
@@ -155,10 +184,11 @@ public class Climb extends SubsystemBase {
     //   }
     // }
 
-      for (ClimbIO io : kHardware) {
-        io.setVoltage(voltage);  
-      }
-  }  
+    for (ClimbIO io : kHardware) {
+      io.setVoltage(voltage);
+    }
+    
+  }
 
   /** Stops the mechanism */
   public void stop() {
@@ -185,19 +215,6 @@ public class Climb extends SubsystemBase {
     //stop();
   }
 
-  public void softLimits() {
-    if ((kAbsoluteEncoderInputs.dutyCycleReading > ClimbConstants.kMaxPosition.getRotations())) {
-      stop();
-    }
-    else {
-      setVoltage(voltageGoal.getGoalVoltage());
-      Logger.recordOutput("Climb/VoltageGoal", voltageGoal);
-    }
-
-    if (kAbsoluteEncoderInputs.dutyCycleReading < ClimbConstants.kMinPosition.getRotations()) {
-      stop();
-    }
-  }
 
   /**
    * Gets the position of the mechanism. Note that this assumes the caller only
