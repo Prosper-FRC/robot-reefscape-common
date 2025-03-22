@@ -34,8 +34,8 @@ public class AutonCommands {
     public static final LoggedTunableNumber kAlgaeIntakeTriggerDistanceMeters = 
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
-    private final double kElevatorPositionTimeoutSeconds = 0.5;
-    private final double kScoreCoralTimeoutSeconds = 0.75;
+    private final double kElevatorPositionTimeoutSeconds = 2.5;
+    private final double kScoreCoralTimeoutSeconds = 0.5;
 
     // private final double kElevatorPositionTimeoutSeconds = 2.5;
     // private final double kScoreCoralTimeoutSeconds = 0.75;
@@ -153,8 +153,14 @@ public class AutonCommands {
     public Command scoreFirstCoralPath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            firstPath(name, startingRotation, () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto),
-            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL));
+            firstPath(
+                name, 
+                new Rotation2d(), 
+                () -> !PathPlannerAuto.currentPathName.equals(name), 
+                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
+                    robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                    scoreCoralCommand()), 
+                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
     }
 
     /* 
@@ -164,8 +170,14 @@ public class AutonCommands {
     public Command scoreFirstCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            firstPath(name, new Rotation2d(), () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto),
-            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL));
+            firstPath(
+                name, 
+                new Rotation2d(), 
+                () -> !PathPlannerAuto.currentPathName.equals(name), 
+                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
+                    robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                    scoreCoralCommand()), 
+                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
     }
 
     /* 
@@ -196,9 +208,13 @@ public class AutonCommands {
     public Command scoreCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), scoreCoralCommand(), nextAuto),
-            GoalPoseChooser.setSideCommand(SIDE.LEFT),
-            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL));
+            nextPath(
+                name, 
+                () -> !PathPlannerAuto.currentPathName.equals(name), 
+                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
+                    .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
+                .andThen(scoreCoralCommand()), 
+                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
     }
 
     /* 
@@ -207,8 +223,13 @@ public class AutonCommands {
     */
     public Command intakeCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
-            nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeCoralCommand(), nextAuto),
-            robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE));
+            nextPath(
+                name, 
+                () -> !PathPlannerAuto.currentPathName.equals(name), 
+                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
+                    .withDeadline(robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                    intakeCoralCommand()), 
+                nextAuto));
     }
 
     /* 
@@ -285,15 +306,28 @@ public class AutonCommands {
                     mElevator.setGoal(ElevatorGoal.kStow);
                 }, 
                 () -> {}, 
-                (interrupted) -> {
-                    mElevator.stop();
-                }, 
-                getElevatorAtGoal(),
+                (interrupted) -> {}, 
+                () -> Math.abs(mElevator.getErrorMeters()) < .5,
                 virtualElevator)
                 .withTimeout(kElevatorPositionTimeoutSeconds)
         );
 
         return command;
+    }
+
+    public Command elevatorToStowCommand() {
+        // return new FunctionalCommand(
+        //     () -> {
+        //         mElevator.setGoal(ElevatorGoal.kStow);
+        //     }, 
+        //     () -> {}, 
+        //     (interrupted) -> {
+        //         mElevator.stop();
+        //     }, 
+        //     getElevatorAtGoal(),
+        //     virtualElevator)
+        //     .withTimeout(kElevatorPositionTimeoutSeconds);
+        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kStow));
     }
 
     public Command intakeCoralCommand() {

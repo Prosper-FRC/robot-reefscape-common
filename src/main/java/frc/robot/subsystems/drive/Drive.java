@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import static frc.robot.subsystems.drive.DriveConstants.*;
 import static frc.robot.FieldConstants.*;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.drive.controllers.HeadingController;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
@@ -452,9 +454,8 @@ public class Drive extends SubsystemBase {
                 /* No need to optimize for Choreo, as it handles it under the hood */
                 return SwerveUtils.convertChoreoNewtonsToAmps(currentState, pathPlanningFF, i);
             case DRIVE_TO_CORAL:           
-                return SwerveUtils.optimizeTorque(unoptimizedState, optimizedState, pathPlanningFF.torqueCurrentsAmps()[i], i);
-            case DRIVE_TO_ALGAE:           
-                return SwerveUtils.optimizeTorque(unoptimizedState, optimizedState, pathPlanningFF.torqueCurrentsAmps()[i], i);
+            case DRIVE_TO_INTAKE:
+                return 0.0;// return pathPlanningFF.torqueCurrentsAmps()[i];
             default:
                 return 0.0;
         }
@@ -493,6 +494,14 @@ public class Drive extends SubsystemBase {
             SysIDCharacterization.runDriveSysIDTests( (voltage) -> {
                 runLinearCharcterization(voltage);
         }, this));
+    }
+
+    public Command waitUnitllAutoAlignFinishes() {
+        return new WaitUntilCommand(()-> autoAlignController.atGoal());
+    }
+
+    public BooleanSupplier waitUnitllAutoAlignFinishesSupplier() {
+        return ()-> autoAlignController.atGoal();
     }
 
     /* Runs the robot forward at a voltage */

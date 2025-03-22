@@ -94,15 +94,15 @@ public class SwerveUtils {
     public static void logPossibleDriveStates(boolean doLogging, ChassisSpeeds desiredSpeeds, SwerveModuleState[] currentStates, SwerveSetpoint previousSetpoint, Rotation2d robotRotation) {
         if(doLogging) {
             /* Regular setpoint generation */
-            SwerveModuleState[] unOptimizedSetpointStates = new SwerveModuleState[4];
+            SwerveModuleState[] unOptimizedSetpointStates = DriveConstants.kKinematics.toSwerveModuleStates(desiredSpeeds);
             for(int i = 0; i < 4; i++) {
-                SwerveDriveKinematics.desaturateWheelSpeeds(unOptimizedSetpointStates, kMaxLinearSpeedMPS);
                 unOptimizedSetpointStates[i] = new SwerveModuleState(
                     unOptimizedSetpointStates[i].speedMetersPerSecond,
                     removeAzimuthJitter(unOptimizedSetpointStates[i], currentStates[i]));
                 unOptimizedSetpointStates[i].optimize(currentStates[i].angle);
                 unOptimizedSetpointStates[i].cosineScale(currentStates[i].angle);
             }
+            SwerveDriveKinematics.desaturateWheelSpeeds(unOptimizedSetpointStates, kMaxLinearSpeedMPS);
             Logger.recordOutput("Drive/Swerve/preOptimizedSetpoints", unOptimizedSetpointStates);
 
             unOptimizedSetpointStates = DriveConstants.kKinematics.toSwerveModuleStates(desiredSpeeds);
