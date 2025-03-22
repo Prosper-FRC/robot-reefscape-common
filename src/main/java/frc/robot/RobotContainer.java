@@ -362,7 +362,7 @@ public class RobotContainer {
         reefPositions.put(operatorController.b(), new Pair<>(ElevatorGoal.kL3Coral, ElevatorGoal.kL3Algae));
         reefPositions.put(operatorController.a(), new Pair<>(ElevatorGoal.kL2Coral, ElevatorGoal.kL2Algae));
         // Made setpoint for x custom so elevator can be tweaked //
-        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.custom, ElevatorGoal.kProcessor));
+        reefPositions.put(operatorController.x(), new Pair<>(ElevatorGoal.kL1Coral, ElevatorGoal.kProcessor));
 
         ArrayList<Trigger> positionButtons = new ArrayList<Trigger>();
         positionButtons.add(operatorController.y());
