@@ -92,15 +92,35 @@ public class Robot extends LoggedRobot {
         // Drive pose
         Logger.recordOutput("RobotPose", new Pose2d());
         Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {
+            new Pose3d(),
+            new Pose3d(),
             new Pose3d()
         });
         Logger.recordOutput("FinalComponentPoses", new Pose3d[] {
             // Middle stage
             new Pose3d(
                 0.0,
-                0.065, // This is the axis that will move
+                0.065, // This is the axis that will move (vertical)
                 0.07,
                 new Rotation3d(0.0, 0.0, 0.0) // No need for rotations if already zeroed
+            ),
+            // Inner stage & box
+            new Pose3d(
+                0.0,
+                0.065, // This is the axis that will move (vertical)
+                0.096,
+                new Rotation3d(0.0, 0.0, 0.0)
+            ),
+            // Algae picker
+            new Pose3d(
+                0.0,
+                0.0, // This is an axis that will move (vertical)
+                0.0,
+                new Rotation3d(
+                    0.0, 
+                    0.0, // This is an axis that should move (angularly) 
+                    0.0
+                )
             )
         });
     }
