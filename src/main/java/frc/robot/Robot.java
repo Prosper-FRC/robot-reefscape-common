@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -90,37 +91,17 @@ public class Robot extends LoggedRobot {
         // Log temporary poses for calibrating 3d component positions
         // Drive pose
         Logger.recordOutput("RobotPose", new Pose2d());
-        // Elevator pose & box pose
-        Logger.recordOutput("ElevatorStage1ZeroedComponentPoses", new Pose3d[] {new Pose3d()});
-        Logger.recordOutput(
-            "ElevatorStage1FinalComponentPoses", 
-            new Pose3d[] {
-                new Pose3d(
-
-                )});
-        Logger.recordOutput("ElevatorBoxCarriageZeroedComponentPoses", new Pose3d[] {new Pose3d()});
-        Logger.recordOutput(
-            "ElevatorBoxCarriageFinalComponentPoses", 
-            new Pose3d[] {
-                new Pose3d(
-
-                )});
-        // Algae picker pose
-        Logger.recordOutput("AlgaeZeroedComponentPoses", new Pose3d[] {new Pose3d()});
-        Logger.recordOutput(
-            "AlgaeFinalComponentPoses", 
-            new Pose3d[] {
-                new Pose3d(
-
-                )});
-        // Climb pose
-        Logger.recordOutput("ClimbZeroedComponentPoses", new Pose3d[] {new Pose3d()});
-        Logger.recordOutput(
-            "ClimbFinalComponentPoses", 
-            new Pose3d[] {
-                new Pose3d(
-
-                )});
+        Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {
+            new Pose3d()
+        });
+        Logger.recordOutput("FinalComponentPoses", new Pose3d[] {
+            new Pose3d(
+                0.0,
+                0.0,
+                0.0,
+                new Rotation3d(0.0, 0.0, 0.0)
+            )
+        });
     }
 
     // ==================== Disabled ====================
