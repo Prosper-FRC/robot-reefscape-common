@@ -11,22 +11,21 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.subsystems.intake.Intake.Gamepiece;
 
 /** Class for 3D visualization of the superstructure */
 public class SuperstructureVisualizer {
   private final Pose3d kHoldingCoralPose = new Pose3d(
-    0.0,
-    0.0,
-    0.0,
-    new Rotation3d(0.0, 0.0, 0.0)
+    -0.03,
+    0.21,
+    0.65,
+    new Rotation3d(0.0, Rotation2d.fromDegrees(-32.0).getRadians(), 0.0)
   );
 
   private final Pose3d kHoldingAlgaePose = new Pose3d(
-    0.0,
-    0.0,
-    0.0,
+    -0.15,
+    0.23,
+    0.95,
     new Rotation3d(0.0, 0.0, 0.0)
   );
 
@@ -65,19 +64,19 @@ public class SuperstructureVisualizer {
 
   /** Create a new superstructure visualizer */
   public SuperstructureVisualizer() {
-    Logger.recordOutput("SuperstructurePoses", new Pose3d[] {
+    Logger.recordOutput("Superstructure/Poses", new Pose3d[] {
       new Pose3d(),
       new Pose3d(),
       new Pose3d(),
       new Pose3d()
     });
 
-    Logger.recordOutput("CoralPose", new Pose3d());
-    Logger.recordOutput("AlgaePose", new Pose3d());
+    Logger.recordOutput("Superstructure/CoralPose", new Pose3d());
+    Logger.recordOutput("Superstructure/AlgaePose", new Pose3d());
   }
 
   public void updateVisualizer(double elevatorPositionMeters, Rotation2d pivotPosition, Rotation2d climbPosition) {
-    Logger.recordOutput("SuperstructurePoses", new Pose3d[] {
+    Logger.recordOutput("Superstructure/Poses", new Pose3d[] {
       updateMiddleStage(elevatorPositionMeters),
       updateInnerStage(elevatorPositionMeters),
       updatePivot(elevatorPositionMeters, pivotPosition),
@@ -93,23 +92,49 @@ public class SuperstructureVisualizer {
     Rotation2d pivotPosition) {
     if (!hasGamepiece) {
       // If we do not have a gamepiece, set both poses back to 0
-      Logger.recordOutput("CoralPose", new Pose3d());
-      Logger.recordOutput("AlgaePose", new Pose3d());
+      Logger.recordOutput("Superstructure/CoralPose", kHoldingCoralPose);
+      Logger.recordOutput("Superstructure/AlgaePose", kHoldingAlgaePose);
     } else {
       if (gamepiece == Gamepiece.kCoral) {
-        Logger.recordOutput("CoralPose", 
-          kHoldingCoralPose.transformBy(
-            new Transform3d(
-              new Translation3d(robotPose.getX(), robotPose.getY(), elevatorPositionMeters), 
-              new Rotation3d(robotPose.getRotation()))
-          ));
+        // Reset algae pose
+        Logger.recordOutput("Superstructure/AlgaePose", kHoldingAlgaePose);
+
+        Logger.recordOutput("Superstructure/CoralPose",
+          new Pose3d(robotPose)
+            .transformBy(
+              new Transform3d(
+                Pose3d.kZero, 
+                new Pose3d(
+                  kHoldingCoralPose.getX(),
+                  kHoldingCoralPose.getY(),
+                  kHoldingCoralPose.getZ() + elevatorPositionMeters,
+                  kHoldingCoralPose.getRotation()
+                )))
+        );
       } else if (gamepiece == Gamepiece.kAlgae) {
-        Logger.recordOutput("AlgaePose", 
-          kHoldingAlgaePose.transformBy(
-            new Transform3d(
-              new Translation3d(robotPose.getX(), robotPose.getY(), elevatorPositionMeters), 
-              new Rotation3d(0.0, -pivotPosition.getRadians(), robotPose.getRotation().getRadians()))
-          ));
+        // Reset coral pose
+        Logger.recordOutput("Superstructure/CoralPose", kHoldingCoralPose);
+
+        /*
+         * TODO Add this maybe later:
+         * To get the open position of the picker, take the elevator position and
+         * substract or add the sine of the pivot angle (ensure that there is an
+         * offset for the pivot angle since 0 is straight up, so probs minus 90
+         * degrees or something like that)
+         */
+
+        Logger.recordOutput("Superstructure/AlgaePose",
+          new Pose3d(robotPose)
+            .transformBy(
+              new Transform3d(
+                Pose3d.kZero, 
+                new Pose3d(
+                  kHoldingAlgaePose.getX(),
+                  kHoldingAlgaePose.getY(),
+                  kHoldingAlgaePose.getZ() + elevatorPositionMeters,
+                  kHoldingAlgaePose.getRotation()
+                )))
+        );
       }
     }
   }

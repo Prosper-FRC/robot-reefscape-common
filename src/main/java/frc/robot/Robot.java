@@ -88,65 +88,7 @@ public class Robot extends LoggedRobot {
         // Some visualizers need to interop and share data between one another
         // periodically, thus this method must be called periodically
         mRobotContainer.updateVisualizers();
-
-        // Log temporary poses for calibrating 3d component positions
-        // Drive pose
-        Logger.recordOutput("RobotPose", new Pose2d());
-        Logger.recordOutput("ZeroedComponentPoses", new Pose3d[] {
-            new Pose3d(),
-            new Pose3d(),
-            new Pose3d(),
-            new Pose3d()
-        });
-        Logger.recordOutput("FinalComponentPoses", new Pose3d[] {
-            // Middle stage
-            new Pose3d(
-                0.0,
-                0.065, // This is the axis that will move (vertical)
-                0.07,
-                new Rotation3d(0.0, 0.0, 0.0) // No need for rotations if already zeroed
-            ),
-            // Inner stage & box
-            new Pose3d(
-                0.0,
-                0.065, // This is the axis that will move (vertical)
-                0.096,
-                new Rotation3d(0.0, 0.0, 0.0)
-            ),
-            // Algae picker
-            new Pose3d(
-                -0.165,
-                0.215, // This is an axis that will move (vertical) because elevator
-                0.428,
-                new Rotation3d(
-                    0.0, 
-                    // This "animates" the angular motion of the algae picker, should be removed after 
-                    // debugging
-                    Math.sin(Timer.getTimestamp()) - 1.0, // This is an axis that will move (angularly) 
-                    0.0
-                )
-            ),
-            // Climb
-            new Pose3d(
-                -0.015,
-                -0.32,
-                0.44,
-                new Rotation3d(
-                    Math.sin(Timer.getTimestamp()) + 1.0, // This is an axis that will move (angularly)  
-                    0.0,
-                    0.0
-                )
-            )
-        });
     }
-
-/*
-new Rotation3d(
-    0.0, 
-    0.0, // This is an axis that should move (angularly) 
-    0.0
-)
-*/
 
     // ==================== Disabled ====================
     @Override
