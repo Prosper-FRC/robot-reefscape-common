@@ -311,6 +311,13 @@ public class Intake extends SubsystemBase {
   }
 
   /**
+   * @return The selected gamepiece type
+   */
+  public Gamepiece getSelectedGamepiece() {
+    return selectedGamepiece;
+  }
+
+  /**
    * Compute the error based off of our current position and current goal
    * 
    * @return The computed error in degrees

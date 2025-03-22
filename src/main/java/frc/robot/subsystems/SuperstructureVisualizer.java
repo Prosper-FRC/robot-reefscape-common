@@ -6,20 +6,29 @@ package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import frc.robot.subsystems.intake.Intake.Gamepiece;
 
 /** Class for 3D visualization of the superstructure */
 public class SuperstructureVisualizer {
-  public enum Gamepiece {
-    kNone,
-    kCoral,
-    kAlgae
-  }
+  private final Pose3d kHoldingCoralPose = new Pose3d(
+    0.0,
+    0.0,
+    0.0,
+    new Rotation3d(0.0, 0.0, 0.0)
+  );
 
-  private Gamepiece currentGamepiece = Gamepiece.kNone;
+  private final Pose3d kHoldingAlgaePose = new Pose3d(
+    0.0,
+    0.0,
+    0.0,
+    new Rotation3d(0.0, 0.0, 0.0)
+  );
 
   private final Pose3d kMiddleStageOrigin = new Pose3d(
     0.0,
@@ -62,6 +71,9 @@ public class SuperstructureVisualizer {
       new Pose3d(),
       new Pose3d()
     });
+
+    Logger.recordOutput("CoralPose", new Pose3d());
+    Logger.recordOutput("AlgaePose", new Pose3d());
   }
 
   public void updateVisualizer(double elevatorPositionMeters, Rotation2d pivotPosition, Rotation2d climbPosition) {
@@ -71,6 +83,35 @@ public class SuperstructureVisualizer {
       updatePivot(elevatorPositionMeters, pivotPosition),
       updateClimb(climbPosition)
     });
+  }
+
+  public void updateGamepiece(
+    boolean hasGamepiece, 
+    Gamepiece gamepiece, 
+    Pose2d robotPose, 
+    double elevatorPositionMeters, 
+    Rotation2d pivotPosition) {
+    if (!hasGamepiece) {
+      // If we do not have a gamepiece, set both poses back to 0
+      Logger.recordOutput("CoralPose", new Pose3d());
+      Logger.recordOutput("AlgaePose", new Pose3d());
+    } else {
+      if (gamepiece == Gamepiece.kCoral) {
+        Logger.recordOutput("CoralPose", 
+          kHoldingCoralPose.transformBy(
+            new Transform3d(
+              new Translation3d(robotPose.getX(), robotPose.getY(), elevatorPositionMeters), 
+              new Rotation3d(robotPose.getRotation()))
+          ));
+      } else if (gamepiece == Gamepiece.kAlgae) {
+        Logger.recordOutput("AlgaePose", 
+          kHoldingAlgaePose.transformBy(
+            new Transform3d(
+              new Translation3d(robotPose.getX(), robotPose.getY(), elevatorPositionMeters), 
+              new Rotation3d(0.0, -pivotPosition.getRadians(), robotPose.getRotation().getRadians()))
+          ));
+      }
+    }
   }
 
   private Pose3d updateMiddleStage(double elevatorPositionMeters) {

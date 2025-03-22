@@ -481,5 +481,12 @@ public class RobotContainer {
             elevator.getPositionMeters(), 
             intake.getPivotPosition(), 
             climb.getPosition());
+
+        superstructureVisualizer.updateGamepiece(
+            intake.detectedGamepiece(), 
+            intake.getSelectedGamepiece(), 
+            robotDrive.getPoseEstimate(), 
+            elevator.getPositionMeters(), 
+            intake.getPivotPosition());
     }
 }
