@@ -71,6 +71,7 @@ import java.util.HashMap;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class RobotContainer {
     // Define subsystems
@@ -355,6 +356,17 @@ public class RobotContainer {
             () -> driverController.getHID().setRumble(RumbleType.kBothRumble, 0.0));
     }
 
+    // Coral should already be intaken
+            // Elev to lvl 1 position
+            // Outtake for .2 seconds (have to test that val)
+            // Strafe right for .3 sec (have to test that val)
+
+    // private Command levelOneAutomation() {
+    //     return new SequentialCommandGroup(
+    //         () -> 
+    //     )
+    // }
+
     private void configureButtonBindings() {
         HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>> reefPositions = 
             new HashMap<Trigger, Pair<ElevatorGoal, ElevatorGoal>>();
@@ -402,6 +414,10 @@ public class RobotContainer {
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.rightBumper()
+                .whileTrue(robotDrive.setDriveStateCommandContinued(DriveState.LVL1_HEADING_ALIGN))
+                .onFalse(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP));
 
             driverController.button(kLeftAlign)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
@@ -467,8 +483,13 @@ public class RobotContainer {
                             // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
-                            teleopCommands.runRollersWhenConfirmed(RollerGoal.custom, confirmScoreTrigger)
-                        )   
+                            // teleopCommands.runRollersWhenConfirmed(RollerGoal.custom, confirmScoreTrigger)
+                            new SequentialCommandGroup(
+                                new InstantCommand(() -> intake.setRollerGoal(RollerGoal.kScoreLevel1)),
+                                Commands.waitSeconds(0.3),
+                                new InstantCommand(() -> intake.setRollerGoal(RollerGoal.kZero))
+                                )
+                            )   
                             .alongWith(
                                 rumbleCommandOperator()
                                 .andThen(

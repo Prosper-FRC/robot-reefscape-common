@@ -61,6 +61,7 @@ public class Drive extends SubsystemBase {
         PROCESSOR_HEADING_ALIGN,
         INTAKE_HEADING_ALIGN,
         REEF_HEADING_ALIGN,
+        LVL1_HEADING_ALIGN,
         DRIVE_TO_REEF,
         DRIVE_TO_INTAKE,
         DRIVE_TO_NET,
@@ -257,6 +258,12 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = new ChassisSpeeds(
                     teleopSpeeds.vxMetersPerSecond, teleopSpeeds.vyMetersPerSecond,
                     headingController.getSnapOutput( getPoseEstimate().getRotation() ));
+                break;
+            case LVL1_HEADING_ALIGN:
+                desiredSpeeds = new ChassisSpeeds(
+                    0,
+                    teleopSpeeds.vyMetersPerSecond,
+                    0);
                 break;
             case DRIVE_TO_REEF:
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
