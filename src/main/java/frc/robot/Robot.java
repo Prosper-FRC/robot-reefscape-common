@@ -95,11 +95,12 @@ public class Robot extends LoggedRobot {
             new Pose3d()
         });
         Logger.recordOutput("FinalComponentPoses", new Pose3d[] {
+            // Middle stage
             new Pose3d(
                 0.0,
-                0.0,
-                0.0,
-                new Rotation3d(0.0, 0.0, 0.0)
+                0.065, // This is the axis that will move
+                0.07,
+                new Rotation3d(0.0, 0.0, 0.0) // No need for rotations if already zeroed
             )
         });
     }
