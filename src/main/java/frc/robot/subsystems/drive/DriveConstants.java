@@ -45,9 +45,9 @@ public class DriveConstants {
     public static final double kDriftRate = RobotBase.isReal() ? 2.5 : 5.57;
     public static final double kSniperSpeed = 0.2;
 
-    public static final boolean kDoExtraLogging = false;
+    public static final boolean kDoExtraLogging = true;
 
-    public static final PIDConstants kPPTranslationPID = new PIDConstants(6.25, 0.0, 0.0);
+    public static final PIDConstants kPPTranslationPID = new PIDConstants(1.25, 0.0, 0.0);
     public static final PIDConstants kPPRotationPID = new PIDConstants(4.75, 0.0, 0.0);
 
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
@@ -82,14 +82,14 @@ public class DriveConstants {
             11, 
             21, 
             31,
-            Rotation2d.fromRotations(0.327881).plus(Rotation2d.k180deg));
+            Rotation2d.fromRotations(0.406494));
 
     public static final ModuleHardwareConfig kFrontRightHardware =
         new ModuleHardwareConfig(
             12, 
             22, 
             32, 
-            Rotation2d.fromRotations(0.047119).plus(Rotation2d.k180deg));
+            Rotation2d.fromRotations(0.079346));
 
     public static final ModuleHardwareConfig kBackLeftHardware =
         new ModuleHardwareConfig(
@@ -103,7 +103,7 @@ public class DriveConstants {
             14, 
             24, 
             34,
-            Rotation2d.fromRotations(0.273926).plus(Rotation2d.k180deg));
+            Rotation2d.fromRotations(-0.497314));
 
     public static record ModuleHardwareConfig(
         int driveID, int azimuthID, int encoderID, Rotation2d offset) {}

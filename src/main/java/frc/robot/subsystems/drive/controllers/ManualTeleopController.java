@@ -137,7 +137,7 @@ public class ManualTeleopController {
 
         /* Does polar to rectangular where POV degree is theta, kSniperControl * maxSpeed is r */
         ChassisSpeeds desiredSpeeds = new ChassisSpeeds(
-            sniperControl.get() * kMaxLinearSpeedMPS * Math.cos(Math.toRadians(povSupplierDegrees.getAsDouble())), 
+            -sniperControl.get() * kMaxLinearSpeedMPS * Math.cos(Math.toRadians(povSupplierDegrees.getAsDouble())), 
             sniperControl.get() * kMaxLinearSpeedMPS * Math.sin(Math.toRadians(povSupplierDegrees.getAsDouble())), 
             DriveConstants.kMaxRotationSpeedRadiansPS * omegaJoystickInput);
 
