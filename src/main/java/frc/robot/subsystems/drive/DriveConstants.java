@@ -47,7 +47,7 @@ public class DriveConstants {
 
     public static final boolean kDoExtraLogging = false;
 
-    public static final PIDConstants kPPTranslationPID = new PIDConstants(6.25, 0.0, 0.0);
+    public static final PIDConstants kPPTranslationPID = new PIDConstants(1.25, 0.0, 0.0);
     public static final PIDConstants kPPRotationPID = new PIDConstants(4.75, 0.0, 0.0);
 
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
@@ -69,7 +69,7 @@ public class DriveConstants {
 
     public static final ModuleControlConfig kModuleControllerConfigs = RobotBase.isReal() ? 
         new ModuleControlConfig(
-            new PIDController(100.0, 0.0, 0.0), new SimpleMotorFeedforward(4.0, 0.0, 0.0),
+            new PIDController(100.0, 0.0, 0.0), new SimpleMotorFeedforward(4.0, 0.0, 1.0),
             new PIDController(20.0, 0.0, 0.5), new SimpleMotorFeedforward(0.0, 0.0, 0.0)) :
         new ModuleControlConfig(
             new PIDController(0.1, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 2.36, 0.005), 

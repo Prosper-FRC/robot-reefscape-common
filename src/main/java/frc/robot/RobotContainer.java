@@ -6,7 +6,6 @@ package frc.robot;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -83,9 +82,6 @@ public class RobotContainer {
     // Define other utility classes
     private final AutonCommands autonCommands;
     private final TeleopCommands teleopCommands;
-
-    private static final int kLeftAlign = 9;
-    private static final int kRightAlign = 10; 
     
     private LoggedDashboardChooser<Command> autoChooser;
     
@@ -138,19 +134,6 @@ public class RobotContainer {
                         IntakeConstants.kPivotMotorConfiguration,
                         IntakeConstants.kPivotGains,
                         IntakeConstants.kStatusSignalUpdateFrequencyHz));
-
-                // robotDrive = new Drive( new Module[] {
-                //     new Module("FL", new ModuleIO() {}),
-                //     new Module("FR", new ModuleIO() {}),
-                //     new Module("BL", new ModuleIO() {}),
-                //     new Module("BR", new ModuleIO() {})
-                // }, new GyroIO() {}, new Vision(new CameraIO[] {
-                //     new CameraIO() {}, new CameraIO() {}
-                // }));
-
-                // elevator = new Elevator(new ElevatorIO(){}, new MagneticSensorIO(){});
-            
-                // intake = new Intake(new IntakeIO(){}, new SensorIO(){}, new PivotIO(){});
             
                 climb = new Climb(
                     new DutyCycleEncoderIORev(
@@ -168,8 +151,8 @@ public class RobotContainer {
                     new Module("BL", new ModuleIOSim()),
                     new Module("BR", new ModuleIOSim())
                 }, new GyroIO() {}, new Vision(new CameraIO[] {
-                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.BACK), 
-                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.BACK)
+                    new CameraIOPV(VisionConstants.kRightCamName, VisionConstants.kRightCamTransform, Orientation.FRONT), 
+                    new CameraIOPV(VisionConstants.kLeftCamName, VisionConstants.kLeftCamTransform, Orientation.FRONT)
                 }));
             
                 elevator = new Elevator(
@@ -238,14 +221,6 @@ public class RobotContainer {
         }
 
         robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
-        // elevator.setDefaultCommand(Commands.run(() -> elevator.setGoal(ElevatorGoal.kStow), elevator));
-        // intake.setDefaultCommand(
-        //     Commands.run(
-        //         () -> {
-        //             intake.setPivotGoal(PivotGoal.kStow);
-        //             intake.stop(true, false);
-        //         }, 
-        //         intake));
 
         // Pass subsystems to classes that need them for configuration
         robotDrive.acceptJoystickInputs(
@@ -282,24 +257,17 @@ public class RobotContainer {
 
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
-        new Trigger(DriverStation::isEnabled)
-            .onTrue(
-                Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+        // new Trigger(DriverStation::isEnabled)
+        //     .onTrue(
+        //     Commands.runOnce(() -> robotDrive.resetModulesEncoders(), robotDrive));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
-                Commands.runOnce(() -> 
-                    led.defaultAnimation()));
+                Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(intake::detectedGamepiece)
-        .whileTrue(
-            Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                0.1, 
-                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
-        .whileFalse(
-            Commands.runOnce(() -> 
-                led.defaultAnimation()));
+        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal)
+            .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
+            .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
         new Trigger(() -> robotDrive.getDriveToPoseTolerance())
             .onTrue(Commands.runOnce(() -> 
@@ -391,27 +359,38 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF))
+            leftAutoAlignTrigger
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+            rightAutoAlignTrigger
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.a()
+                .onTrue(GoalPoseChooser.setSideCommand(SIDE.ALGAE)
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.button(kLeftAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
-                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // BOI ignore ts //
+            // driverController.rightBumper()
+            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
+            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
 
-            driverController.button(kRightAlign)
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
-                    .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_REEF)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.leftBumper()
+            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
+            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
@@ -446,11 +425,15 @@ public class RobotContainer {
                             // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )
                 )
+
                 .whileFalse(
                     teleopCommands.stopRollersCommand()
                         .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup))
-                        .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow))
-                );
+                        .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)));
+
+                // .whileFalse(teleopCommands.stopRollersCommand()
+                //     .andThen(teleopCommands.runPivotAndStopCommand(PivotGoal.kStowPickup))
+                //     .andThen(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kStow)));
 
             // SCORE CORAL AND PICKUP ALGAE
             for (int i = 0; i < positionButtons.size(); i++) {
@@ -650,6 +633,7 @@ public class RobotContainer {
             //         Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
             //         .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
         } 
+
         else {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
 
@@ -673,7 +657,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_NET))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             operatorController.povLeft()

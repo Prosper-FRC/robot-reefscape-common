@@ -1,5 +1,4 @@
 package frc.robot.subsystems.LED;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -15,11 +14,6 @@ public class LED extends SubsystemBase implements ILED {
     AddressableLED m_led;
     AddressableLEDBuffer m_ledBuffer;
     LEDPattern pattern = LEDPattern.kOff;
-    private Color m_EyeColor = Color.kGreen;
-    private Color m_BackgroundColor = Color.kPurple;
-    private int m_eyePosition = 0;
-    private int m_scanDirection = 1;
-
     public LED(LEDConfig configuration){
         m_led = new AddressableLED(configuration.port());
         m_ledBuffer = new AddressableLEDBuffer(configuration.bufferLength());
@@ -28,40 +22,21 @@ public class LED extends SubsystemBase implements ILED {
         m_led.start();
     }
 
-    public void setScanner() {
-        int bufferLength = m_ledBuffer.getLength();
-        double intensity;
-        double red;
-        double green;
-        double blue;
-        double distanceFromEye;
-
-        for (int index = 0; index < bufferLength; index++) {
-            distanceFromEye = MathUtil.clamp(Math.abs(m_eyePosition - index), 0, 2);
-            intensity = 1.0; //1 - distanceFromEye / 2;
-            red = MathUtil.interpolate(m_BackgroundColor.red, m_EyeColor.red, intensity);
-            green = MathUtil.interpolate(m_BackgroundColor.green, m_EyeColor.green, intensity);
-            blue = MathUtil.interpolate(m_BackgroundColor.blue, m_EyeColor.blue, intensity);
-
-            m_ledBuffer.setLED(index, new Color(red, green, blue));
-        }
-
-        if (m_eyePosition == 0) {
-            m_scanDirection = 1;
-        } else if (m_eyePosition == bufferLength - 1) {
-         m_scanDirection = -1;
-        }
-
-        m_eyePosition += m_scanDirection;
-  }
-
     public void defaultAnimation() {
         setGradientAnimation(
                 100,
                 GradientType.kContinuous,
-                Color.kSeaGreen,
-                Color.kLimeGreen,
-                Color.kGreen);
+                Color.kLightBlue,
+                Color.kMediumBlue,
+                Color.kDarkBlue);
+    }
+
+    public void alignedAnimation() {
+        setSolidBlinkAnimation(0.1, Color.kGreen);
+    }
+
+    public void intakedAnimation() {
+        setSolidBlinkAnimation(0.1, Color.kRed);
     }
 
     // Low level method, use only for custom LED animations

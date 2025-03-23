@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drive.controllers;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,7 +24,7 @@ public class GoalPoseChooser {
     }
 
     public static enum SIDE {
-        LEFT, RIGHT
+        LEFT, RIGHT, ALGAE
     }
 
     private static Pose2d customGoal = FieldConstants.AL;
@@ -56,36 +55,86 @@ public class GoalPoseChooser {
         Pose2d goal;
         if(inBetween(-30.0, 30.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "D");
+            
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.DL;
-            } else goal = FieldConstants.DR;
-        } else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
+            }
+            
+            else if(side.equals(SIDE.RIGHT)) {
+                goal = FieldConstants.DR;
+            }
+            
+            else goal = FieldConstants.DM;
+        } 
+        
+        else if(inBetween(30.0, 90.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "E");
+
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.EL;
-            } else goal = FieldConstants.ER;
-        } else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
+            }
+            
+            else if(side.equals(SIDE.RIGHT)) {
+                goal = FieldConstants.ER;
+            }
+            
+            else goal = FieldConstants.EM;
+        } 
+        
+        else if(inBetween(90.0, 150.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "F");
+
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.FL;
-            } else goal = FieldConstants.FR;
-            // Skipped -150 to 150 because the inBetween function miscopes
-            // Putting it in else covers the remainder of the hexagon scope
-        } else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
+            }
+            
+            else if(side.equals(SIDE.RIGHT)) {
+                goal = FieldConstants.FR;
+            }
+            
+            else goal = FieldConstants.FM;
+        } 
+        
+        else if(inBetween(-150.0, -90.0, angleFromReefCenter.getDegrees())) {
             Logger.recordOutput("Drive/ReefSide", "B");
+
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.BL;
-            } else goal = FieldConstants.BR;
-        } else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
+            }
+            
+            else if(side.equals(SIDE.RIGHT)) {
+                goal = FieldConstants.BR;
+            }
+            
+            else goal = FieldConstants.BM;
+        } 
+        
+        else if(inBetween(-90.0, -30.0, angleFromReefCenter.getDegrees())){
             Logger.recordOutput("Drive/ReefSide", "C");
+
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.CL;
-            } else goal = FieldConstants.CR;
-        } else {
+            }
+            
+            else if(side.equals(SIDE.RIGHT)) {
+                goal = FieldConstants.CR;
+            }
+            
+            else goal = FieldConstants.CM;
+        } 
+        
+        else {
             Logger.recordOutput("Drive/ReefSide", "A");
+
             if(side.equals(SIDE.LEFT)) {
                 goal = FieldConstants.AL;
-            } else goal = FieldConstants.AR;
+            }
+            
+            else if(side.equals(SIDE.RIGHT)) {
+                goal = FieldConstants.AR;
+            }
+            
+            else goal = FieldConstants.AM;
         }
         // Logger.recordOutput("Drive/SelectedSide", side);
 
@@ -140,6 +189,10 @@ public class GoalPoseChooser {
 
     public static Command setSideCommand(SIDE reefSide) {
         return Commands.runOnce(() -> side = reefSide);
+    } 
+
+    public static void setSide(SIDE reefSide) {
+        side = reefSide;
     } 
 
     private static boolean inBetween(double min, double max, double val) {
