@@ -388,7 +388,7 @@ public class RobotContainer {
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.rightBumper()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // BOI ignore ts //
