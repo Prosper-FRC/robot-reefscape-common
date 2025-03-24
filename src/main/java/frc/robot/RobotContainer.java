@@ -355,9 +355,9 @@ public class RobotContainer {
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
-            new Trigger(()-> driverController.getHID().getPOV() != -1)
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // new Trigger(()-> driverController.getHID().getPOV() != -1)
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             leftAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
@@ -381,6 +381,14 @@ public class RobotContainer {
 
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.leftBumper()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.rightBumper()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // BOI ignore ts //
@@ -592,17 +600,17 @@ public class RobotContainer {
                 */
 
             // CLIMB 
-            operatorController.povRight()
+            operatorController.rightStick()
                 .whileTrue(
-                    new InstantCommand(() -> climb.setVoltageOut())
+                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab))
                 )
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
                 
-            operatorController.povLeft()
+            operatorController.leftStick()
                 .whileTrue(
-                    new InstantCommand(() -> climb.setVoltageIn())
+                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease))
                 )
                 .whileFalse(
                     teleopCommands.stopClimbCommand()

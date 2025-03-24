@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
     kL4Coral(() -> Units.inchesToMeters(60.0)),
     kL3Coral(() -> 0.84),
     kL2Coral(() -> 0.41),
-    kL1Coral(() -> Units.inchesToMeters(5.0)),
+    kL1Coral(() -> Units.inchesToMeters(4.0)),
 
     kBarge(() -> Units.inchesToMeters(60.0)),
     kL3Algae(() -> 0.7 - 0.1),
@@ -35,7 +35,7 @@ public class Elevator extends SubsystemBase {
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
 
     /** Stow the elevator during transit */
-    kStow(() -> Units.inchesToMeters(2.0)),
+    kStow(() -> Units.inchesToMeters(4.0)),
     /** Position for intaking from the coral station */
     kIntake(() -> Units.inchesToMeters(0.0)),
     /** Custom setpoint that can be modified over network tables; Usefu for debugging */
