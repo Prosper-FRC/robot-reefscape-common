@@ -592,7 +592,7 @@ public class RobotContainer {
                 */
 
             // CLIMB 
-            operatorController.povRight()
+            operatorController.rightStick()
                 .whileTrue(
                     new InstantCommand(() -> climb.setVoltageOut())
                 )
@@ -600,7 +600,7 @@ public class RobotContainer {
                     teleopCommands.stopClimbCommand()
                 );
                 
-            operatorController.povLeft()
+            operatorController.leftStick()
                 .whileTrue(
                     new InstantCommand(() -> climb.setVoltageIn())
                 )
