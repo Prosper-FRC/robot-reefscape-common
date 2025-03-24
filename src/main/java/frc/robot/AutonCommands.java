@@ -160,7 +160,7 @@ public class AutonCommands {
                 robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                     robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                     scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+                nextAutoChecker(nextAuto).alongWith(setElevatorToL2())));
     }
 
     /* 
@@ -177,7 +177,7 @@ public class AutonCommands {
                 robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                     robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                     scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+                nextAutoChecker(nextAuto).alongWith(setElevatorToL2())));
     }
 
     /* 
@@ -214,7 +214,7 @@ public class AutonCommands {
                 robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                     .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
                 .andThen(scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+                nextAutoChecker(nextAuto).alongWith(setElevatorToL2())));
     }
 
     /* 
@@ -315,20 +315,19 @@ public class AutonCommands {
         return command;
     }
 
-    public Command elevatorToStowCommand() {
-        // return new FunctionalCommand(
-        //     () -> {
-        //         mElevator.setGoal(ElevatorGoal.kStow);
-        //     }, 
-        //     () -> {}, 
-        //     (interrupted) -> {
-        //         mElevator.stop();
-        //     }, 
-        //     getElevatorAtGoal(),
-        //     virtualElevator)
-        //     .withTimeout(kElevatorPositionTimeoutSeconds);
-        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kStow));
+    public Command setElevatorToL2(){
+        Command command = new FunctionalCommand(
+            () -> {mElevator.setGoal(ElevatorGoal.kL2Coral);}, 
+            () -> {}, 
+            (interrupted) -> {
+                mElevator.setPosition(mElevator.getPositionMeters());
+            }, 
+            getElevatorAtGoal(),
+            virtualElevator);
+        
+        return command;
     }
+
 
     public Command intakeCoralCommand() {
         return Commands.startEnd(
