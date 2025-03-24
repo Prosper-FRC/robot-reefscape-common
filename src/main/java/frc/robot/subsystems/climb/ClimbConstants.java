@@ -63,10 +63,8 @@ public class ClimbConstants {
     double maximumDutyCycleRange
   ) {}
 
-  public static final Rotation2d kMinPosition = Rotation2d.fromRadians(-1.25); // -1.586 and -1.907
-  public static final Rotation2d kMaxPosition = Rotation2d.fromRadians(0.35);
-
-
+  public static final Rotation2d kMinPosition = Rotation2d.fromRadians(1.1); // 1.27 and 1.17
+  public static final Rotation2d kMaxPosition = Rotation2d.fromRadians(2.662);
   public static final Rotation2d kClimbInPosition = Rotation2d.fromDegrees(-1.044);
 
   public static final Rotation2d kPositionOffset = Rotation2d.fromRotations(0.198);

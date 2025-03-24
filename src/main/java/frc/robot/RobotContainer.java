@@ -602,7 +602,7 @@ public class RobotContainer {
             // CLIMB 
             operatorController.rightStick()
                 .whileTrue(
-                    new InstantCommand(() -> climb.setVoltageOut())
+                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab))
                 )
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
@@ -610,7 +610,7 @@ public class RobotContainer {
                 
             operatorController.leftStick()
                 .whileTrue(
-                    new InstantCommand(() -> climb.setVoltageIn())
+                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease))
                 )
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
