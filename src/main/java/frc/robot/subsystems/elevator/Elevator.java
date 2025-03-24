@@ -35,7 +35,7 @@ public class Elevator extends SubsystemBase {
     kGroundAlgae(() -> Units.inchesToMeters(8.0)),
 
     /** Stow the elevator during transit */
-    kStow(() -> Units.inchesToMeters(4.0)),
+    kStow(() -> Units.inchesToMeters(3.0)),
     /** Position for intaking from the coral station */
     kIntake(() -> Units.inchesToMeters(0.0)),
     /** Custom setpoint that can be modified over network tables; Usefu for debugging */

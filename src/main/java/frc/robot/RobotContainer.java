@@ -347,8 +347,8 @@ public class RobotContainer {
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
-        Trigger leftAutoAlignTrigger = driverController.leftTrigger(0.5, teleopLoop);
-        Trigger rightAutoAlignTrigger = driverController.rightTrigger(0.5, teleopLoop);
+        Trigger leftAutoAlignTrigger = driverController.leftStick();
+        Trigger rightAutoAlignTrigger = driverController.rightStick();
 
         if (useCompetitionBindings) {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -602,7 +602,7 @@ public class RobotContainer {
             // CLIMB 
             operatorController.rightStick()
                 .whileTrue(
-                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab))
+                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease))
                 )
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
@@ -610,7 +610,7 @@ public class RobotContainer {
                 
             operatorController.leftStick()
                 .whileTrue(
-                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kRelease))
+                    new InstantCommand(() -> climb.setGoalVoltage(ClimbVoltageGoal.kGrab))
                 )
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
