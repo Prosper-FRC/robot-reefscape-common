@@ -307,7 +307,7 @@ public class AutonCommands {
                 }, 
                 () -> {}, 
                 (interrupted) -> {}, 
-                () -> Math.abs(mElevator.getErrorMeters()) < .75,
+                () -> Math.abs(mElevator.getErrorMeters()) < 1.0,
                 virtualElevator)
                 .withTimeout(kElevatorPositionTimeoutSeconds)
         );

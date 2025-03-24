@@ -91,7 +91,7 @@ public class RobotContainer {
     /* TODO: Set to true before competition
      please */
 
-    private final boolean useCompetitionBindings = true;
+    private final boolean useCompetitionBindings = false;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -699,7 +699,7 @@ public class RobotContainer {
             operatorController.povDown()
                 .whileTrue(
                     Commands.startEnd(
-                        () -> elevator.setVoltage(0.45), 
+                        () -> elevator.setVoltage(-3.0), 
                         () -> elevator.stop(), 
                         elevator));
 

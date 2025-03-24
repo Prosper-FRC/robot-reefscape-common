@@ -63,7 +63,7 @@ public class ElevatorConstants {
   public static final int kAmpFilterThreshold = 40;
   public static final boolean kHomeWithCurrent = false;
 
-  public static final double kMaxPositionMeters = 1.593;
+  public static final double kMaxPositionMeters = 1.586;
   public static final double kMinPositionMeters = 0.0;
 
   /** Position tolerance when controlling the elevator via feedback */
@@ -127,7 +127,7 @@ public class ElevatorConstants {
     50.0, 
     12.0,
     -12.0,
-    NeutralModeValue.Brake);
+    NeutralModeValue.Coast);
 
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
