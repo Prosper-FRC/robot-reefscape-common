@@ -347,8 +347,8 @@ public class RobotContainer {
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
-        Trigger leftAutoAlignTrigger = driverController.leftStick();
-        Trigger rightAutoAlignTrigger = driverController.rightStick();
+        Trigger leftAutoAlignTrigger = driverController.leftTrigger(0.5, teleopLoop);
+        Trigger rightAutoAlignTrigger = driverController.rightTrigger(0.5, teleopLoop);
 
         if (useCompetitionBindings) {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -358,6 +358,14 @@ public class RobotContainer {
             // new Trigger(()-> driverController.getHID().getPOV() != -1)
             //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
             //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.leftBumper()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.rightBumper()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             leftAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
@@ -381,14 +389,6 @@ public class RobotContainer {
 
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            driverController.leftBumper()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
-
-            driverController.rightBumper()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // BOI ignore ts //
@@ -458,7 +458,7 @@ public class RobotContainer {
                             // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
-                            teleopCommands.runRollersWhenConfirmed(RollerGoal.custom, confirmScoreTrigger)
+                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
                         )   
                     )
                     .whileFalse(
@@ -615,31 +615,8 @@ public class RobotContainer {
                 .whileFalse(
                     teleopCommands.stopClimbCommand()
                 );
-            // PIVOT - OUT
-            // operatorController.povLeft()
-            //     .whileTrue(
-            //         teleopCommands.runPivotAndRollersVoltage(3.0, -3.0, confirmScoreTrigger)
-            //     )
-            //     .whileFalse(
-            //         teleopCommands.stopRollersAndPivotCommand()
-            //     );
-                
-            // // PIVOT - IN
-            // operatorController.povRight()
-            //     .whileTrue(
-            //         teleopCommands.runPivotAndRollersVoltage(-3.0, -3.0, confirmScoreTrigger)
-            //     )
-            //     .whileFalse(
-            //         teleopCommands.stopRollersAndPivotCommand()
-            //     );
 
-            // operatorController.leftStick()
-            //     .onTrue(Commands.runOnce(() -> elevator.resetPosition(), elevator));
 
-            // operatorController.rightStick()
-            //     .onTrue(
-            //         Commands.runOnce(() -> GoalPoseChooser.recordWorkingPose(robotDrive.getPoseEstimate()))
-            //         .andThen(Commands.runOnce(() -> GoalPoseChooser.setWorkingPose(robotDrive.getPoseEstimate(), DriverStation.getAlliance().get()))));
         } 
 
         else {
