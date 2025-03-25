@@ -91,7 +91,7 @@ public class RobotContainer {
     /* TODO: Set to true before competition
      please */
 
-    private final boolean useCompetitionBindings = false;
+    private final boolean useCompetitionBindings = true;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();

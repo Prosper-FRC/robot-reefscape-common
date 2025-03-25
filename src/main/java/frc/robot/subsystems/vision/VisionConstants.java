@@ -16,17 +16,17 @@ public class VisionConstants {
     public static final String kLeftCamName = "9492_LEFT";
     public static final Orientation kLeftCamOrientation = Orientation.BACK;
     public static final Transform3d kLeftCamTransform = new Transform3d(
-        new Translation3d(0.3, 0.3, 0.0),
+        new Translation3d(0.3, -0.3, 0.0),
         // Accounts for cameras being on back
-        new Rotation3d(0.0, Math.toRadians(8.317), Math.toRadians(-25.0))
+        new Rotation3d(0.0, Math.toRadians(8.317), Math.toRadians(25.0))
     );
   
     public static final String kRightCamName = "9492_RIGHT";
     public static final Orientation kRightCamOrientation = Orientation.BACK;
     public static final Transform3d kRightCamTransform = new Transform3d(
-        new Translation3d(0.3, -0.3, 0.0),
+        new Translation3d(0.3, 0.3, 0.0),
         // Accounts for cameras being on back
-        new Rotation3d(0.0, Math.toRadians(8.317), Math.toRadians(25.0))
+        new Rotation3d(0.0, Math.toRadians(8.317), Math.toRadians(-25.0))
     );
 
     /* TODO: SET TO FALSE UNLESS YOU ACTUALLY KNOW WHAT THIS DOES

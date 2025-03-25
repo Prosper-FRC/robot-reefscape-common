@@ -127,7 +127,7 @@ public class ElevatorConstants {
     50.0, 
     12.0,
     -12.0,
-    NeutralModeValue.Coast);
+    NeutralModeValue.Brake);
 
   public static final SimulationConfiguration kSimulationConfiguration = new SimulationConfiguration(
     DCMotor.getKrakenX60(1), 
