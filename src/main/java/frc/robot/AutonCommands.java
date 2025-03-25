@@ -160,7 +160,7 @@ public class AutonCommands {
                 robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                     robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                     scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+                nextAutoChecker(nextAuto).alongWith(elevatorToL2())));
     }
 
     /* 
@@ -177,7 +177,7 @@ public class AutonCommands {
                 robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                     robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                     scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+                nextAutoChecker(nextAuto).alongWith(elevatorToL2())));
     }
 
     /* 
@@ -214,7 +214,7 @@ public class AutonCommands {
                 robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                     .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
                 .andThen(scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+                nextAutoChecker(nextAuto).alongWith(elevatorToL2())));
     }
 
     /* 
@@ -307,7 +307,7 @@ public class AutonCommands {
                 }, 
                 () -> {}, 
                 (interrupted) -> {}, 
-                () -> Math.abs(mElevator.getErrorMeters()) < .75,
+                () -> Math.abs(mElevator.getErrorMeters()) < 1.0,
                 virtualElevator)
                 .withTimeout(kElevatorPositionTimeoutSeconds)
         );
@@ -315,7 +315,7 @@ public class AutonCommands {
         return command;
     }
 
-    public Command elevatorToStowCommand() {
+    public Command elevatorToL2() {
         // return new FunctionalCommand(
         //     () -> {
         //         mElevator.setGoal(ElevatorGoal.kStow);
@@ -327,7 +327,7 @@ public class AutonCommands {
         //     getElevatorAtGoal(),
         //     virtualElevator)
         //     .withTimeout(kElevatorPositionTimeoutSeconds);
-        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kStow));
+        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL2Coral));
     }
 
     public Command intakeCoralCommand() {
