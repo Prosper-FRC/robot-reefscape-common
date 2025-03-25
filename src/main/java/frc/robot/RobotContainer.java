@@ -257,17 +257,24 @@ public class RobotContainer {
 
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
-        // new Trigger(DriverStation::isEnabled)
-        //     .onTrue(
-        //     Commands.runOnce(() -> robotDrive.resetModulesEncoders(), robotDrive));
+        new Trigger(DriverStation::isEnabled)
+            .onTrue(
+                Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
-                Commands.runOnce(() -> led.defaultAnimation(), led));
+                Commands.runOnce(() -> 
+                    led.defaultAnimation()));
 
-        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal)
-            .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
-            .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
+        new Trigger(intake::detectedGamepiece)
+        .whileTrue(
+            Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                0.1, 
+                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
+        .whileFalse(
+            Commands.runOnce(() -> 
+                led.defaultAnimation()));
 
         new Trigger(() -> robotDrive.getDriveToPoseTolerance())
             .onTrue(Commands.runOnce(() -> 
@@ -306,9 +313,6 @@ public class RobotContainer {
                             Commands.runOnce(() -> led.defaultAnimation())
                         )
                 ));
-    
-
-        
     }
 
     private Command rumbleCommandOperator() {
