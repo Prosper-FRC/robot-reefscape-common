@@ -201,7 +201,7 @@ public class IntakeConstants {
     50.0, // Supply limit
     12.0, // Peak forward voltage
     -12.0, // Peak reverse voltage
-    NeutralModeValue.Coast); // Idle mode
+    NeutralModeValue.Brake); // Idle mode
 
   // Pivot mass: 2.6553 kg
   // Distance from COM: ~14in
