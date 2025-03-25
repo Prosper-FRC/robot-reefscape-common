@@ -3,10 +3,8 @@ package frc.robot.utils.debugging;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -15,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 // import static frc.robot.subsystems.drive.DriveConstants.kRadiusMeters;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 

@@ -123,7 +123,7 @@ public class ElevatorConstants {
     false, 
     true, 
     true, 
-   80.0, 
+    80.0, 
     50.0, 
     12.0,
     -12.0,
