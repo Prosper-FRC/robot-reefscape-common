@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
@@ -153,14 +154,16 @@ public class AutonCommands {
     public Command scoreFirstCoralPath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            firstPath(
-                name, 
-                new Rotation2d(), 
-                () -> !PathPlannerAuto.currentPathName.equals(name), 
-                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
-                    robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                    scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+            new ParallelCommandGroup(
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+                firstPath(
+                    name, 
+                    new Rotation2d(), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
+                        robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                        scoreCoralCommand()), 
+                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
     }
 
     /* 
@@ -170,14 +173,16 @@ public class AutonCommands {
     public Command scoreFirstCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            firstPath(
-                name, 
-                new Rotation2d(), 
-                () -> !PathPlannerAuto.currentPathName.equals(name), 
-                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
-                    robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                    scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+            new ParallelCommandGroup(
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+                firstPath(
+                    name, 
+                    new Rotation2d(), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
+                        robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                        scoreCoralCommand()), 
+                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
     }
 
     /* 
@@ -208,13 +213,15 @@ public class AutonCommands {
     public Command scoreCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            nextPath(
-                name, 
-                () -> !PathPlannerAuto.currentPathName.equals(name), 
-                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
-                    .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
-                .andThen(scoreCoralCommand()), 
-                nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand())));
+            new ParallelCommandGroup(
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
+                nextPath(
+                    name, 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
+                        .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
+                    .andThen(scoreCoralCommand()), 
+                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
     }
 
     /* 
@@ -328,6 +335,21 @@ public class AutonCommands {
         //     virtualElevator)
         //     .withTimeout(kElevatorPositionTimeoutSeconds);
         return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kStow));
+    }
+
+    public Command elevatorToL2Command() {
+        // return new FunctionalCommand(
+        //     () -> {
+        //         mElevator.setGoal(ElevatorGoal.kStow);
+        //     }, 
+        //     () -> {}, 
+        //     (interrupted) -> {
+        //         mElevator.stop();
+        //     }, 
+        //     getElevatorAtGoal(),
+        //     virtualElevator)
+        //     .withTimeout(kElevatorPositionTimeoutSeconds);
+        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL2Coral));
     }
 
     public Command intakeCoralCommand() {
