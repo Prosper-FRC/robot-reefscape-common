@@ -273,11 +273,11 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
                 break;
             case DRIVE_TO_BARGE:
-                ChassisSpeeds autoAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());;
+                ChassisSpeeds bargeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());;
                 desiredSpeeds = new ChassisSpeeds(
-                    autoAlignSpeeds.vxMetersPerSecond,
+                    bargeAlignSpeeds.vxMetersPerSecond,
                     teleopSpeeds.vyMetersPerSecond,
-                    autoAlignSpeeds.omegaRadiansPerSecond
+                    bargeAlignSpeeds.omegaRadiansPerSecond
                 );
                 break;
             case DRIVE_TO_ALGAE:
