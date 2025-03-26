@@ -355,9 +355,9 @@ public class RobotContainer {
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
-            // new Trigger(()-> driverController.getHID().getPOV() != -1)
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            new Trigger(()-> driverController.getHID().getPOV() != -1)
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.leftBumper()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
