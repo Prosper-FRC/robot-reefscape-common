@@ -48,7 +48,7 @@ public class DriveConstants {
     public static final boolean kDoExtraLogging = true;
 
     public static final PIDConstants kPPTranslationPID = new PIDConstants(1.6, 0.0, 0.0);
-    public static final PIDConstants kPPRotationPID = new PIDConstants(3.75, 0.0, 0.0);
+    public static final PIDConstants kPPRotationPID = new PIDConstants(2.5, 0.0, 0.0);
 
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\
     /* GENERAL SWERVE MODULE CONSTANTS */
