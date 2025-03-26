@@ -219,6 +219,10 @@ public class HolonomicController {
             Math.toRadians( omegaController.getSetpoint().velocity ) );
     }
 
+    public boolean atPositionTimeout() {
+        return getPositionGoal().equals(getPositionSetpoint());
+    }
+
     // @AutoLogOutput(key = "Drive/HolonomicController/PoseError")
     // public Pose2d getPoseError() {
     //     return new Pose2d(

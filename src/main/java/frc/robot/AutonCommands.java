@@ -36,7 +36,7 @@ public class AutonCommands {
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
     private final double kElevatorPositionTimeoutSeconds = 2.5;
-    private final double kScoreCoralTimeoutSeconds = 0.5;
+    private final double kScoreCoralTimeoutSeconds = 0.4;
 
     // private final double kElevatorPositionTimeoutSeconds = 2.5;
     // private final double kScoreCoralTimeoutSeconds = 0.75;
@@ -155,7 +155,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+                //new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
                 firstPath(
                     name, 
                     new Rotation2d(), 
@@ -163,7 +163,7 @@ public class AutonCommands {
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
+                    nextAutoChecker(nextAuto))));
     }
 
     /* 
@@ -174,7 +174,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+               // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
                 firstPath(
                     name, 
                     new Rotation2d(), 
@@ -182,7 +182,7 @@ public class AutonCommands {
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
+                    nextAutoChecker(nextAuto))));
     }
 
     /* 
@@ -214,14 +214,14 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
+                //new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
                 nextPath(
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
                     .andThen(scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
+                    nextAutoChecker(nextAuto))));
     }
 
     /* 
@@ -230,13 +230,15 @@ public class AutonCommands {
     */
     public Command intakeCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
-            nextPath(
-                name, 
-                () -> !PathPlannerAuto.currentPathName.equals(name), 
-                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
-                    .withDeadline(robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                    intakeCoralCommand()), 
-                nextAuto));
+            new ParallelCommandGroup(
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kStow)),
+                nextPath(
+                    name, 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
+                        .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
+                        intakeCoralCommand()), 
+                    nextAuto)));
     }
 
     /* 
@@ -307,16 +309,16 @@ public class AutonCommands {
                 }, 
                 () -> false,
                 virtualIntake)
-                .withTimeout(kScoreCoralTimeoutSeconds),
-            new FunctionalCommand(
-                () -> {
-                    mElevator.setGoal(ElevatorGoal.kL2Coral);
-                }, 
-                () -> {},
-                (interrupted) -> {}, 
-                () -> Math.abs(mElevator.getErrorMeters()) < 0.25,
-                virtualElevator)
-                .withTimeout(kElevatorPositionTimeoutSeconds)
+                .withTimeout(kScoreCoralTimeoutSeconds)
+            // new FunctionalCommand(
+            //     () -> {
+            //         mElevator.setGoal(ElevatorGoal.kStow);
+            //     }, 
+            //     () -> {}, 
+            //     (interrupted) -> {}, 
+            //     () -> Math.abs(mElevator.getErrorMeters()) < 1.0,
+            //     virtualElevator)
+            //     .withTimeout(kElevatorPositionTimeoutSeconds)
         );
 
         return command;
@@ -385,7 +387,7 @@ public class AutonCommands {
                 robotDrive.setDriveState(DriveState.AUTON);
                 robotDrive.setPose(AllianceFlipUtil.apply(new Pose2d(path.getPathPoses().get(0).getTranslation(), startingRotation)));
             }), 
-            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
+            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.5), 
             robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
