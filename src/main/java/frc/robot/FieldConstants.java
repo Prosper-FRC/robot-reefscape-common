@@ -19,9 +19,9 @@ public class FieldConstants {
 
     public static final Pose2d FL = new Pose2d(3.55, 3.1, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(3.86, 2.88, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d FR = new Pose2d(3.81, 2.93, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FR = new Pose2d(3.78, 2.96, Rotation2d.fromDegrees(-120.0));
 
-    public static final Pose2d EL = new Pose2d(4.78, 2.71, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d EL = new Pose2d(4.78, 2.72, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d EM = new Pose2d(5.15, 2.94, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d ER = new Pose2d(5.07, 2.88, Rotation2d.fromDegrees(-60.0));
     
