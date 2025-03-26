@@ -10,6 +10,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.utils.debugging.LoggedTunableNumber;
+import frc.robot.utils.math.EqualsUtil;
+import frc.robot.utils.math.GeomUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -201,6 +203,10 @@ public class HolonomicController {
                 yController.getSetpoint().position ), 
             Rotation2d.fromDegrees(
                 omegaController.getSetpoint().position ) );
+    }
+
+    public boolean atPositionTimeout() {
+        return getPositionGoal().equals(getPositionSetpoint());
     }
 
     // @AutoLogOutput(key = "Drive/HolonomicController/VelocityGoal")
