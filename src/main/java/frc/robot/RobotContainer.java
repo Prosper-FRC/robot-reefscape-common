@@ -285,10 +285,7 @@ public class RobotContainer {
             intake::detectedGamepiece)
                 .and(operatorController.leftBumper())
             .onTrue(
-                (rumbleCommandOperator()
-                    .withTimeout(0.5)).alongWith(
-                rumbleCommandDriver()
-                    .withTimeout(0.5)));
+                (rumbleCommandOperator().withTimeout(0.5)));
 
     }
 
