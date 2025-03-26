@@ -358,7 +358,7 @@ public class AutonCommands {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
             () -> mIntake.stop(true, false), 
-            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
+            mIntake);
     }
 
     public Command scoreAlgaeCommand() {
