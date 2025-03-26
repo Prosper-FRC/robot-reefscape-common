@@ -155,7 +155,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+                //new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
                 firstPath(
                     name, 
                     new Rotation2d(), 
@@ -174,7 +174,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+               // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
                 firstPath(
                     name, 
                     new Rotation2d(), 
@@ -214,7 +214,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
+                //new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
                 nextPath(
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
@@ -309,16 +309,16 @@ public class AutonCommands {
                 }, 
                 () -> false,
                 virtualIntake)
-                .withTimeout(kScoreCoralTimeoutSeconds),
-            new FunctionalCommand(
-                () -> {
-                    mElevator.setGoal(ElevatorGoal.kStow);
-                }, 
-                () -> {}, 
-                (interrupted) -> {}, 
-                () -> Math.abs(mElevator.getErrorMeters()) < 1.0,
-                virtualElevator)
-                .withTimeout(kElevatorPositionTimeoutSeconds)
+                .withTimeout(kScoreCoralTimeoutSeconds)
+            // new FunctionalCommand(
+            //     () -> {
+            //         mElevator.setGoal(ElevatorGoal.kStow);
+            //     }, 
+            //     () -> {}, 
+            //     (interrupted) -> {}, 
+            //     () -> Math.abs(mElevator.getErrorMeters()) < 1.0,
+            //     virtualElevator)
+            //     .withTimeout(kElevatorPositionTimeoutSeconds)
         );
 
         return command;
