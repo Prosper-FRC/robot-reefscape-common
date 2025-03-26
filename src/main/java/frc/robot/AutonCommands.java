@@ -214,7 +214,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                //new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
+                // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
                 nextPath(
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
@@ -351,7 +351,7 @@ public class AutonCommands {
         //     getElevatorAtGoal(),
         //     virtualElevator)
         //     .withTimeout(kElevatorPositionTimeoutSeconds);
-        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL2Coral));
+        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL205Coral));
     }
 
     public Command intakeCoralCommand() {
