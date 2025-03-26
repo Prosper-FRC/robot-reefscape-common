@@ -633,7 +633,4 @@ public class Drive extends SubsystemBase {
         return !autoAlignController.atGoal();
     }
 
-    public boolean getDriveToPoseTolerance() {
-        return autoAlignController.atGoal();
-    }
 }

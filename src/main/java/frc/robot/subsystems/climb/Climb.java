@@ -237,4 +237,12 @@ public class Climb extends SubsystemBase {
       return kInputs[0].position;
     }
   }
+
+  public boolean isDeepClimbReady(){
+    if(ClimbConstants.kMinPosition.getRotations() < getPosition().getRotations() && getPosition().getRotations() < ClimbConstants.kMaxPosition.getRotations()){
+      return true;
+    }
+
+    return false;
+  }
 }

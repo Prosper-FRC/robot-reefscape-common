@@ -39,6 +39,10 @@ public class LED extends SubsystemBase implements ILED {
         setSolidBlinkAnimation(0.1, Color.kRed);
     }
 
+    public void deepClimb() {
+        setSolidBlinkAnimation(0.1, Color.kDarkBlue);
+    }
+
     // Low level method, use only for custom LED animations
     public void setSingleRGB(int index, int r, int g, int b){
         m_ledBuffer.setRGB(index,r,g,b);

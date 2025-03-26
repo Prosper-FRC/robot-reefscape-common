@@ -121,7 +121,7 @@ public class Intake extends SubsystemBase {
   private final PivotVisualizer kPivotVisualizer;
 
   private final LoggedNetworkBoolean kOverrideDetectGamepiece = 
-    new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", false);
+    new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", true);
 
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kRollerHardware = hardwareIO;

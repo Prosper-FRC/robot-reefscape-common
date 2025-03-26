@@ -269,17 +269,15 @@ public class RobotContainer {
             .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(() -> robotDrive.getDriveToPoseTolerance())
-            .onTrue(Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                    0.1, Color.kBlanchedAlmond))
-                .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
+        new Trigger(robotDrive::atGoal)  
+            .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
+            .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
         new Trigger(() -> elevator.atGoal())
-            .onTrue(Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                    0.1, Color.kAqua))
-                    .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
+            .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
+            .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
+
+        new Trigger(teleopLoop, () -> climb.isDeepClimbReady()).onTrue(rumbleCommandOperator().withTimeout(0.5).alongWith(rumbleCommandDriver().withTimeout(0.5)));
 
         // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
@@ -292,23 +290,6 @@ public class RobotContainer {
                 rumbleCommandDriver()
                     .withTimeout(0.5)));
 
-        new Trigger(() -> climb.getIfClimbOut())
-            .onTrue(rumbleCommandOperator().withTimeout(0.5));
-
-        
-        new Trigger(() -> climb.getIfClimbIn())
-            .onTrue(
-                new ParallelCommandGroup(
-                    rumbleCommandOperator(),
-                    Commands.runOnce(
-                        () -> led.setRed()).andThen(
-                            Commands.waitSeconds(1.0),
-                            Commands.runOnce(() -> led.defaultAnimation())
-                        )
-                ));
-    
-
-        
     }
 
     private Command rumbleCommandOperator() {
