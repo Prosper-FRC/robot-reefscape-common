@@ -241,7 +241,8 @@ public class RobotContainer {
     /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
-            robotDrive.setDriveStateCommand(DriveState.TELEOP)
+            robotDrive.setDriveStateCommand(DriveState.TELEOP),
+            new InstantCommand(()-> elevator.setGoal(ElevatorGoal.kStow), elevator)
         );
     }
 
