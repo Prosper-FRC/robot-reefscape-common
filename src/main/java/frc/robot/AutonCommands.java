@@ -163,7 +163,7 @@ public class AutonCommands {
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
+                    nextAutoChecker(nextAuto))));
     }
 
     /* 
@@ -182,7 +182,7 @@ public class AutonCommands {
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
+                    nextAutoChecker(nextAuto))));
     }
 
     /* 
@@ -221,7 +221,7 @@ public class AutonCommands {
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
                     .andThen(scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto).alongWith(elevatorToStowCommand()))));
+                    nextAutoChecker(nextAuto))));
     }
 
     /* 
@@ -230,13 +230,15 @@ public class AutonCommands {
     */
     public Command intakeCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
-            nextPath(
-                name, 
-                () -> !PathPlannerAuto.currentPathName.equals(name), 
-                robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
-                    .withDeadline(robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                    intakeCoralCommand()), 
-                nextAuto));
+            new ParallelCommandGroup(
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kStow)),
+                nextPath(
+                    name, 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
+                        .withDeadline(robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                        intakeCoralCommand()), 
+                    nextAuto)));
     }
 
     /* 
