@@ -14,6 +14,8 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -126,6 +128,8 @@ public class Drive extends SubsystemBase {
     private final static LoggedTunableNumber driftRate = new LoggedTunableNumber("Drive/DriftRate", DriveConstants.kDriftRate);
     private final static LoggedTunableNumber rotationDriftTestSpeedDeg = new LoggedTunableNumber("Drive/DriftRotationTestDeg", 360);
     private final static LoggedTunableNumber linearTestSpeedMPS = new LoggedTunableNumber("Drive/LinearTestMPS", 4.5);
+
+    Debouncer autoAlignTimeout = new Debouncer(0.1, DebounceType.kRising);
 
     public Drive(Module[] modules, GyroIO gyro, Vision vision) {
         this.modules = modules;
@@ -506,6 +510,11 @@ public class Drive extends SubsystemBase {
 
     public Command waitUnitllAutoAlignFinishes() {
         return new WaitUntilCommand(()-> autoAlignController.atGoal());
+    }
+
+    public Command waitUnitllIntakeAutoAlignFinishes() {
+        return new WaitUntilCommand(()-> autoAlignController.atGoal() || 
+            autoAlignTimeout.calculate(autoAlignController.atPositionTimeout()));
     }
 
     public BooleanSupplier waitUnitllAutoAlignFinishesSupplier() {

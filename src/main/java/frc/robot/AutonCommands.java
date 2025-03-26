@@ -36,7 +36,7 @@ public class AutonCommands {
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
     private final double kElevatorPositionTimeoutSeconds = 2.5;
-    private final double kScoreCoralTimeoutSeconds = 0.5;
+    private final double kScoreCoralTimeoutSeconds = 0.4;
 
     // private final double kElevatorPositionTimeoutSeconds = 2.5;
     // private final double kScoreCoralTimeoutSeconds = 0.75;
@@ -236,7 +236,7 @@ public class AutonCommands {
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
-                        .withDeadline(robotDrive.waitUnitllAutoAlignFinishes()).andThen(
+                        .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
                         intakeCoralCommand()), 
                     nextAuto)));
     }
