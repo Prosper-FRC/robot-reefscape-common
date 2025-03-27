@@ -67,9 +67,6 @@ public class ClimbConstants {
   public static final Rotation2d kMaxPosition = Rotation2d.fromRadians(2.708);
   public static final Rotation2d kClimbInPosition = Rotation2d.fromDegrees(-1.044);
 
-  public static final Rotation2d kReadyInMinPosition = Rotation2d.fromRadians(1.17); // 1.27 and 1.17
-  public static final Rotation2d kReadyInMaxPosition = Rotation2d.fromRadians(1.27);
-
   public static final Rotation2d kPositionOffset = Rotation2d.fromRotations(0.198);
 
   public static final double kGearing = 125.0 / 1.0;
