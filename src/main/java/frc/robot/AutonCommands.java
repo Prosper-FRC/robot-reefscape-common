@@ -181,7 +181,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                        scoreCoralCommand()), 
+                        scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -220,7 +220,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
-                    .andThen(scoreCoralCommand()), 
+                    .andThen(scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -237,7 +237,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
                         .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
-                        intakeCoralCommand().withTimeout(0.2)), 
+                        intakeCoralCommand().withTimeout(0.3)), 
                     nextAuto)));
     }
 

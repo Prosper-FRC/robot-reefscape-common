@@ -205,6 +205,7 @@ public class HolonomicController {
                 omegaController.getSetpoint().position ) );
     }
 
+    @AutoLogOutput(key = "Drive/HolonomicController/AtPositionTimeout")
     public boolean atPositionTimeout() {
         return getPositionGoal().equals(getPositionSetpoint());
     }
