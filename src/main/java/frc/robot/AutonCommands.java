@@ -36,7 +36,7 @@ public class AutonCommands {
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
     private final double kElevatorPositionTimeoutSeconds = 2.5;
-    private final double kScoreCoralTimeoutSeconds = 0.4;
+    private final double kScoreCoralTimeoutSeconds = 0.7;
 
     // private final double kElevatorPositionTimeoutSeconds = 2.5;
     // private final double kScoreCoralTimeoutSeconds = 0.75;
@@ -237,7 +237,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
                         .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
-                        intakeCoralCommand()), 
+                        intakeCoralCommand().withTimeout(0.2)), 
                     nextAuto)));
     }
 
@@ -351,14 +351,14 @@ public class AutonCommands {
         //     getElevatorAtGoal(),
         //     virtualElevator)
         //     .withTimeout(kElevatorPositionTimeoutSeconds);
-        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL2Coral));
+        return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL205Coral));
     }
 
     public Command intakeCoralCommand() {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
             () -> mIntake.stop(true, false), 
-            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
+            mIntake);
     }
 
     public Command scoreAlgaeCommand() {

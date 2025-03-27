@@ -241,7 +241,8 @@ public class RobotContainer {
     /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
-            robotDrive.setDriveStateCommand(DriveState.TELEOP)
+            robotDrive.setDriveStateCommand(DriveState.TELEOP),
+            new InstantCommand(() -> elevator.setGoal(ElevatorGoal.kStow))
         );
     }
 
@@ -270,10 +271,10 @@ public class RobotContainer {
             .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-            new Trigger(() -> robotDrive.getDriveToPoseTolerance())
-            .onTrue(Commands.runOnce(() ->
-                led.setBlue())
-                .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
+            // new Trigger(() -> robotDrive.getDriveToPoseTolerance())
+            // .onTrue(Commands.runOnce(() ->
+            //     led.setBlue())
+            //     .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
  
 
         new Trigger(() -> elevator.atGoal())
@@ -303,20 +304,8 @@ public class RobotContainer {
                         led.setRed())
                             .andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())));
 
-        new Trigger(() -> climb.getIfClimbOut())
-                            .onTrue(rumbleCommandOperator().withTimeout(0.5));
-                
-                        
-        new Trigger(() -> climb.getIfClimbIn())
-                            .onTrue(
-                                new ParallelCommandGroup(
-                                    rumbleCommandOperator(),
-                                    Commands.runOnce(
-                                        () -> led.setRed()).andThen(
-                                            Commands.waitSeconds(1.0),
-                                            Commands.runOnce(() -> led.defaultAnimation())
-                                        )
-                                ));
+        new Trigger(teleopLoop, () -> climb.isDeepClimbReady())
+            .onTrue(rumbleCommandOperator().withTimeout(0.5).alongWith(rumbleCommandDriver().withTimeout(0.5)));
          
     }
 

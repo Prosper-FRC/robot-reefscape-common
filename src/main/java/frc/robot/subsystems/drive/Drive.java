@@ -300,10 +300,10 @@ public class Drive extends SubsystemBase {
                 desiredSpeeds = ppDesiredSpeeds;
                 break;
             case LEFT:
-                desiredSpeeds = new ChassisSpeeds(0.0, -1.0, teleopSpeeds.omegaRadiansPerSecond);
+                desiredSpeeds = new ChassisSpeeds(0.0, -0.5, teleopSpeeds.omegaRadiansPerSecond);
                 break;
             case RIGHT:
-                desiredSpeeds = new ChassisSpeeds(0.0, 1.0, teleopSpeeds.omegaRadiansPerSecond);
+                desiredSpeeds = new ChassisSpeeds(0.0, 0.5, teleopSpeeds.omegaRadiansPerSecond);
                 break;
             case STOP:
                 desiredSpeeds = new ChassisSpeeds();
@@ -634,7 +634,5 @@ public class Drive extends SubsystemBase {
         return !autoAlignController.atGoal();
     }
 
-    public boolean getDriveToPoseTolerance() {
-        return autoAlignController.atGoal();
-    }
+
 }
