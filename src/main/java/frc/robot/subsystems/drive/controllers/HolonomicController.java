@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive.controllers;
 
+import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -219,6 +220,7 @@ public class HolonomicController {
             Math.toRadians( omegaController.getSetpoint().velocity ) );
     }
 
+    @AutoLogOutput(key = "Drive/HolonomicController/AtPosistionTimeout")
     public boolean atPositionTimeout() {
         return getPositionGoal().equals(getPositionSetpoint());
     }
