@@ -36,7 +36,7 @@ public class AutonCommands {
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
     private final double kElevatorPositionTimeoutSeconds = 2.5;
-    private final double kScoreCoralTimeoutSeconds = 0.4;
+    private final double kScoreCoralTimeoutSeconds = 0.5;
 
     // private final double kElevatorPositionTimeoutSeconds = 2.5;
     // private final double kScoreCoralTimeoutSeconds = 0.75;
@@ -237,7 +237,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
                         .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
-                        intakeCoralCommand()), 
+                        intakeCoralCommand().withTimeout(0.3)),
                     nextAuto)));
     }
 
@@ -387,7 +387,7 @@ public class AutonCommands {
                 robotDrive.setDriveState(DriveState.AUTON);
                 robotDrive.setPose(AllianceFlipUtil.apply(new Pose2d(path.getPathPoses().get(0).getTranslation(), startingRotation)));
             }), 
-            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.5), 
+            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
             robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
@@ -397,7 +397,7 @@ public class AutonCommands {
         double totalTimeSeconds = path.getIdealTrajectory(Drive.robotConfig).get().getTotalTimeSeconds();
         return 
             robotDrive.setDriveStateCommand(DriveState.AUTON).andThen(
-                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.5), 
+                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
                 robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
