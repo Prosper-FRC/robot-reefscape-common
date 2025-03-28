@@ -96,14 +96,14 @@ public class DriveConstants {
             13, 
             23, 
             33,
-            Rotation2d.fromRotations(0.058105));
+            Rotation2d.fromRotations(0.098389));
 
     public static final ModuleHardwareConfig kBackRightHardware =
         new ModuleHardwareConfig(
             14, 
             24, 
             34,
-            Rotation2d.fromRotations(0.496582));
+            Rotation2d.fromRotations(0.001456));
 
     public static record ModuleHardwareConfig(
         int driveID, int azimuthID, int encoderID, Rotation2d offset) {}
