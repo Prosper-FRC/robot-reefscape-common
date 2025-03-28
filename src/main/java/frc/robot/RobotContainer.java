@@ -277,14 +277,14 @@ public class RobotContainer {
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(
-            teleopLoop, 
-            () -> climb.isDeepClimbReady())
-            .onTrue(
-                rumbleCommandOperator()
-                    .withTimeout(0.5).alongWith(
-                rumbleCommandDriver()
-                    .withTimeout(0.5)));
+        // new Trigger(
+        //     teleopLoop, 
+        //     () -> climb.isDeepClimbReady())
+        //     .onTrue(
+        //         rumbleCommandOperator()
+        //             .withTimeout(0.5).alongWith(
+        //         rumbleCommandDriver()
+        //             .withTimeout(0.5)));
 
         // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
@@ -337,7 +337,7 @@ public class RobotContainer {
         Trigger rightAutoAlignTrigger = driverController.rightTrigger(0.5, teleopLoop);
 
         if (useCompetitionBindings) {
-            driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
+            // driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
@@ -345,13 +345,13 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftBumper()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.leftBumper()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.rightBumper()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.rightBumper()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             leftAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
@@ -377,14 +377,13 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // BOI ignore ts //
-            // driverController.rightBumper()
-            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
-            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+            driverController.rightBumper()
+            .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
+            .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
 
-            // driverController.leftBumper()
-            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
-            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+            driverController.leftBumper()
+            .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
+            .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)
