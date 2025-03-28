@@ -162,7 +162,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                        scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
+                        scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -181,7 +181,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                        scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
+                        scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -220,7 +220,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
-                    .andThen(scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
+                    .andThen(scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -237,7 +237,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                         robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
                             .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
-                        intakeCoralCommand().withTimeout(0.3)),
+                        intakeCoralCommand()),
                     nextAuto)));
     }
 

@@ -76,7 +76,7 @@ public class Robot extends LoggedRobot {
         SignalLogger.stop();
 
         mRobotContainer = new RobotContainer();
-        CameraServer.startAutomaticCapture();
+        // CameraServer.startAutomaticCapture();
         PathfindingCommand.warmupCommand().schedule();
 
 
