@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase {
     kStowScore(() -> Rotation2d.fromDegrees(64.0)),
     kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
     kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
-    kIntakeGround(() -> Rotation2d.fromDegrees(-55.5)),
+    kIntakeGround(() -> Rotation2d.fromDegrees(-52.5)),
     kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
     kScore(() -> Rotation2d.fromDegrees(40.0)),
     kBargeScore(() -> Rotation2d.fromDegrees(46.0)),
