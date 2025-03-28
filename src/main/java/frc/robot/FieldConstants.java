@@ -19,14 +19,14 @@ public class FieldConstants {
 
     public static final Pose2d FL = new Pose2d(3.51, 3.12, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(3.86, 2.88, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d FR = new Pose2d(3.78, 2.96, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FR = new Pose2d(3.80, 2.96, Rotation2d.fromDegrees(-120.0));
 
     public static final Pose2d EL = new Pose2d(4.79, 2.72, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d EM = new Pose2d(5.15, 2.94, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d ER = new Pose2d(5.07, 2.88, Rotation2d.fromDegrees(-60.0));
     
-    public static final Pose2d B_IL = new Pose2d(16.03, 0.72, Rotation2d.fromRadians(2.20));
-    public static final Pose2d B_IR = new Pose2d(16.42, 7.01, Rotation2d.fromRadians(-2.20));
+    public static final Pose2d B_IL = new Pose2d(1.58, 7.38, Rotation2d.fromRadians(2.20));
+    public static final Pose2d B_IR = new Pose2d(1.10, 1.03, Rotation2d.fromRadians(-2.20));
 
     public static final Pose2d R_IL = new Pose2d(16.03, 0.72, Rotation2d.fromRadians(2.20).plus(Rotation2d.k180deg));
     public static final Pose2d R_IR = new Pose2d(16.42, 7.01, Rotation2d.fromRadians(-2.20).plus(Rotation2d.k180deg));
