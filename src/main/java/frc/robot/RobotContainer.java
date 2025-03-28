@@ -367,14 +367,18 @@ public class RobotContainer {
                 .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.a()
-                .onTrue(GoalPoseChooser.setSideCommand(SIDE.ALGAE)
-                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            // driverController.a()
+            //     .onTrue(GoalPoseChooser.setSideCommand(SIDE.ALGAE)
+            //     .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE)))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+
+            // driverController.b()
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.x()
