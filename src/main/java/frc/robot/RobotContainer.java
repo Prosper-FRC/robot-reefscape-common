@@ -277,7 +277,14 @@ public class RobotContainer {
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(teleopLoop, () -> climb.isDeepClimbReady()).onTrue(rumbleCommandOperator().withTimeout(0.5).alongWith(rumbleCommandDriver().withTimeout(0.5)));
+        new Trigger(
+            teleopLoop, 
+            () -> climb.isDeepClimbReady())
+            .onTrue(
+                rumbleCommandOperator()
+                    .withTimeout(0.5).alongWith(
+                rumbleCommandDriver()
+                    .withTimeout(0.5)));
 
         // Auto rumble if we are pressing intake button and we already have a gamepiece
         new Trigger(
@@ -286,8 +293,6 @@ public class RobotContainer {
                 .and(operatorController.leftBumper())
             .onTrue(
                 (rumbleCommandOperator()
-                    .withTimeout(0.5)).alongWith(
-                rumbleCommandDriver()
                     .withTimeout(0.5)));
 
     }
