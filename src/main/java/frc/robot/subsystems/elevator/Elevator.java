@@ -26,7 +26,7 @@ public class Elevator extends SubsystemBase {
     kL4Coral(() -> Units.inchesToMeters(60.0)),
     kL3Coral(() -> 0.84),
     kL2Coral(() -> 0.41),
-    kL1Coral(() -> Units.inchesToMeters(4.0)),
+    kL1Coral(() -> Units.inchesToMeters(5.0)),
     kL205Coral(() -> 0.6),
 
     kBarge(() -> Units.inchesToMeters(60.0)),
