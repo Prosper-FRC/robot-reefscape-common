@@ -443,7 +443,7 @@ public class RobotContainer {
                             // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
-                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreL1Coral, confirmScoreTrigger)
                         )   
                     )
                     .whileFalse(
