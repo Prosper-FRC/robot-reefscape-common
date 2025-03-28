@@ -36,7 +36,7 @@ public class AutonCommands {
         new LoggedTunableNumber("Auto/AlgaeMeterTrigger", 0.5); 
 
     private final double kElevatorPositionTimeoutSeconds = 2.5;
-    private final double kScoreCoralTimeoutSeconds = 0.7;
+    private final double kScoreCoralTimeoutSeconds = 0.5;
 
     // private final double kElevatorPositionTimeoutSeconds = 2.5;
     // private final double kScoreCoralTimeoutSeconds = 0.75;
@@ -181,7 +181,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
-                        scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
+                        scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -220,7 +220,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
-                    .andThen(scoreCoralCommand(), new InstantCommand(() -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral))), 
+                    .andThen(scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -237,7 +237,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
                         .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
-                        intakeCoralCommand().withTimeout(0.3)), 
+                        intakeCoralCommand()), 
                     nextAuto)));
     }
 
@@ -358,7 +358,7 @@ public class AutonCommands {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
             () -> mIntake.stop(true, false), 
-            mIntake);
+            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
     }
 
     public Command scoreAlgaeCommand() {
