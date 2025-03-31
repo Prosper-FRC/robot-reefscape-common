@@ -396,6 +396,14 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
+            driverController.rightTrigger()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.UP))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
+            driverController.leftTrigger()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DOWN))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
             // BOI ignore ts //
             // driverController.rightBumper()
             // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))

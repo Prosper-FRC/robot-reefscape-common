@@ -74,6 +74,8 @@ public class Drive extends SubsystemBase {
         DRIVE_TO_BARGE,
         AUTON, 
         STOP,
+        UP,
+        DOWN,
         LEFT,
         RIGHT,
         // TESTS
@@ -298,6 +300,12 @@ public class Drive extends SubsystemBase {
                 break;
             case AUTON:
                 desiredSpeeds = ppDesiredSpeeds;
+                break;
+            case UP:
+                desiredSpeeds = new ChassisSpeeds(0.5, 0.0, teleopSpeeds.omegaRadiansPerSecond);
+                break;
+            case DOWN:
+                desiredSpeeds = new ChassisSpeeds(-0.5, 0.0, teleopSpeeds.omegaRadiansPerSecond);
                 break;
             case LEFT:
                 desiredSpeeds = new ChassisSpeeds(0.0, -0.5, teleopSpeeds.omegaRadiansPerSecond);
