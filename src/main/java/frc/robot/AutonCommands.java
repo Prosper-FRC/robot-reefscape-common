@@ -38,9 +38,6 @@ public class AutonCommands {
     private final double kElevatorPositionTimeoutSeconds = 2.5;
     private final double kScoreCoralTimeoutSeconds = 0.5;
 
-    // private final double kElevatorPositionTimeoutSeconds = 2.5;
-    // private final double kScoreCoralTimeoutSeconds = 0.75;
-
     private final double kIntakeCoralTimeoutSeconds = 2.5;
 
     private SendableChooser<Command> autoChooser;
@@ -389,7 +386,7 @@ public class AutonCommands {
                 robotDrive.setDriveState(DriveState.AUTON);
                 robotDrive.setPose(AllianceFlipUtil.apply(new Pose2d(path.getPathPoses().get(0).getTranslation(), startingRotation)));
             }), 
-            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.5), 
+            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
             robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
@@ -399,7 +396,7 @@ public class AutonCommands {
         double totalTimeSeconds = path.getIdealTrajectory(Drive.robotConfig).get().getTotalTimeSeconds();
         return 
             robotDrive.setDriveStateCommand(DriveState.AUTON).andThen(
-                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.5), 
+                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
                 robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 

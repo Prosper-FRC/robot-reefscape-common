@@ -257,9 +257,9 @@ public class RobotContainer {
 
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
-        // new Trigger(DriverStation::isEnabled)
-        //     .onTrue(
-        //     Commands.runOnce(() -> robotDrive.resetModulesEncoders(), robotDrive));
+        new Trigger(DriverStation::isEnabled)
+             .onTrue(
+             Commands.runOnce(() -> robotDrive.resetModulesEncoders(), robotDrive));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
@@ -337,7 +337,7 @@ public class RobotContainer {
         Trigger rightAutoAlignTrigger = driverController.rightTrigger(0.5, teleopLoop);
 
         if (useCompetitionBindings) {
-            // driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
+            driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
