@@ -423,6 +423,15 @@ public class RobotContainer {
                 .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(3.0)))
                 .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
 
+            operatorController.povLeft()
+                .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
+                .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+    
+            operatorController.povRight()
+                .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
+                .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+    
+
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
