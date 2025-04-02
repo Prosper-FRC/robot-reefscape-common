@@ -39,11 +39,12 @@ public class Intake extends SubsystemBase {
     }
   }
 
+
   /** List of position setpoints for the pivot */
   public enum PivotGoal {
     kStowScore(() -> Rotation2d.fromDegrees(64.0)),
     kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
-    kIntakeReef(() -> Rotation2d.fromDegrees(5.0)),
+    kIntakeReef(() -> Rotation2d.fromDegrees(-27)),
     kIntakeGround(() -> Rotation2d.fromDegrees(-55.5)),
     kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
     kScore(() -> Rotation2d.fromDegrees(40.0)),
