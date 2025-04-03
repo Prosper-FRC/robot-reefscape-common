@@ -259,9 +259,9 @@ public class RobotContainer {
 
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
-        // new Trigger(DriverStation::isEnabled)
-        //     .onTrue(
-        //     Commands.runOnce(() -> robotDrive.resetModulesEncoders(), robotDrive));
+        new Trigger(DriverStation::isEnabled)
+            .onTrue(
+            Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
