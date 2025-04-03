@@ -358,4 +358,11 @@ public class Intake extends SubsystemBase {
   public Double getStatorCurrent() {
     return kRollerInputs.statorCurrentAmps;
   }
+
+    /**
+   * @return The selected gamepiece type
+   */
+  public Gamepiece getSelectedGamepiece() {
+    return selectedGamepiece;
+  }
 }

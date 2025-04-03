@@ -34,6 +34,7 @@ import frc.robot.subsystems.intake.PivotIOTalonFX;
 import frc.robot.subsystems.intake.SensorIO;
 import frc.robot.subsystems.intake.SensorIOLaserCAN;
 import frc.robot.subsystems.intake.Intake.PivotGoal;
+import frc.robot.subsystems.SuperstructureVisualizer;
 import frc.robot.subsystems.LED.LED;
 import frc.robot.subsystems.LED.LEDConstants;
 import frc.robot.subsystems.climb.Climb;
@@ -95,6 +96,8 @@ public class RobotContainer {
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
+
+    private final SuperstructureVisualizer superstructureVisualizer = new SuperstructureVisualizer();
 
     public RobotContainer() {
         led = new LED(LEDConstants.kLED);
@@ -742,5 +745,17 @@ public class RobotContainer {
         // Add a fudge factor to make the algae picker visualizer line up with the 
         // elevator better
         intake.setVisualizerVerticalPosition(elevator.getPositionMeters() + 0.38);
+        
+        superstructureVisualizer.updateVisualizer(
+            elevator.getPositionMeters(), 
+            intake.getPivotPosition(), 
+            climb.getPosition());
+
+        superstructureVisualizer.updateGamepiece(
+            intake.detectedGamepiece(), 
+            intake.getSelectedGamepiece(), 
+            robotDrive.getPoseEstimate(), 
+            elevator.getPositionMeters(), 
+            intake.getPivotPosition());
     }
 }
