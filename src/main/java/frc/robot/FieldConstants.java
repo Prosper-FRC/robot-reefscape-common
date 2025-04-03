@@ -19,11 +19,11 @@ public class FieldConstants {
 
     public static final Pose2d FL = new Pose2d(3.51, 3.13, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(3.86, 2.88, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d FR = new Pose2d(3.80, 2.96, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FR = new Pose2d(3.80, 2.96, Rotation2d.fromDegrees(-120.0)); // amarillo pose
 
     public static final Pose2d EL = new Pose2d(4.76, 2.72, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d EM = new Pose2d(5.15, 2.94, Rotation2d.fromDegrees(-60.0));
-    public static final Pose2d ER = new Pose2d(5.04, 2.88, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d ER = new Pose2d(5.04, 2.88, Rotation2d.fromDegrees(-60.0)); // my pose
     
     public static final Pose2d B_IL = new Pose2d(1.45, 7.21, Rotation2d.fromRadians(2.20));
     public static final Pose2d B_IR = new Pose2d(1.16, 0.99, Rotation2d.fromRadians(-2.20));
