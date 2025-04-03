@@ -260,6 +260,7 @@ public class RobotContainer {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
         new Trigger(DriverStation::isEnabled)
             .onTrue(
+                /* Do not require robot drive or it will deschedule auto */
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
