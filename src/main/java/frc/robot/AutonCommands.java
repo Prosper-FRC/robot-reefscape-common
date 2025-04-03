@@ -214,7 +214,7 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)),
+                // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)),
                 nextPath(
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
