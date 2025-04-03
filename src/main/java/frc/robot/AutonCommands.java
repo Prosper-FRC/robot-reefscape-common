@@ -38,6 +38,9 @@ public class AutonCommands {
     private final double kElevatorPositionTimeoutSeconds = 2.5;
     private final double kScoreCoralTimeoutSeconds = 0.5;
 
+    // private final double kElevatorPositionTimeoutSeconds = 2.5;
+    // private final double kScoreCoralTimeoutSeconds = 0.75;
+
     private final double kIntakeCoralTimeoutSeconds = 2.5;
 
     private SendableChooser<Command> autoChooser;
@@ -217,8 +220,7 @@ public class AutonCommands {
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
-                    .andThen(scoreCoralCommand()),
-                    // remove instant command //), 
+                    .andThen(scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }
 
@@ -233,9 +235,9 @@ public class AutonCommands {
                 nextPath(
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
-                    robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
-                        .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
-                        intakeCoralCommand()), 
+                        robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE)
+                            .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes()).andThen(
+                        intakeCoralCommand()),
                     nextAuto)));
     }
 
@@ -352,7 +354,6 @@ public class AutonCommands {
         return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL205Coral));
     }
 
-    // onlyWhile getHaspiece //
     public Command intakeCoralCommand() {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
