@@ -10,7 +10,7 @@ public class FieldConstants {
     public static final Pose2d BL = new Pose2d(4.21, 5.32, Rotation2d.fromDegrees(120.0));
     public static final Pose2d BM = new Pose2d(3.85, 5.13, Rotation2d.fromDegrees(120.0));
     public static final Pose2d BR = new Pose2d(3.91, 5.16, Rotation2d.fromDegrees(120.0));
-    public static final Pose2d CL = new Pose2d(5.48, 4.92, Rotation2d.fromDegrees(60.0));
+    public static final Pose2d CL = new Pose2d(5.46, 4.92, Rotation2d.fromDegrees(60.0));
     public static final Pose2d CM = new Pose2d(5.15, 5.14, Rotation2d.fromDegrees(60.0));
     public static final Pose2d CR = new Pose2d(5.18, 5.08, Rotation2d.fromDegrees(60.0));
     public static final Pose2d DL = new Pose2d(5.76, 3.63, Rotation2d.kZero);
@@ -19,7 +19,7 @@ public class FieldConstants {
 
     public static final Pose2d FL = new Pose2d(3.51, 3.13, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(3.86, 2.88, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d FR = new Pose2d(3.81, 2.94, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FR = new Pose2d(3.80, 2.96, Rotation2d.fromDegrees(-120.0));
 
     public static final Pose2d EL = new Pose2d(4.76, 2.72, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d EM = new Pose2d(5.15, 2.94, Rotation2d.fromDegrees(-60.0));
