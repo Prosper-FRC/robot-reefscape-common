@@ -246,7 +246,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Commands.runOnce(() -> robotDrive.setDriveState(DriveState.AUTON), robotDrive).schedule();
+        // Commands.runOnce(() -> robotDrive.setDriveState(DriveState.AUTON), robotDrive).schedule();
 
         return autoChooser.get();
     }
@@ -259,7 +259,7 @@ public class RobotContainer {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
         new Trigger(DriverStation::isEnabled)
              .onTrue(
-             Commands.runOnce(() -> robotDrive.resetModulesEncoders(), robotDrive));
+             Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
