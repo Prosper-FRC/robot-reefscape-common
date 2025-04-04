@@ -114,6 +114,10 @@ public class AutonCommands {
             null)))))))));
 
         tryToAddPathToChooser(
+            "CenterCoral", 
+            scoreFirstCoralPath("S_SM_DR_C", null));
+
+        tryToAddPathToChooser(
             "Algae(DONTUSE)", 
             intakeFirstAlgaePath("I_SM_DM_A",
             scoreAlgaePath("S_DM_P_A", 
