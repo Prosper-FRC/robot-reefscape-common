@@ -57,7 +57,7 @@ public class Robot extends LoggedRobot {
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
                 SignalLogger.setPath("/U/logs");
-                // SignalLogger.enableAutoLogging(false);
+                SignalLogger.enableAutoLogging(false);
                 // SignalLogger.stop();
                 break;
             case SIM:
