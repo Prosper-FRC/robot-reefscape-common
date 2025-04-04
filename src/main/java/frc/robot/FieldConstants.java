@@ -10,8 +10,8 @@ public class FieldConstants {
     public static final Pose2d AR = new Pose2d(3.22, 4.08, Rotation2d.k180deg);
 
     public static final Pose2d BL = new Pose2d(4.21, 5.32, Rotation2d.fromDegrees(120.0));
-    public static final Pose2d BM = new Pose2d(4.06, 5.24, Rotation2d.fromDegrees(120.0));
-    public static final Pose2d BR = new Pose2d(3.91, 5.16, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d BM = new Pose2d(4.07, 5.245, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d BR = new Pose2d(3.93, 5.17, Rotation2d.fromDegrees(120.0));
 
     public static final Pose2d CL = new Pose2d(5.46, 4.92, Rotation2d.fromDegrees(60.0));
     public static final Pose2d CM = new Pose2d(5.32, 5, Rotation2d.fromDegrees(60.0));
@@ -27,7 +27,7 @@ public class FieldConstants {
 
     public static final Pose2d FL = new Pose2d(3.51, 3.13, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(3.66, 3.035, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d FR = new Pose2d(3.81, 2.94, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FR = new Pose2d(3.73, 2.97, Rotation2d.fromDegrees(-120.0));
     
 
     // get 5411 constants //
