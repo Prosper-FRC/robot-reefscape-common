@@ -353,9 +353,6 @@ public class RobotContainer {
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
-            // new Trigger(()-> driverController.getHID().getPOV() != -1)
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             leftAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
@@ -393,14 +390,14 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // BOI ignore ts //
-            // driverController.rightBumper()
-            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
-            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+            driverController.leftStick()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.UP))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            // driverController.leftBumper()
-            // .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
-            // .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+            driverController.rightStick()
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DOWN))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+
 
             //TEMPORARY SCORE
             operatorController.rightBumper().and(coralSelectTrigger)

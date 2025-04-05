@@ -76,6 +76,8 @@ public class Drive extends SubsystemBase {
         STOP,
         LEFT,
         RIGHT,
+        UP,
+        DOWN,
         // TESTS
         DRIFT_TEST,
         LINEAR_TEST,
@@ -304,6 +306,12 @@ public class Drive extends SubsystemBase {
                 break;
             case RIGHT:
                 desiredSpeeds = new ChassisSpeeds(0.0, 0.5, teleopSpeeds.omegaRadiansPerSecond);
+                break;
+            case UP:
+                desiredSpeeds = new ChassisSpeeds(0.5, 0.0, teleopSpeeds.omegaRadiansPerSecond);
+                break;
+            case DOWN:
+                desiredSpeeds = new ChassisSpeeds(-0.5, 0.0, teleopSpeeds.omegaRadiansPerSecond);
                 break;
             case STOP:
                 desiredSpeeds = new ChassisSpeeds();
