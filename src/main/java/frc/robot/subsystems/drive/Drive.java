@@ -627,7 +627,7 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Odometry/DistanceFromReef")
     public double distanceFromReefCenter(){
-        return getPoseEstimate().getTranslation().getDistance(kReefCenter.getTranslation());
+        return getPoseEstimate().getTranslation().getDistance(AllianceFlipUtil.apply(kReefCenter).getTranslation());
     }
 
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {
