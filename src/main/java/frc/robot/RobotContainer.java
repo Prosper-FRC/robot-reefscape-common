@@ -372,7 +372,7 @@ public class RobotContainer {
 
             rightAutoAlignTrigger
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
-                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
+                .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             driverController.a()
