@@ -178,7 +178,9 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-               // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL1Coral))
+                    .andThen(Commands.waitUntil(() -> robotDrive.distanceFromReefCenter() < 2 )
+                    .andThen(new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)))),
                 firstPath(
                     name, 
                     new Rotation2d(), 
@@ -218,7 +220,9 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-                // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL2Coral)),
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL1Coral))
+                    .andThen(Commands.waitUntil(() -> robotDrive.distanceFromReefCenter() < 3.5 )
+                    .andThen(new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)))),
                 nextPath(
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), 
@@ -391,7 +395,7 @@ public class AutonCommands {
                 robotDrive.setDriveState(DriveState.AUTON);
                 robotDrive.setPose(AllianceFlipUtil.apply(new Pose2d(path.getPathPoses().get(0).getTranslation(), startingRotation)));
             }), 
-            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
+            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds), 
             robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
@@ -401,7 +405,7 @@ public class AutonCommands {
         double totalTimeSeconds = path.getIdealTrajectory(Drive.robotConfig).get().getTotalTimeSeconds();
         return 
             robotDrive.setDriveStateCommand(DriveState.AUTON).andThen(
-                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
+                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds), 
                 robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 

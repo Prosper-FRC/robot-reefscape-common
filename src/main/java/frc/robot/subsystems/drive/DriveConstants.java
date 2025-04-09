@@ -42,7 +42,7 @@ public class DriveConstants {
         kMaxRotationSpeedRadiansPS, kMaxRotationAccelRadiansPS);
 
     /* MISC */
-    public static final double kDriftRate = RobotBase.isReal() ? 2.5 : 5.57;
+    public static final double kDriftRate = RobotBase.isReal() ? 3.0 : 5.57;
     public static final double kSniperSpeed = 0.2;
 
     public static final boolean kDoExtraLogging = false;
