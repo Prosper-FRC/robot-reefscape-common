@@ -172,7 +172,7 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public void resetPosition() {
-    kMotor.setPosition(0.0);
+    kMotor.setPosition(Rotation2d.fromDegrees(64.331).getRotations());
   }
 
   @Override

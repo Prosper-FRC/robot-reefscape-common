@@ -123,6 +123,8 @@ public class Intake extends SubsystemBase {
   private final LoggedNetworkBoolean kOverrideDetectGamepiece = 
     new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", false);
 
+  private boolean overridePivotSoftLimit = false;
+
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
@@ -192,15 +194,17 @@ public class Intake extends SubsystemBase {
       Logger.recordOutput("Intake/PivotGoal", "NONE");
     }
 
-    // Check if pivot is attempting to move beyond its limitations
-    if (getPivotPosition().getDegrees() > IntakeConstants.kMaxPivotPosition.getDegrees() 
-        && kPivotInputs.appliedVoltage > 0.0) {
-      stop(false, true);
-    } else if (getPivotPosition().getDegrees() < IntakeConstants.kMinPivotPosition.getDegrees() 
-        && kPivotInputs.appliedVoltage < 0.0) {
-      stop(false, true);
-    } else {
-      // Do nothing if limits are not reached
+    if (!overridePivotSoftLimit) {
+      // Check if pivot is attempting to move beyond its limitations
+      if (getPivotPosition().getDegrees() > IntakeConstants.kMaxPivotPosition.getDegrees() 
+          && kPivotInputs.appliedVoltage > 0.0) {
+        stop(false, true);
+      } else if (getPivotPosition().getDegrees() < IntakeConstants.kMinPivotPosition.getDegrees() 
+          && kPivotInputs.appliedVoltage < 0.0) {
+        stop(false, true);
+      } else {
+        // Do nothing if limits are not reached
+      }
     }
 
     if (rollerGoal != null) {
@@ -302,6 +306,20 @@ public class Intake extends SubsystemBase {
 
   public void setPivotPosition(Rotation2d position) {
     kPivotHardware.setPosition(position);
+  }
+
+  /**
+   * Sets an internal variable that dictates whether the subsystem will check to
+   * see if the pivot is attempting to extend beyond its softlimit
+   * 
+   * @param overrideSoftLimit
+   */
+  public void overridePivotSoftlimit(boolean overrideSoftLimit) {
+    overridePivotSoftLimit = overrideSoftLimit;
+  }
+
+  public void resetPivotPosition() {
+    kPivotHardware.resetPosition();
   }
 
   /**

@@ -425,13 +425,19 @@ public class RobotContainer {
                 .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
 
             operatorController.povLeft()
-                .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
-                .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+                .onTrue(Commands.runOnce(() -> intake.overridePivotSoftlimit(true))
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(-1))))
+                .onFalse(Commands.runOnce(() -> intake.overridePivotSoftlimit(false))
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(0))));
     
             operatorController.povRight()
-                .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
-                .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
-    
+                .onTrue(Commands.runOnce(() -> intake.overridePivotSoftlimit(true))
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(1))))
+                .onFalse(Commands.runOnce(() -> intake.overridePivotSoftlimit(false))
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(0))));
+
+            operatorController.leftTrigger().and(operatorController.rightTrigger()).and(operatorController.rightStick())
+                .onTrue(Commands.runOnce(() -> intake.resetPivotPosition()));
 
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
