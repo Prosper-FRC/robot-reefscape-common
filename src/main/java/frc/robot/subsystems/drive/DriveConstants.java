@@ -28,7 +28,7 @@ public class DriveConstants {
         Math.hypot(kTrackWidthXMeters / 2.0, kTrackWidthYMeters / 2.0);
     
     /* DRIVEBASE CONSTRAINTS */
-    public static final double kMaxLinearSpeedMPS = 4.5;
+    public static final double kMaxLinearSpeedMPS = 5.0;
     public static final double kMaxLinearAccelerationMPSS = 12.0;
 
     public static final double kMaxRotationSpeedRadiansPS = Math.toRadians(360);
@@ -47,7 +47,7 @@ public class DriveConstants {
 
     public static final boolean kDoExtraLogging = false;
 
-    public static final PIDConstants kPPTranslationPID = new PIDConstants(1.6, 0.0, 0.0);
+    public static final PIDConstants kPPTranslationPID = new PIDConstants(2.0, 0.0, 0.0);
     public static final PIDConstants kPPRotationPID = new PIDConstants(2.5, 0.0, 0.0);
 
     ///////////////////// MODULES \\\\\\\\\\\\\\\\\\\\\\\

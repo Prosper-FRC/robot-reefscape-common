@@ -18,7 +18,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class HolonomicController {
     public static final LoggedTunableNumber xP = new LoggedTunableNumber(
-        "AutoAlign/X/kP", 3.5);
+        "AutoAlign/X/kP", 4.25);
     public static final LoggedTunableNumber xD = new LoggedTunableNumber(
         "AutoAlign/X/kD", 0.0);
     public static final LoggedTunableNumber xI = new LoggedTunableNumber(
@@ -30,7 +30,7 @@ public class HolonomicController {
     public static final LoggedTunableNumber xMaxVMPS = new LoggedTunableNumber(
         "AutoAlign/X/kMaxVMPS", 3.0);
     public static final LoggedTunableNumber xMaxAMPSS = new LoggedTunableNumber(
-        "AutoAlign/X/kMaxVMPSS", 3.0);
+        "AutoAlign/X/kMaxVMPSS", 4.5);
 
     public static final LoggedTunableNumber xS = new LoggedTunableNumber(
         "AutoAlign/X/kS", 0.0);
@@ -53,7 +53,7 @@ public class HolonomicController {
     public static final LoggedTunableNumber yMaxVMPS = new LoggedTunableNumber(
         "AutoAlign/Y/kMaxVMPS", 3.0);
     public static final LoggedTunableNumber yMaxAMPSS = new LoggedTunableNumber(
-        "AutoAlign/Y/kMaxVMPSS", 3.0);
+        "AutoAlign/Y/kMaxVMPSS", 4.5);
 
     public static final LoggedTunableNumber yS = new LoggedTunableNumber(
         "AutoAlign/Y/kS", 0.0);
