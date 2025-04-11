@@ -353,8 +353,8 @@ public class RobotContainer {
         Trigger coralSelectTrigger = operatorController.rightTrigger(0.5, teleopLoop);
         Trigger algaeSelectTrigger = operatorController.leftTrigger(0.5, teleopLoop);
         Trigger confirmScoreTrigger = operatorController.rightBumper(teleopLoop);
-        Trigger leftAutoAlignTrigger = driverController.leftTrigger();
-        Trigger rightAutoAlignTrigger = driverController.rightTrigger();
+        Trigger leftAutoAlignTrigger = driverController.leftStick();
+        Trigger rightAutoAlignTrigger = driverController.rightStick();
 
         if (useCompetitionBindings) {
             driverController.y().onTrue(Commands.runOnce(() -> robotDrive.resetGyro()));
@@ -397,11 +397,11 @@ public class RobotContainer {
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.leftStick()
+            driverController.leftTrigger()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.UP))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
-            driverController.rightStick()
+            driverController.rightTrigger()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DOWN))
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 

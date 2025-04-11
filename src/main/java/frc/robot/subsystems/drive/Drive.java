@@ -462,9 +462,9 @@ public class Drive extends SubsystemBase {
         
         Logger.recordOutput("Drive/Swerve/Setpoints", unOptimizedSetpointStates);
         Logger.recordOutput("Drive/Swerve/SetpointsOptimized", optimizedSetpointStates);
-        // Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
-        // Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
-        //     kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
+        Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
+        Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
+            kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
     }
 
     /* Calculates DriveFeedforward based off state */
