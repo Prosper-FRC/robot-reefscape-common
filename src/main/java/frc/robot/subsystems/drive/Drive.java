@@ -287,17 +287,44 @@ public class Drive extends SubsystemBase {
                 );
                 break;
             case DRIVE_TO_ALGAE:
-                ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
-                double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
-                ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
-                if(AllianceFlipUtil.shouldFlip()) forwardJoy *= -1;
-                desiredSpeeds = new ChassisSpeeds(
-                    /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
-                    forwardJoy,
-                    algaeAlignSpeeds.vyMetersPerSecond,
-                    algaeAlignSpeeds.omegaRadiansPerSecond
-                );
+                // ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                // double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                // ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                // if(AllianceFlipUtil.shouldFlip()) forwardJoy *= -1;
+                // desiredSpeeds = new ChassisSpeeds(
+                //     /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                //     forwardJoy  * (AllianceFlipUtil),
+                //     algaeAlignSpeeds.vyMetersPerSecond,
+                //     algaeAlignSpeeds.omegaRadiansPerSecond
+                // );
+                // break;
+
+                if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+                    ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                    double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                    ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                    desiredSpeeds = new ChassisSpeeds(
+                        /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                        forwardJoy,
+                        algaeAlignSpeeds.vyMetersPerSecond,
+                        algaeAlignSpeeds.omegaRadiansPerSecond
+                    );
+                }
+
+                else{
+                    ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                    double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                    ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                    desiredSpeeds = new ChassisSpeeds(
+                        /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                        -forwardJoy,
+                        algaeAlignSpeeds.vyMetersPerSecond,
+                        algaeAlignSpeeds.omegaRadiansPerSecond
+                    );
+                }
+
                 break;
+
             case AUTON:
                 desiredSpeeds = ppDesiredSpeeds;
                 break;
