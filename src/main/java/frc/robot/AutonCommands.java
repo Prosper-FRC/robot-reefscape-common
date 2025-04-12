@@ -43,6 +43,8 @@ public class AutonCommands {
 
     private final double kIntakeCoralTimeoutSeconds = 2.5;
 
+    private final double kAutoAlignActivationDistance = 1.5;
+
     private SendableChooser<Command> autoChooser;
 
     private Drive robotDrive;
@@ -163,7 +165,7 @@ public class AutonCommands {
                 firstPath(
                     name, 
                     new Rotation2d(), 
-                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
@@ -184,7 +186,7 @@ public class AutonCommands {
                 firstPath(
                     name, 
                     new Rotation2d(), 
-                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
@@ -225,7 +227,7 @@ public class AutonCommands {
                     .andThen(new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)))),
                 nextPath(
                     name, 
-                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
                     .andThen(scoreCoralCommand()), 

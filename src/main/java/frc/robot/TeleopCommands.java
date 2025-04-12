@@ -383,7 +383,7 @@ public class TeleopCommands {
      * @return The command to select the gamepiece
      */
     public Command selectGamepieceCommand(Gamepiece gamepiece) {
-        return Commands.runOnce(() -> kIntake.selectGamepiece(gamepiece), kIntake);
+        return Commands.runOnce(() -> kIntake.selectGamepiece(gamepiece));
     }
 
     /**
