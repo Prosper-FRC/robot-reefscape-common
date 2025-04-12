@@ -511,6 +511,7 @@ public class RobotContainer {
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                            .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .alongWith(
                                 teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeReef)
                                 .onlyWhile(hasGamepieceTrigger.negate())
@@ -537,6 +538,7 @@ public class RobotContainer {
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .alongWith(
                                 teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
@@ -563,6 +565,7 @@ public class RobotContainer {
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .alongWith(
                                 teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
