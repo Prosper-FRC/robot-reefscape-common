@@ -24,6 +24,7 @@ import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.Gamepiece;
 import frc.robot.subsystems.intake.Intake.RollerGoal;
 import frc.robot.utils.VirtualSubsystem;
 import frc.robot.utils.debugging.LoggedTunableNumber;
@@ -368,7 +369,8 @@ public class AutonCommands {
         return Commands.startEnd(
             () -> mIntake.setRollerGoal(RollerGoal.kIntakeCoral), 
             () -> mIntake.stop(true, false), 
-            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean());
+            mIntake).onlyWhile(() -> getHasPiece().getAsBoolean())
+            .beforeStarting(Commands.runOnce(() -> mIntake.selectGamepiece(Gamepiece.kCoral)));
     }
 
     public Command scoreAlgaeCommand() {
