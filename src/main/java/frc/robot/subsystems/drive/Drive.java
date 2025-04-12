@@ -132,6 +132,7 @@ public class Drive extends SubsystemBase {
     private final static LoggedTunableNumber linearTestSpeedMPS = new LoggedTunableNumber("Drive/LinearTestMPS", 4.5);
 
     Debouncer autoAlignTimeout = new Debouncer(0.1, DebounceType.kRising);
+    Debouncer autoAlignDelay = new Debouncer(0.1, DebounceType.kRising);
 
     public Drive(Module[] modules, GyroIO gyro, Vision vision) {
         this.modules = modules;
@@ -517,7 +518,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Command waitUnitllAutoAlignFinishes() {
-        return new WaitUntilCommand(()-> autoAlignController.atGoal());
+        return new WaitUntilCommand(()-> autoAlignDelay.calculate(autoAlignController.atGoal()));
     }
 
     public Command waitUnitllIntakeAutoAlignFinishes() {
