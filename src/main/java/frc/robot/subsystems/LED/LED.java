@@ -26,9 +26,9 @@ public class LED extends SubsystemBase implements ILED {
         setGradientAnimation(
                 100,
                 GradientType.kContinuous,
-                Color.kLightBlue,
-                Color.kMediumBlue,
-                Color.kDarkBlue);
+                Color.kSeaGreen,
+                Color.kLimeGreen,
+                Color.kGreen);
     }
 
     public void alignedAnimation() {

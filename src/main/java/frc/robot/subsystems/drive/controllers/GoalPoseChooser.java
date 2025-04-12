@@ -152,7 +152,7 @@ public class GoalPoseChooser {
 
     /* DO NOT USE X COORDINATE, REPLACE y holonomic speeds with driver controller when using this! */
     public static Pose2d getNetPose(Pose2d robotPose) {
-        return AllianceFlipUtil.apply(new Pose2d(FieldConstants.kXNetLineMeters, 0.0, Rotation2d.kZero));
+        return AllianceFlipUtil.apply(new Pose2d(FieldConstants.kXNetLineMeters, 0.0, Rotation2d.k180deg));
     }
 
     /* Accoumts for rotation from reef, and offsets for red-side logic */

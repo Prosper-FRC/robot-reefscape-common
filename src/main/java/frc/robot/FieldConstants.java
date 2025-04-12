@@ -28,7 +28,7 @@ public class FieldConstants {
 
     public static final Pose2d FL = new Pose2d(3.47, 3.10, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(3.645, 3.045, Rotation2d.fromDegrees(-120.0));
-    public static final Pose2d FR = new Pose2d(3.80, 2.96, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FR = new Pose2d(3.81, 2.94, Rotation2d.fromDegrees(-120.0));
     
     public static final Pose2d B_IL = new Pose2d(1.45, 7.29, Rotation2d.fromRadians(2.20));
     public static final Pose2d B_IR = new Pose2d(0.88, 1.64, Rotation2d.fromRadians(-2.20));

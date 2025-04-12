@@ -43,6 +43,8 @@ public class AutonCommands {
 
     private final double kIntakeCoralTimeoutSeconds = 2.5;
 
+    private final double kAutoAlignActivationDistance = 1.5;
+
     private SendableChooser<Command> autoChooser;
 
     private Drive robotDrive;
@@ -114,6 +116,10 @@ public class AutonCommands {
             null)))))))));
 
         tryToAddPathToChooser(
+            "CenterCoral", 
+            scoreFirstCoralPath("S_SM_DR_C", null));
+
+        tryToAddPathToChooser(
             "Algae(DONTUSE)", 
             intakeFirstAlgaePath("I_SM_DM_A",
             scoreAlgaePath("S_DM_P_A", 
@@ -159,7 +165,7 @@ public class AutonCommands {
                 firstPath(
                     name, 
                     new Rotation2d(), 
-                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
@@ -174,11 +180,13 @@ public class AutonCommands {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
             new ParallelCommandGroup(
-               // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL3Coral)),
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL1Coral))
+                    .andThen(Commands.waitUntil(() -> robotDrive.distanceFromReefCenter() < 2 )
+                    .andThen(new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)))),
                 firstPath(
                     name, 
                     new Rotation2d(), 
-                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL).withDeadline(
                         robotDrive.waitUnitllAutoAlignFinishes()).andThen(
                         scoreCoralCommand()), 
@@ -213,11 +221,13 @@ public class AutonCommands {
     public Command scoreCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            new ParallelCommandGroup(
-                // new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)),
+            new ParallelCommandGroup(   
+                new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL1Coral))
+                    .andThen(Commands.waitUntil(() -> robotDrive.distanceFromReefCenter() < 3.0 )
+                    .andThen(new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)))),
                 nextPath(
                     name, 
-                    () -> !PathPlannerAuto.currentPathName.equals(name), 
+                    () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
                     .andThen(scoreCoralCommand()), 
@@ -387,7 +397,7 @@ public class AutonCommands {
                 robotDrive.setDriveState(DriveState.AUTON);
                 robotDrive.setPose(AllianceFlipUtil.apply(new Pose2d(path.getPathPoses().get(0).getTranslation(), startingRotation)));
             }), 
-            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
+            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds), 
             robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
@@ -397,7 +407,7 @@ public class AutonCommands {
         double totalTimeSeconds = path.getIdealTrajectory(Drive.robotConfig).get().getTotalTimeSeconds();
         return 
             robotDrive.setDriveStateCommand(DriveState.AUTON).andThen(
-                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds + 0.1), 
+                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds), 
                 robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 

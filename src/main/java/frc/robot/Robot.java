@@ -52,12 +52,16 @@ public class Robot extends LoggedRobot {
                 break;
         }
 
+        SignalLogger.setPath("/U/logs");
+        SignalLogger.enableAutoLogging(false);
+        SignalLogger.stop();
+
         switch (Constants.kCurrentMode) {
             case REAL:
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
-                SignalLogger.setPath("/U/logs");
-                SignalLogger.enableAutoLogging(false);
+                // SignalLogger.setPath("/U/logs");
+                // SignalLogger.enableAutoLogging(false);
                 // SignalLogger.stop();
                 break;
             case SIM:
@@ -73,7 +77,7 @@ public class Robot extends LoggedRobot {
         }
 
         Logger.start();
-        SignalLogger.stop();
+        // SignalLogger.stop();
 
         mRobotContainer = new RobotContainer();
         CameraServer.startAutomaticCapture();

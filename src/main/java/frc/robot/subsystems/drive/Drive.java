@@ -74,6 +74,8 @@ public class Drive extends SubsystemBase {
         DRIVE_TO_BARGE,
         AUTON, 
         STOP,
+        UP,
+        DOWN,
         LEFT,
         RIGHT,
         // TESTS
@@ -299,11 +301,17 @@ public class Drive extends SubsystemBase {
             case AUTON:
                 desiredSpeeds = ppDesiredSpeeds;
                 break;
+            case UP:
+                desiredSpeeds = new ChassisSpeeds(0.5, 0.0, teleopSpeeds.omegaRadiansPerSecond);
+                break;
+            case DOWN:
+                desiredSpeeds = new ChassisSpeeds(-0.5, 0.0, teleopSpeeds.omegaRadiansPerSecond);
+                break;
             case LEFT:
-                desiredSpeeds = new ChassisSpeeds(0.0, -1.0, teleopSpeeds.omegaRadiansPerSecond);
+                desiredSpeeds = new ChassisSpeeds(0.0, -0.5, teleopSpeeds.omegaRadiansPerSecond);
                 break;
             case RIGHT:
-                desiredSpeeds = new ChassisSpeeds(0.0, 1.0, teleopSpeeds.omegaRadiansPerSecond);
+                desiredSpeeds = new ChassisSpeeds(0.0, 0.5, teleopSpeeds.omegaRadiansPerSecond);
                 break;
             case STOP:
                 desiredSpeeds = new ChassisSpeeds();
@@ -454,9 +462,9 @@ public class Drive extends SubsystemBase {
         
         Logger.recordOutput("Drive/Swerve/Setpoints", unOptimizedSetpointStates);
         Logger.recordOutput("Drive/Swerve/SetpointsOptimized", optimizedSetpointStates);
-        // Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
-        // Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
-        //     kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
+        Logger.recordOutput("Drive/Swerve/SetpointsChassisSpeeds", kKinematics.toChassisSpeeds(optimizedSetpointStates));
+        Logger.recordOutput("Drive/Odometry/FieldSetpointChassisSpeed", ChassisSpeeds.fromRobotRelativeSpeeds(
+            kKinematics.toChassisSpeeds(optimizedSetpointStates), robotRotation));
     }
 
     /* Calculates DriveFeedforward based off state */
@@ -514,6 +522,11 @@ public class Drive extends SubsystemBase {
     }
     public Command waitUnitllAutoAlignFinishes() {
         return new WaitUntilCommand(()-> autoAlignController.atGoal());
+    }
+
+    public Command waitUnitllIntakeAutoAlignFinishes() {
+        return new WaitUntilCommand(()-> autoAlignController.atGoal() || 
+            autoAlignTimeout.calculate(autoAlignController.atPositionTimeout()));
     }
 
     public BooleanSupplier waitUnitllAutoAlignFinishesSupplier() {
@@ -618,7 +631,7 @@ public class Drive extends SubsystemBase {
 
     @AutoLogOutput(key = "Drive/Odometry/DistanceFromReef")
     public double distanceFromReefCenter(){
-        return getPoseEstimate().getTranslation().getDistance(kReefCenter.getTranslation());
+        return getPoseEstimate().getTranslation().getDistance(AllianceFlipUtil.apply(kReefCenter).getTranslation());
     }
 
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {

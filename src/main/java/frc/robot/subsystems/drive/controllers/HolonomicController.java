@@ -11,6 +11,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import frc.robot.utils.debugging.LoggedTunableNumber;
+import frc.robot.utils.math.EqualsUtil;
+import frc.robot.utils.math.GeomUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -37,7 +39,7 @@ public class HolonomicController {
         "AutoAlign/X/kV", 0.5);
 
     public static final LoggedTunableNumber xToleranceMeters = new LoggedTunableNumber(
-        "AutoAlign/X/ToleranceMeters", 0.02);
+        "AutoAlign/X/ToleranceMeters", 0.03);
 
     public static final LoggedTunableNumber yP = new LoggedTunableNumber(
         "AutoAlign/Y/kP", 3.5);
@@ -60,7 +62,7 @@ public class HolonomicController {
         "AutoAlign/Y/kV", 0.5);
 
     public static final LoggedTunableNumber yToleranceMeters = new LoggedTunableNumber(
-        "AutoAlign/Y/ToleranceMeters", 0.02);
+        "AutoAlign/Y/ToleranceMeters", 0.03);
 
     public static final LoggedTunableNumber omegaP = new LoggedTunableNumber(
         "AutoAlign/Omega/kP", 3.0);
@@ -202,6 +204,11 @@ public class HolonomicController {
                 yController.getSetpoint().position ), 
             Rotation2d.fromDegrees(
                 omegaController.getSetpoint().position ) );
+    }
+
+    @AutoLogOutput(key = "Drive/HolonomicController/AtPositionTimeout")
+    public boolean atPositionTimeout() {
+        return getPositionGoal().equals(getPositionSetpoint());
     }
 
     // @AutoLogOutput(key = "Drive/HolonomicController/VelocityGoal")

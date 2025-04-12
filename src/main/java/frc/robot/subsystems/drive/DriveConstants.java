@@ -28,7 +28,7 @@ public class DriveConstants {
         Math.hypot(kTrackWidthXMeters / 2.0, kTrackWidthYMeters / 2.0);
     
     /* DRIVEBASE CONSTRAINTS */
-    public static final double kMaxLinearSpeedMPS = 4.5;
+    public static final double kMaxLinearSpeedMPS = 5.0;
     public static final double kMaxLinearAccelerationMPSS = 12.0;
 
     public static final double kMaxRotationSpeedRadiansPS = Math.toRadians(360);
@@ -42,7 +42,7 @@ public class DriveConstants {
         kMaxRotationSpeedRadiansPS, kMaxRotationAccelRadiansPS);
 
     /* MISC */
-    public static final double kDriftRate = RobotBase.isReal() ? 2.5 : 5.57;
+    public static final double kDriftRate = RobotBase.isReal() ? 3.0 : 5.57;
     public static final double kSniperSpeed = 0.2;
 
     public static final boolean kDoExtraLogging = true;
@@ -69,11 +69,12 @@ public class DriveConstants {
 
     public static final ModuleControlConfig kModuleControllerConfigs = RobotBase.isReal() ? 
         new ModuleControlConfig(
-            new PIDController(100.0, 0.0, 0.0), new SimpleMotorFeedforward(4.0, 0.0, 0.0),
+            new PIDController(100.0, 0.0, 0.0), new SimpleMotorFeedforward(5.25, 0.0, 1.0),
             new PIDController(20.0, 0.0, 0.5), new SimpleMotorFeedforward(0.0, 0.0, 0.0)) :
         new ModuleControlConfig(
             new PIDController(0.1, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 2.36, 0.005), 
             new PIDController(4.5, 0.0, 0.0), new SimpleMotorFeedforward(0.0, 0.0));
+
 
     /* MODULE SPECIFIC CONSTANTS */
     /* If 180 was added, the person who got the offset had the bevel gears on the wrong side when he did it */

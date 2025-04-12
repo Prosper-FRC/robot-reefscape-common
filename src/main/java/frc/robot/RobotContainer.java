@@ -241,7 +241,8 @@ public class RobotContainer {
     /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
-            robotDrive.setDriveStateCommand(DriveState.TELEOP)
+            robotDrive.setDriveStateCommand(DriveState.TELEOP),
+            new InstantCommand(()-> elevator.setGoal(ElevatorGoal.kStow), elevator)
         );
     }
 
@@ -258,16 +259,24 @@ public class RobotContainer {
  private void configureStateTriggers() {
         /* Due to roborio start up times sometimes modules aren't reset properly, this accounts for that */
         new Trigger(DriverStation::isEnabled)
-             .onTrue(
-             Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
+            .onTrue(
+                /* Do not require robot drive or it will deschedule auto */
+                Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
         new Trigger(DriverStation::isEnabled)
             .onTrue(
-                Commands.runOnce(() -> led.defaultAnimation(), led));
+                Commands.runOnce(() -> 
+                    led.defaultAnimation()));
 
-        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal)
-            .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
-            .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
+        new Trigger(intake::detectedGamepiece)
+        .whileTrue(
+            Commands.runOnce(() -> 
+                led.setSolidBlinkAnimation(
+                0.1, 
+                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
+        .whileFalse(
+            Commands.runOnce(() -> 
+                led.defaultAnimation()));
 
         new Trigger(robotDrive::atGoal)  
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
@@ -395,6 +404,15 @@ public class RobotContainer {
                 .whileTrue(new InstantCommand(() -> intake.setRollerVoltage(3.0)))
                 .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
 
+            operatorController.povLeft()
+                .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(-1)))
+                .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+    
+            operatorController.povRight()
+                .onTrue(Commands.runOnce(() -> intake.setPivotVoltage(1)))
+                .onFalse(Commands.runOnce(() -> intake.setPivotVoltage(0)));
+    
+
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
@@ -473,6 +491,7 @@ public class RobotContainer {
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                            .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .alongWith(
                                 teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeReef)
                                 .onlyWhile(hasGamepieceTrigger.negate())
@@ -499,6 +518,7 @@ public class RobotContainer {
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .alongWith(
                                 teleopCommands.runPivotAndStopCommand(PivotGoal.kProcessorScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
@@ -525,6 +545,7 @@ public class RobotContainer {
                     algaePickup.and(algaeSelectTrigger)
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
+                        .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                         .alongWith(
                                 teleopCommands.runPivotAndStopCommand(PivotGoal.kBargeScore)
                                     .onlyWhile(hasGamepieceTrigger.negate())
@@ -661,7 +682,7 @@ public class RobotContainer {
             operatorController.povDown()
                 .whileTrue(
                     Commands.startEnd(
-                        () -> elevator.setVoltage(0.45), 
+                        () -> elevator.setVoltage(-3.0), 
                         () -> elevator.stop(), 
                         elevator));
 
