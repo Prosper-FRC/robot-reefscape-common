@@ -204,7 +204,7 @@ public class Intake extends SubsystemBase {
     }
 
     if (rollerGoal != null) {
-      if (detectedGamepiece() && (rollerGoal.equals(RollerGoal.kIntakeAlgae) || rollerGoal.equals(RollerGoal.kIntakeCoral))) {
+      if (detectedGamepiece() && rollerGoal.equals(RollerGoal.kIntakeCoral)) {
         stop(true, false);
       }
     }

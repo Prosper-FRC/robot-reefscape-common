@@ -437,6 +437,7 @@ public class RobotContainer {
             operatorController.leftBumper().and(coralSelectTrigger)
                 .whileTrue(
                     teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kIntake)
+                        .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .alongWith(
                             teleopCommands.runRollersAndStopCommand(RollerGoal.kIntakeCoral)
                                 .onlyWhile(hasGamepieceTrigger.negate()))
@@ -450,6 +451,7 @@ public class RobotContainer {
             operatorController.leftBumper().and(algaeSelectTrigger)
                 .whileTrue(
                     teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeGround)
+                    .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kAlgae))
                     .onlyWhile(hasGamepieceTrigger.negate())
                          .alongWith(
                             teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kGroundAlgae)
