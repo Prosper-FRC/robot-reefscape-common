@@ -21,8 +21,8 @@
    "maxV":{
     "dimension":"LinVel",
     "var":{
-     "exp":"3.7 m / s",
-     "val":3.7
+     "exp":"3.3 m / s",
+     "val":3.3
     }
    }
   },

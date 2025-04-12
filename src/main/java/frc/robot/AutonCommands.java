@@ -219,7 +219,7 @@ public class AutonCommands {
     public Command scoreCoralPath(String name, Command nextAuto) {
         return new SequentialCommandGroup(
             GoalPoseChooser.setSideCommand(getSide(name)),
-            new ParallelCommandGroup(
+            new ParallelCommandGroup(   
                 new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL1Coral))
                     .andThen(Commands.waitUntil(() -> robotDrive.distanceFromReefCenter() < 3.0 )
                     .andThen(new InstantCommand(() ->mElevator.setGoal(ElevatorGoal.kL4Coral)))),
