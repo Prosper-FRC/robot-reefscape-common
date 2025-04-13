@@ -14,15 +14,15 @@
    "maxAccel":{
     "dimension":"LinAcc",
     "var":{
-     "exp":"11 m / s ^ 2",
-     "val":11.0
+     "exp":"6 m / s ^ 2",
+     "val":6.0
     }
    },
    "maxV":{
     "dimension":"LinVel",
     "var":{
-     "exp":"3.3 m / s",
-     "val":3.3
+     "exp":"2.7 m / s",
+     "val":2.7
     }
    }
   },
@@ -159,8 +159,8 @@
      "val":4.78
     },
     "y":{
-     "exp":"2.7 m",
-     "val":2.7
+     "exp":"2.74 m",
+     "val":2.74
     },
     "heading":{
      "exp":"-1.05 rad",
@@ -335,8 +335,8 @@
    "val":61.23496995
   },
   "inertia":{
-   "exp":"10 kg m ^ 2",
-   "val":10.0
+   "exp":"15 kg m ^ 2",
+   "val":15.0
   },
   "gearing":{
    "exp":"6.12",
