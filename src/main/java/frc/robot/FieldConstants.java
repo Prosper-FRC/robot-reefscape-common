@@ -7,11 +7,11 @@ public class FieldConstants {
     public static final double kXNetLineMeters = 7.15;
 
     public static final Pose2d AL = new Pose2d(3.22, 4.43, Rotation2d.k180deg);
-    public static final Pose2d AM = new Pose2d(3.22, 4.25, Rotation2d.k180deg);
+    public static final Pose2d AM = new Pose2d(3.22, 4.26, Rotation2d.k180deg);
     public static final Pose2d AR = new Pose2d(3.23, 4.09, Rotation2d.k180deg);
 
     public static final Pose2d BL = new Pose2d(4.19, 5.31, Rotation2d.fromDegrees(120.0));
-    public static final Pose2d BM = new Pose2d(4.06, 5.24, Rotation2d.fromDegrees(120.0));
+    public static final Pose2d BM = new Pose2d(4.07, 5.24, Rotation2d.fromDegrees(120.0));
     public static final Pose2d BR = new Pose2d(3.93, 5.16, Rotation2d.fromDegrees(120.0));
 
     public static final Pose2d CL = new Pose2d(5.45, 4.92, Rotation2d.fromDegrees(60.0));

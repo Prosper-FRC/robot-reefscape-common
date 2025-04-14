@@ -25,6 +25,7 @@ public class Intake extends SubsystemBase {
     kScoreCoral(() -> -4.0),
     kAutonScoreCoral(() -> 6.0),
     kScoreAlgae(() -> -5.0),
+    kAutonScoreAlgae(() -> -5.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Intake/Feedback/RollerSetpointVolts", -4.0));
 
