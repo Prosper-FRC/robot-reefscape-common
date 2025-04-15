@@ -6,6 +6,8 @@ public class FieldConstants {
     public static final Pose2d kReefCenter = new Pose2d(4.48249, Constants.kFieldWidthMeters / 2.0, Rotation2d.fromDegrees(0.0));
     public static final double kXNetLineMeters = 7.15;
 
+    public static final Pose2d B = new Pose2d(7.286905765533447, 6.14763069152832, Rotation2d.k180deg);
+
     public static final Pose2d AL = new Pose2d(3.22, 4.43, Rotation2d.k180deg);
     public static final Pose2d AM = new Pose2d(3.22, 4.25, Rotation2d.k180deg);
     public static final Pose2d AR = new Pose2d(3.23, 4.09, Rotation2d.k180deg);
