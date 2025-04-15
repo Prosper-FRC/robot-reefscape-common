@@ -82,7 +82,7 @@ public class AutonCommands {
 
         tryToAddPathToChooser(
             "FirstAlgaeTest(DONTUSE)", 
-            intakeFirstAlgaePath("FirstTest", 
+            intakeAlgaePath("FirstTest", 
             intakeAlgaePath("SecondTest",
             scoreAlgaePath("I_FR_IR_C", 
             scoreCoralPath("S_IR_FL_C", 
@@ -122,13 +122,13 @@ public class AutonCommands {
         tryToAddPathToChooser(
             "MidAlgae",
             scoreFirstCoralPath("S_SM_DR_C", 
-            travelPath("S", getElevatorAtGoal(), null),
-            intakeFirstAlgaePath("I_SM_DM_A", 
-            null)));
+            travelPath("T_DR_SM_A", getElevatorAtGoal(),
+            intakeAlgaePath("I_SM_DM_A", 
+            null))));
 
         tryToAddPathToChooser(
             "Algae(DONTUSE)", 
-            intakeFirstAlgaePath("I_SM_DM_A",
+            intakeAlgaePath("I_SM_DM_A",
             scoreAlgaePath("S_DM_P_A", 
             intakeAlgaePath("I_P_EM_A", 
             scoreAlgaePath("S_EM_P_A", 
@@ -200,30 +200,7 @@ public class AutonCommands {
                     nextAutoChecker(nextAuto))));
     }
 
-    /* 
-     * The first path of the robot, sets pose and rotation of robot 
-     * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
-    */
-    public PathPlannerAuto intakeFirstAlgaePath(String name, Rotation2d startingRotation, PathPlannerAuto nextAuto) {
-        // PathPlannerAuto auto = firstPath(name, startingRotation, getHasPiece(), intakeAlgaeCommand(), nextAuto);
-        // auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.DM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get()).or(
-        //     auto.nearFieldPosition(AllianceFlipUtil.apply(FieldConstants.EM).getTranslation(), kAlgaeIntakeTriggerDistanceMeters.get())
-        // ).whileTrue(
-        //     intakeAlgaeCommand() );
-        // return auto;
-
-        PathPlannerAuto auto = firstPath(name, startingRotation, getHasPiece(), intakeAlgaeCommand(), nextAuto);
-
-        return auto;
-    }
-
-    /* 
-     * The first path of the robot, sets pose and rotation of robot 
-     * Upon finishing will  score an algae, and have the trigger schedule the nextAuto
-    */
-    public PathPlannerAuto intakeFirstAlgaePath(String name, Command nextAuto) {
-        return firstPath(name, new Rotation2d(), () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
-    }
+    
 
     /* 
      * Upon finishing will score the named path, the coral will be scored
@@ -267,8 +244,7 @@ public class AutonCommands {
      * and then the trigger schedules the nextAuto
     */
     public Command scoreAlgaePath(String name, Command nextAuto) {
-        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), 
-                scoreAlgaeCommand(), nextAuto);
+        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), scoreAlgaeCommand(), nextAuto);
     }
 
     /* 
@@ -276,8 +252,7 @@ public class AutonCommands {
      * and upon finishing then the nextAuto is scheduled
     */
     public Command intakeAlgaePath(String name, Command nextAuto) {
-        PathPlannerAuto auto = nextPath(name, getHasPiece(), intakeAlgaeCommand(), nextAuto);
-        return auto;
+        return nextPath(name, () -> !PathPlannerAuto.currentPathName.equals(name), intakeAlgaeCommand(), nextAuto);
     }
 
     ///////////////// PATH CHAINING LOGIC \\\\\\\\\\\\\\\\\\\\\\
@@ -294,12 +269,18 @@ public class AutonCommands {
     }
 
     public PathPlannerAuto travelPath(String name,  BooleanSupplier conditionSupplier, Command nextAuto) {
-        return nextPath(name, conditionSupplier, new InstantCommand(), null);
+        return 
+            nextPath(
+                name, 
+                conditionSupplier, 
+                new InstantCommand(),
+                nextAuto);
     }
 
     public Command nextAutoChecker(Command auto) {
         return (auto == null) ? robotDrive.setDriveStateCommand(Drive.DriveState.STOP) : auto;
     }
+    
 
     public Command backUpAuton() {
         return new InstantCommand();
@@ -330,47 +311,16 @@ public class AutonCommands {
                 () -> false,
                 virtualIntake)
                 .withTimeout(kScoreCoralTimeoutSeconds)
-            // new FunctionalCommand(
-            //     () -> {
-            //         mElevator.setGoal(ElevatorGoal.kStow);
-            //     }, 
-            //     () -> {}, 
-            //     (interrupted) -> {}, 
-            //     () -> Math.abs(mElevator.getErrorMeters()) < 1.0,
-            //     virtualElevator)
-            //     .withTimeout(kElevatorPositionTimeoutSeconds)
         );
 
         return command;
     }
 
     public Command elevatorToStowCommand() {
-        // return new FunctionalCommand(
-        //     () -> {
-        //         mElevator.setGoal(ElevatorGoal.kStow);
-        //     }, 
-        //     () -> {}, 
-        //     (interrupted) -> {
-        //         mElevator.stop();
-        //     }, 
-        //     getElevatorAtGoal(),
-        //     virtualElevator)
-        //     .withTimeout(kElevatorPositionTimeoutSeconds);
         return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kStow));
     }
 
     public Command elevatorToL2Command() {
-        // return new FunctionalCommand(
-        //     () -> {
-        //         mElevator.setGoal(ElevatorGoal.kStow);
-        //     }, 
-        //     () -> {}, 
-        //     (interrupted) -> {
-        //         mElevator.stop();
-        //     }, 
-        //     getElevatorAtGoal(),
-        //     virtualElevator)
-        //     .withTimeout(kElevatorPositionTimeoutSeconds);
         return Commands.runOnce(() -> mElevator.setGoal(ElevatorGoal.kL205Coral));
     }
 
@@ -451,8 +401,70 @@ public class AutonCommands {
     }
 
     public Command intakeAlgaeCommand() {
-        return new PrintCommand("Intake Algae");
+        Command command = new SequentialCommandGroup(
+
+            new ParallelCommandGroup(
+            new FunctionalCommand(
+                () -> {
+                    mElevator.setGoal(ElevatorGoal.kL2Algae);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mElevator.setPosition(mElevator.getPositionMeters());
+                }, 
+                getElevatorAtGoal(),
+                virtualElevator),
+
+            new FunctionalCommand(
+                () -> {
+                    mIntake.setPivotGoal(PivotGoal.kIntakeReef);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mIntake.setPivotPosition(mIntake.getPivotPosition());
+                }, 
+                getPivotAtGoal(),
+                virtualIntake)
+            ),
+
+            Commands.runOnce(() -> mIntake.setRollerGoal(RollerGoal.kIntakeAlgae), mIntake);
+        )
+
+
+        return command;
     }
+
+    public Command stowAlgaePath() {
+        Command command = new SequentialCommandGroup(
+            new FunctionalCommand(
+                () -> {
+                    mElevator.setGoal(ElevatorGoal.kStow);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mElevator.setPosition(mElevator.getPositionMeters());
+                }, 
+                getElevatorAtGoal(),
+                virtualElevator)
+
+            .alongWith(
+
+            new FunctionalCommand(
+                () -> {
+                    mIntake.setPivotGoal(PivotGoal.kStowScore);
+                }, 
+                () -> {}, 
+                (interrupted) -> {
+                    mIntake.setPivotPosition(mIntake.getPivotPosition());
+                }, 
+                getPivotAtGoal(),
+                virtualIntake)
+            ).withTimeout(kElevatorPositionTimeoutSeconds));
+
+        return command;
+    }
+
+
 
     public BooleanSupplier getHasPiece() {
         return () -> !mIntake.detectedGamepiece();

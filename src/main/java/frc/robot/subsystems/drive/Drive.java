@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,6 +55,7 @@ import frc.robot.utils.swerve.SwerveUtils;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.w3c.dom.traversal.DocumentTraversal;
 
 /* 
  * This code is a swerve drivebase 
@@ -287,40 +289,56 @@ public class Drive extends SubsystemBase {
                 );
                 break;
             case DRIVE_TO_ALGAE:
-                // ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
-                // double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
-                // ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
-                // if(AllianceFlipUtil.shouldFlip()) forwardJoy *= -1;
-                // desiredSpeeds = new ChassisSpeeds(
-                //     /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
-                //     forwardJoy  * (AllianceFlipUtil),
-                //     algaeAlignSpeeds.vyMetersPerSecond,
-                //     algaeAlignSpeeds.omegaRadiansPerSecond
-                // );
-                // break;
-
-                if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
-                    ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
-                    double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
-                    ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
-                    desiredSpeeds = new ChassisSpeeds(
-                        /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
-                        forwardJoy,
-                        algaeAlignSpeeds.vyMetersPerSecond,
-                        algaeAlignSpeeds.omegaRadiansPerSecond
-                    );
+                if(RobotState.isAutonomous()){
+                    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+                        ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                        double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                        ? -0.5: 0.5;
+                        desiredSpeeds = new ChassisSpeeds(
+                            /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                            forwardJoy,
+                            algaeAlignSpeeds.vyMetersPerSecond,
+                            algaeAlignSpeeds.omegaRadiansPerSecond
+                        );
+                    }
+    
+                    else{
+                        ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                        double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                        ? -0.5: 0.5;
+                        desiredSpeeds = new ChassisSpeeds(
+                            /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                            -forwardJoy,
+                            algaeAlignSpeeds.vyMetersPerSecond,
+                            algaeAlignSpeeds.omegaRadiansPerSecond
+                        );
+                    }
                 }
 
                 else{
-                    ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
-                    double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
-                    ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
-                    desiredSpeeds = new ChassisSpeeds(
-                        /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
-                        -forwardJoy,
-                        algaeAlignSpeeds.vyMetersPerSecond,
-                        algaeAlignSpeeds.omegaRadiansPerSecond
-                    );
+                    if(DriverStation.getAlliance().get().equals(Alliance.Blue)){
+                        ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                        double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                        ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                        desiredSpeeds = new ChassisSpeeds(
+                            /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                            forwardJoy,
+                            algaeAlignSpeeds.vyMetersPerSecond,
+                            algaeAlignSpeeds.omegaRadiansPerSecond
+                        );
+                    }
+    
+                    else{
+                        ChassisSpeeds algaeAlignSpeeds = autoAlignController.calculate(goalPose, getPoseEstimate());
+                        double forwardJoy = (goalPose.getX() > AllianceFlipUtil.apply(FieldConstants.kReefCenter.getX()))
+                        ? -teleopSpeeds.vxMetersPerSecond: teleopSpeeds.vxMetersPerSecond;
+                        desiredSpeeds = new ChassisSpeeds(
+                            /* Flips speed to preserve field relative. Not best solution, but probably good enough? */
+                            -forwardJoy,
+                            algaeAlignSpeeds.vyMetersPerSecond,
+                            algaeAlignSpeeds.omegaRadiansPerSecond
+                        );
+                    }
                 }
 
                 break;
