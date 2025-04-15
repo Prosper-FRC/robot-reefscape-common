@@ -65,8 +65,9 @@ public class ClimbConstants {
 
   public static final Rotation2d kMinPosition = Rotation2d.fromRadians(1.17); // 1.27 and 1.17
   public static final Rotation2d kMaxPosition = Rotation2d.fromRadians(2.708);
+  public static final Rotation2d kClimbInPosition = Rotation2d.fromDegrees(-1.044);
 
-  public static final Rotation2d kPositionOffset = Rotation2d.fromDegrees(93.0);
+  public static final Rotation2d kPositionOffset = Rotation2d.fromRotations(0.198);
 
   public static final double kGearing = 125.0 / 1.0;
 
@@ -145,11 +146,11 @@ public class ClimbConstants {
     new Rotation2d(), // Initial position
     0.002); // Std devs
 
-    public static final DutyCycleConfiguration kDutyCycleConfiguration = new DutyCycleConfiguration(
-      0,
-      960,
-      0.0,
-      1.0);
+  public static final DutyCycleConfiguration kDutyCycleConfiguration = new DutyCycleConfiguration(
+    0,
+    960,
+    0.0,
+    1.0);
   
   public static final PivotVisualizerConfiguration kPivotVisualizerConfiguration = new PivotVisualizerConfiguration(
     new Pair<Double,Double>(1.0, 3.0),
