@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 /* Controls the pose of the robot using 3 PID controllers and Feedforward */
 public class ManualTeleopController {
     public static final LoggedTunableNumber linearScalar =
-        new LoggedTunableNumber("Drive/Teleop/LinearScalar", 1);
+        new LoggedTunableNumber("Drive/Teleop/LinearScalar", 0.9468);
     public static final LoggedTunableNumber linearDeadBand =
         new LoggedTunableNumber("Drive/Teleop/Deadband", 0.075);
     public static final LoggedTunableNumber linearInputsExponent =
