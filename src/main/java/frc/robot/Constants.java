@@ -22,7 +22,7 @@ public final class Constants {
     // ROBOT SEPCIFIC
     public static final String kCanbusName = "drivebase";
 
-    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
     public static final double kFieldLengthMeters = kFieldLayout.getFieldLength();
     public static final double kFieldWidthMeters = kFieldLayout.getFieldWidth();

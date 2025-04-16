@@ -45,7 +45,7 @@ public class CameraIOPV implements CameraIO {
         PhotonCamera.setVersionCheckEnabled(false);
 
         poseEstimator = new PhotonPoseEstimator(
-            AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark), 
+            AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded), 
             PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cameraTransform);
         poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
 
