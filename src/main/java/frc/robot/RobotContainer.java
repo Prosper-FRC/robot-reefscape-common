@@ -241,8 +241,7 @@ public class RobotContainer {
     /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
-            robotDrive.setDriveStateCommand(DriveState.TELEOP),
-            new InstantCommand(()-> elevator.setGoal(ElevatorGoal.kStow), elevator)
+            robotDrive.setDriveStateCommand(DriveState.TELEOP)
         );
     }
 
@@ -263,46 +262,21 @@ public class RobotContainer {
                 /* Do not require robot drive or it will deschedule auto */
                 Commands.runOnce(() -> robotDrive.resetModulesEncoders()));
 
-        new Trigger(DriverStation::isEnabled)
-            .onTrue(
-                Commands.runOnce(() -> 
-                    led.defaultAnimation()));
+        new Trigger(DriverStation::isEnabled).onTrue(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(intake::detectedGamepiece)
-        .whileTrue(
-            Commands.runOnce(() -> 
-                led.setSolidBlinkAnimation(
-                0.1, 
-                Color.kLavenderBlush)).andThen(Commands.waitSeconds(1.0), Commands.runOnce(() -> led.defaultAnimation())))
-        .whileFalse(
-            Commands.runOnce(() -> 
-                led.defaultAnimation()));
+        new Trigger(intake::detectedGamepiece).and(robotDrive::notAtGoal)
+            .whileTrue(Commands.runOnce(() -> led.intakedAnimation(), led))
+            .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(robotDrive::atGoal)  
+        new Trigger(intake::detectedGamepiece).and(robotDrive::atGoal)
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        new Trigger(() -> elevator.atGoal())
+        new Trigger(elevator::atGoal)
             .whileTrue(Commands.runOnce(() -> led.alignedAnimation(), led))
             .whileFalse(Commands.runOnce(() -> led.defaultAnimation(), led));
 
-        // new Trigger(
-        //     teleopLoop, 
-        //     () -> climb.isDeepClimbReady())
-        //     .onTrue(
-        //         rumbleCommandOperator()
-        //             .withTimeout(0.5).alongWith(
-        //         rumbleCommandDriver()
-        //             .withTimeout(0.5)));
 
-        // Auto rumble if we are pressing intake button and we already have a gamepiece
-        new Trigger(
-            teleopLoop,
-            intake::detectedGamepiece)
-                .and(operatorController.leftBumper())
-            .onTrue(
-                (rumbleCommandOperator()
-                    .withTimeout(0.5)));
 
     }
 
@@ -463,7 +437,7 @@ public class RobotContainer {
                             // .onlyWhile(elevatorAtGoalTrigger.negate().debounce(0.5))
                             .beforeStarting(teleopCommands.selectGamepieceCommand(Gamepiece.kCoral))
                         .andThen(
-                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreCoral, confirmScoreTrigger)
+                            teleopCommands.runRollersWhenConfirmed(RollerGoal.kScoreL1Coral, confirmScoreTrigger)
                         )   
                     )
                     .whileFalse(

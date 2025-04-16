@@ -20,7 +20,8 @@ public class GoalPoseChooser {
         kReefHexagonal,
         kCustom,
         kIntake,
-        kNet
+        kNet,
+        kB
     }
 
     public static enum SIDE {
@@ -43,6 +44,8 @@ public class GoalPoseChooser {
                 return getIntakePose(pose);
             case kNet:
                 return getNetPose(pose);
+            case kB:
+                return AllianceFlipUtil.apply(FieldConstants.B);
         }
         return new Pose2d();
     }
