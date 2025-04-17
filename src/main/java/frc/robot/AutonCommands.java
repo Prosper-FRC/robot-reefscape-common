@@ -118,7 +118,7 @@ public class AutonCommands {
 
         tryToAddPathToChooser(
             "CenterCoral", 
-            scoreFirstCoralPath("S_SM_DR_C", null));
+            scoreFirstCoralPath("S_SM_DL_C", null));
 
         tryToAddPathToChooser(
             "Algae(DONTUSE)", 
@@ -230,7 +230,7 @@ public class AutonCommands {
                     name, 
                     () -> !PathPlannerAuto.currentPathName.equals(name), //|| robotDrive.distanceFromReefCenter() < kAutoAlignActivationDistance, 
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
-                        .withDeadline(robotDrive.waitUnitllAutoAlignFinishes())
+                        .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes())
                     .andThen(scoreCoralCommand()), 
                     nextAutoChecker(nextAuto))));
     }

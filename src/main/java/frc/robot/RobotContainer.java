@@ -425,16 +425,16 @@ public class RobotContainer {
                 .whileFalse(new InstantCommand(() -> intake.setRollerVoltage(0.0)));
 
             operatorController.povLeft()
-                .onTrue(Commands.runOnce(() -> intake.setOverrideSoftLimits(true))
-                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(-1))))
-                .onFalse(Commands.runOnce(() -> intake.setOverrideSoftLimits(false))
-                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(0))));
+                .onTrue(Commands.runOnce(() -> intake.setOverrideSoftLimits(true), intake)
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(-1), intake)))
+                .onFalse(Commands.runOnce(() -> intake.setOverrideSoftLimits(false), intake)
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(0), intake)));
             
             operatorController.povRight()
-                .onTrue(Commands.runOnce(() -> intake.setOverrideSoftLimits(true))
-                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(1))))
-                .onFalse(Commands.runOnce(() -> intake.setOverrideSoftLimits(false))
-                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(0))));
+                .onTrue(Commands.runOnce(() -> intake.setOverrideSoftLimits(true), intake)
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(1), intake)))
+                .onFalse(Commands.runOnce(() -> intake.setOverrideSoftLimits(false), intake)
+                    .andThen(Commands.runOnce(() -> intake.setPivotVoltage(0), intake)));
 
             // CORAL - INTAKE
             operatorController.leftBumper().and(coralSelectTrigger)
