@@ -7,8 +7,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -181,6 +183,38 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putData(field);
 
         headingController.setHeadingGoal(() -> goalRotation);
+    }
+
+    public Command customFollowPathComamnd(PathPlannerPath path) {
+        return new FollowPathCommand(
+            path,
+            this::getPoseEstimate,
+            this::getRobotChassisSpeeds, 
+            (speeds, ff) -> {
+                ppDesiredSpeeds = speeds;
+                pathPlanningFF = ff;
+            }, 
+            new PPHolonomicDriveController( kPPTranslationPID, kPPRotationPID ), 
+            robotConfig, 
+            () -> DriverStation.getAlliance().isPresent() && 
+                DriverStation.getAlliance().get() == Alliance.Red, 
+            this);
+    }
+
+    public Command customFollowPathComamnd(PathPlannerPath path, PPHolonomicDriveController drivePID) {
+        return new FollowPathCommand(
+            path,
+            this::getPoseEstimate,
+            this::getRobotChassisSpeeds, 
+            (speeds, ff) -> {
+                ppDesiredSpeeds = speeds;
+                pathPlanningFF = ff;
+            }, 
+            drivePID, 
+            robotConfig, 
+            () -> DriverStation.getAlliance().isPresent() && 
+                DriverStation.getAlliance().get() == Alliance.Red, 
+            this);
     }
 
     /*

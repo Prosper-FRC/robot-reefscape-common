@@ -4,7 +4,10 @@ import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.Drive.DriveState;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser;
+import frc.robot.subsystems.drive.controllers.HolonomicController;
 import frc.robot.subsystems.drive.controllers.GoalPoseChooser.SIDE;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.Elevator.ElevatorGoal;
@@ -232,7 +236,9 @@ public class AutonCommands {
                     robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)
                         .withDeadline(robotDrive.waitUnitllIntakeAutoAlignFinishes())
                     .andThen(scoreCoralCommand()), 
-                    nextAutoChecker(nextAuto))));
+                    nextAutoChecker(nextAuto), new PPHolonomicDriveController(
+                        new PIDConstants(2.5, 0.0), 
+                        new PIDConstants(2.5, 0.0)))));
     }
 
     /* 
@@ -284,6 +290,12 @@ public class AutonCommands {
 
     public PathPlannerAuto nextPath(String name, BooleanSupplier conditionSupplier, Command nextCommand, Command nextAuto) {
         PathPlannerAuto auto = new PathPlannerAuto(followChoreoPath(name));
+        auto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
+        return auto;
+    }
+
+    public PathPlannerAuto nextPath(String name, BooleanSupplier conditionSupplier, Command nextCommand, Command nextAuto, PPHolonomicDriveController PID) {
+        PathPlannerAuto auto = new PathPlannerAuto(followChoreoPath(name, PID));
         auto.condition(conditionSupplier).onTrue(nextCommand.andThen(Commands.runOnce(() -> nextAutoChecker(nextAuto).schedule())));
         return auto;
     }
@@ -399,7 +411,7 @@ public class AutonCommands {
                 robotDrive.setDriveState(DriveState.AUTON);
                 robotDrive.setPose(AllianceFlipUtil.apply(new Pose2d(path.getPathPoses().get(0).getTranslation(), startingRotation)));
             }), 
-            AutoBuilder.followPath(path).withTimeout(totalTimeSeconds), 
+            robotDrive.customFollowPathComamnd(path).withTimeout(totalTimeSeconds), 
             robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
@@ -409,7 +421,17 @@ public class AutonCommands {
         double totalTimeSeconds = path.getIdealTrajectory(Drive.robotConfig).get().getTotalTimeSeconds();
         return 
             robotDrive.setDriveStateCommand(DriveState.AUTON).andThen(
-                AutoBuilder.followPath(path).withTimeout(totalTimeSeconds), 
+                robotDrive.customFollowPathComamnd(path).withTimeout(totalTimeSeconds), 
+                robotDrive.setDriveStateCommand(DriveState.STOP));
+    }
+
+    public Command followChoreoPath(String pathName, PPHolonomicDriveController PID) {
+        PathPlannerPath path = getTraj(pathName).get();
+        path.getIdealTrajectory(Drive.robotConfig);
+        double totalTimeSeconds = path.getIdealTrajectory(Drive.robotConfig).get().getTotalTimeSeconds();
+        return 
+            robotDrive.setDriveStateCommand(DriveState.AUTON).andThen(
+                robotDrive.customFollowPathComamnd(path, PID).withTimeout(totalTimeSeconds), 
                 robotDrive.setDriveStateCommand(DriveState.STOP));
     }
 
