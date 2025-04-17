@@ -123,6 +123,8 @@ public class Intake extends SubsystemBase {
   private final LoggedNetworkBoolean kOverrideDetectGamepiece = 
     new LoggedNetworkBoolean("Intake/OverrideDetectGamepiece", false);
 
+  private boolean overrideSoftLimits = false;
+
   public Intake(IntakeIO hardwareIO, SensorIO sensorIO, PivotIO pivotHardwareIO) {
     kRollerHardware = hardwareIO;
     kSensor = sensorIO;
@@ -193,14 +195,16 @@ public class Intake extends SubsystemBase {
     }
 
     // Check if pivot is attempting to move beyond its limitations
-    if (getPivotPosition().getDegrees() > IntakeConstants.kMaxPivotPosition.getDegrees() 
-        && kPivotInputs.appliedVoltage > 0.0) {
-      stop(false, true);
-    } else if (getPivotPosition().getDegrees() < IntakeConstants.kMinPivotPosition.getDegrees() 
-        && kPivotInputs.appliedVoltage < 0.0) {
-      stop(false, true);
-    } else {
-      // Do nothing if limits are not reached
+    if (!overrideSoftLimits) {
+      if (getPivotPosition().getDegrees() > IntakeConstants.kMaxPivotPosition.getDegrees() 
+          && kPivotInputs.appliedVoltage > 0.0) {
+        stop(false, true);
+      } else if (getPivotPosition().getDegrees() < IntakeConstants.kMinPivotPosition.getDegrees() 
+          && kPivotInputs.appliedVoltage < 0.0) {
+        stop(false, true);
+      } else {
+        // Do nothing if limits are not reached
+      }
     }
 
     if (rollerGoal != null) {
@@ -312,6 +316,16 @@ public class Intake extends SubsystemBase {
    */
   public void setVisualizerVerticalPosition(double positionMeters) {
     kPivotVisualizer.setRootVerticalPositionMeters(positionMeters);
+  }
+
+  /**
+   * Enables the soft limit override. If this is set to true the pivot will no longer
+   * have softlimits and could break itself
+   * 
+   * @param enableOverride
+   */
+  public void setOverrideSoftLimits(boolean enableOverride) {
+    overrideSoftLimits = enableOverride;
   }
 
   /**
