@@ -64,6 +64,7 @@ import org.littletonrobotics.junction.Logger;
 public class Drive extends SubsystemBase {
     public static enum DriveState {
         // TELEOP AND AUTON CONTROLS
+        DEFAULT,
         TELEOP,
         TELEOP_SNIPER,
         POV_SNIPER,
@@ -135,6 +136,8 @@ public class Drive extends SubsystemBase {
 
     Debouncer autoAlignTimeout = new Debouncer(0.1, DebounceType.kRising);
     Debouncer autoAlignDelay = new Debouncer(0.1, DebounceType.kRising);
+
+    private DriveState defaultState = DriveState.TELEOP;
 
     public Drive(Module[] modules, GyroIO gyro, Vision vision) {
         this.modules = modules;
@@ -365,6 +368,9 @@ public class Drive extends SubsystemBase {
                 /* If null, then PID isn't set, so characterization can set motors w/o interruption */
                 desiredSpeeds = null;
                 break;
+            /* Not meant to be used */
+            case DEFAULT:
+                throw new Error("Don't use default case");
             default:
                 /* Defaults to Teleop control if no other cases are run*/
         }
@@ -425,8 +431,18 @@ public class Drive extends SubsystemBase {
                         getRobotChassisSpeeds(), getPoseEstimate().getRotation()));
                 goalPose = GoalPoseChooser.getGoalPose(CHOOSER_STRATEGY.kNet, getPoseEstimate());
                 break;
+            case DEFAULT:
+                driveState = defaultState;
             default:
         }
+    }
+
+    public void setDefaultState(DriveState state) {
+        defaultState = state;
+    }
+
+    public Command setDefaultToReefHeading() {
+        return Commands.runOnce(() -> setDefaultState(DriveState.REEF_HEADING_ALIGN));
     }
 
     ////////////// CHASSIS SPEED TO MODULES \\\\\\\\\\\\\\\\
@@ -663,6 +679,11 @@ public class Drive extends SubsystemBase {
     @AutoLogOutput(key = "Drive/Odometry/DistanceFromReef")
     public double distanceFromReefCenter(){
         return getPoseEstimate().getTranslation().getDistance(AllianceFlipUtil.apply(kReefCenter).getTranslation());
+    }
+
+    @AutoLogOutput(key = "Drive/Odometry/DistanceFromIntake")
+    public double distanceFromIntake(){
+        return GoalPoseChooser.getDistanceToClosestIntake(getPoseEstimate());
     }
 
     public void acceptJoystickInputs(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier, DoubleSupplier povSupplierDegrees) {

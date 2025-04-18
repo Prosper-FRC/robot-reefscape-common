@@ -54,6 +54,7 @@ import frc.robot.subsystems.drive.ModuleIOKraken;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionConstants.Orientation;
+import frc.robot.utils.debugging.LoggedTunableNumber;
 import frc.robot.subsystems.vision.CameraIO;
 import frc.robot.subsystems.vision.CameraIOPV;
 import frc.robot.subsystems.drive.Module;
@@ -223,7 +224,7 @@ public class RobotContainer {
             autoChooser.addDefaultOption("PATHS FAILED: initActionZeroPath", new InstantCommand());
         }
 
-        robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.TELEOP), robotDrive));
+        robotDrive.setDefaultCommand(Commands.run(() -> robotDrive.setDriveState(DriveState.DEFAULT), robotDrive));
 
         // Pass subsystems to classes that need them for configuration
         robotDrive.acceptJoystickInputs(
@@ -244,7 +245,7 @@ public class RobotContainer {
     /* Commands to schedule on telop start-up */
     public Command getTeleopCommand() {
         return new SequentialCommandGroup(
-            robotDrive.setDriveStateCommand(DriveState.TELEOP),
+            robotDrive.setDriveStateCommand(DriveState.DEFAULT),
             new InstantCommand(()-> elevator.setGoal(ElevatorGoal.kStow), elevator)
         );
     }
@@ -349,7 +350,8 @@ public class RobotContainer {
 
 
     
-
+        Trigger inReefRange = new Trigger(teleopLoop, () ->  robotDrive.distanceFromReefCenter() < 2.5);
+        Trigger inIntakeRange = new Trigger(teleopLoop, () -> robotDrive.distanceFromIntake() < 2.5);
         Trigger hasGamepieceTrigger = new Trigger(teleopLoop, intake::detectedGamepiece);
         Trigger elevatorAtGoalTrigger = new Trigger(teleopLoop, elevator::atGoal);
         Trigger pivotAtGoalTrigger = new Trigger(teleopLoop, intake::pivotAtGoal);
@@ -366,47 +368,47 @@ public class RobotContainer {
             // then pov control is being used as its being pressed
             // new Trigger(()-> driverController.getHID().getPOV() != -1)
             //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
-            leftAutoAlignTrigger
+            leftAutoAlignTrigger.and(inReefRange)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.LEFT)
                 .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
-            rightAutoAlignTrigger
+            rightAutoAlignTrigger.and(inReefRange)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.RIGHT)
                 .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_CORAL)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
-            driverController.a()
+            driverController.a().and(inReefRange)
                 .onTrue(GoalPoseChooser.setSideCommand(SIDE.ALGAE)
                 .andThen(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_ALGAE)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
 
             driverController.b()
-                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.REEF_HEADING_ALIGN))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
-            driverController.x()
+            driverController.x().and(inIntakeRange)
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_INTAKE))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             driverController.leftBumper()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LEFT))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             driverController.rightBumper()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.RIGHT))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             driverController.leftTrigger()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.UP))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             driverController.rightTrigger()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DOWN))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             // BOI ignore ts //
             // driverController.rightBumper()
@@ -682,25 +684,25 @@ public class RobotContainer {
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommand(DriveState.SYSID_CHARACTERIZATION).andThen(Commands.run(() -> 
                     robotDrive.runMOICharacterization(20), robotDrive)))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             // driverController.x()
-            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.TELEOP_SNIPER))
-            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            //     .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DEFAULT_SNIPER))
+            //     .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             // getPOV == -1 if nothing is pressed, so if it doesn't return that
             // then pov control is being used as its being pressed
             new Trigger(()-> driverController.getHID().getPOV() != -1)
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.POV_SNIPER))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             driverController.b()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.LINEAR_TEST))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             driverController.a()
                 .onTrue(robotDrive.setDriveStateCommandContinued(DriveState.DRIVE_TO_BARGE))
-                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.DEFAULT));
 
             operatorController.povLeft()
                 .whileTrue(

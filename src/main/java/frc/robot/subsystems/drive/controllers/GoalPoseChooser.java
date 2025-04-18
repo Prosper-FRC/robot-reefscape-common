@@ -145,6 +145,12 @@ public class GoalPoseChooser {
         Logger.recordOutput("Drive/SelectedSide", side);
     }
 
+    public static double getDistanceToClosestIntake(Pose2d robotPose) {
+        Pose2d intakePose = getIntakePose(robotPose);
+
+        return Math.hypot(robotPose.getX() - intakePose.getX(), robotPose.getX() - intakePose.getX());
+    }
+
     public static Pose2d getIntakePose(Pose2d robotPose) {
         if(DriverStation.getAlliance().get().equals(Alliance.Blue)) {
             return AllianceFlipUtil.apply((robotPose.getY() < Constants.kFieldWidthMeters / 2.0) ? FieldConstants.B_IR : FieldConstants.B_IL);
