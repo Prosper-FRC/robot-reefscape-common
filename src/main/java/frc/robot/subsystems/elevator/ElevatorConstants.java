@@ -133,7 +133,7 @@ public class ElevatorConstants {
     DCMotor.getKrakenX60(1), 
     // empty carriage load = .8kg
     // prototype carriage load = 13.61 kg
-    5.0, 
+    0.1, 
     kDrumRadiusMeters, 
     true, 
     0.0, 
