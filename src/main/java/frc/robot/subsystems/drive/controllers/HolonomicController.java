@@ -18,7 +18,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 
 public class HolonomicController {
     public static final LoggedTunableNumber xP = new LoggedTunableNumber(
-        "AutoAlign/X/kP", 3.75);
+        "AutoAlign/X/kP", 3.625);
     public static final LoggedTunableNumber xD = new LoggedTunableNumber(
         "AutoAlign/X/kD", 0.0);
     public static final LoggedTunableNumber xI = new LoggedTunableNumber(
@@ -41,7 +41,7 @@ public class HolonomicController {
         "AutoAlign/X/ToleranceMeters", 0.03);
 
     public static final LoggedTunableNumber yP = new LoggedTunableNumber(
-        "AutoAlign/Y/kP", 3.75);
+        "AutoAlign/Y/kP", 3.625);
     public static final LoggedTunableNumber yD = new LoggedTunableNumber(
         "AutoAlign/Y/kD", 0.0);
     public static final LoggedTunableNumber yI = new LoggedTunableNumber(
