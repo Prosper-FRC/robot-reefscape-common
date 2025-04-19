@@ -63,7 +63,7 @@ public class ClimbConstants {
     double maximumDutyCycleRange
   ) {}
 
-  public static final Rotation2d kMinPosition = Rotation2d.fromRadians(-0.285); // 1.27 and 1.17
+  public static final Rotation2d kMinPosition = Rotation2d.fromRadians(-0.245); // 1.27 and 1.17
   public static final Rotation2d kMaxPosition = Rotation2d.fromRadians(1.331);
 
   public static final Rotation2d kPositionOffset = Rotation2d.fromDegrees(93.0);
@@ -77,7 +77,7 @@ public class ClimbConstants {
     kGearing); // Gear ratio
   public static final ClimbHardware kFollowerMotorHardware = new ClimbHardware(
     0, // CAN ID
-    kGearing); // Gear ratio
+    kGearing); // Gear ratioP
 
   public static final ClimbGains kMotorGains =  
     switch (Constants.kCurrentMode) {
