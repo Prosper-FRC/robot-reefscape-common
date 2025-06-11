@@ -488,7 +488,7 @@ public class RobotContainer {
                         .whileTrue(
                         teleopCommands.runElevatorAndHoldCommand(reefPositions.get(button).getSecond())
                         .alongWith(
-                                teleopCommands.runAlgaeAndStopCommand(RollerGoal.kIntakeAlgae, PivotGoal.kIntakeReef)
+                                teleopCommands.runPivotAndStopCommand(PivotGoal.kIntakeReef)
                                 .onlyWhile(hasGamepieceTrigger.negate())
                                // .alongWith(teleopCommands.runElevatorAndHoldCommand(ElevatorGoal.kL2Algae))
                         )

@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
     kIntakeAlgae(() -> -5.0),
     kScoreCoral(() -> -4.0),
     kAutonScoreCoral(() -> 6.0),
-    kScoreAlgae(() -> -5.0),
+    kScoreAlgae(() -> -3.0),
     /** Custom setpoint that can be modified over network tables; Useful for debugging */
     custom(new LoggedTunableNumber("Intake/Feedback/RollerSetpointVolts", -4.0));
 
@@ -44,7 +44,7 @@ public class Intake extends SubsystemBase {
   public enum PivotGoal {
     kStowScore(() -> Rotation2d.fromDegrees(64.0)),
     kStowPickup(() -> Rotation2d.fromDegrees(54.0)),
-    kIntakeReef(() -> Rotation2d.fromDegrees(-27)),
+    kIntakeReef(() -> Rotation2d.fromDegrees(-10)),
     kIntakeGround(() -> Rotation2d.fromDegrees(-55.5)),
     kProcessorScore(() -> Rotation2d.fromDegrees(-30.0)),
     kScore(() -> Rotation2d.fromDegrees(40.0)),
