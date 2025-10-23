@@ -11,6 +11,8 @@ public class FieldConstants {
     public static final Pose2d AM = new Pose2d(average(AL.getX(), AR.getX()), average(AL.getY(), AR.getY()), Rotation2d.k180deg);
 
     public static final Pose2d BL = new Pose2d(4.22, 5.32, Rotation2d.fromDegrees(120.0));
+    // public static final Pose2d BL = new Pose2d(3.496, 3.068, Rotation2d.fromDegrees(120.0));
+
     public static final Pose2d BR = new Pose2d(3.94, 5.17, Rotation2d.fromDegrees(120.0));
     public static final Pose2d BM = new Pose2d(average(BL.getX(), BR.getX()), average(BL.getY(), BR.getY()), Rotation2d.fromDegrees(120.0));
 
@@ -26,7 +28,9 @@ public class FieldConstants {
     public static final Pose2d ER = new Pose2d(5.03, 2.88, Rotation2d.fromDegrees(-60.0));
     public static final Pose2d EM = new Pose2d(average(EL.getX(), ER.getX()), average(EL.getY(), ER.getY()), Rotation2d.fromDegrees(-60.0));
 
-    public static final Pose2d FL = new Pose2d(3.48, 3.15, Rotation2d.fromDegrees(-120.0));
+    // public static final Pose2d FL = new Pose2d(3.496, 3.068, Rotation2d.fromDegrees(-120.0));
+    public static final Pose2d FL = new Pose2d(3.496, 3.068, Rotation2d.fromDegrees(-120.0));
+
     public static final Pose2d FR = new Pose2d(3.78, 2.98, Rotation2d.fromDegrees(-120.0));
     public static final Pose2d FM = new Pose2d(average(FL.getX(), FR.getX()), average(FL.getY(), FR.getY()), Rotation2d.fromDegrees(-120.0));
     
