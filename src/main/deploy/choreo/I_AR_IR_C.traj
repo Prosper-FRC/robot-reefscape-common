@@ -16,8 +16,8 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"AR.x", "val":3.22}, "y":{"exp":"AR.y", "val":4.14}, "heading":{"exp":"AR.heading", "val":3.14}, "intervals":42, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"IR.x", "val":1.17}, "y":{"exp":"IR.y", "val":1.02}, "heading":{"exp":"IR.heading", "val":-2.2}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"AR.x", "val":3.22}, "y":{"exp":"AR.y", "val":4.08}, "heading":{"exp":"AR.heading", "val":3.14}, "intervals":42, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"IR.x", "val":1.32}, "y":{"exp":"IR.y", "val":0.86}, "heading":{"exp":"IR.heading", "val":-2.2}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"first", "to":"last", "data":{"type":"KeepInRectangle", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "w":{"exp":"17.548 m", "val":17.548}, "h":{"exp":"8.052 m", "val":8.052}}}, "enabled":false},
