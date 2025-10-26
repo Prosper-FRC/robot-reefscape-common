@@ -14,23 +14,23 @@
    "maxAccel":{
     "dimension":"LinAcc",
     "var":{
-     "exp":"11 m / s ^ 2",
-     "val":11.0
+     "exp":"9.5 m / s ^ 2",
+     "val":9.5
     }
    },
    "maxV":{
     "dimension":"LinVel",
     "var":{
-     "exp":"3.3 m / s",
-     "val":3.3
+     "exp":"3 m / s",
+     "val":3.0
     }
    }
   },
   "poses":{
    "AL":{
     "x":{
-     "exp":"3.22 m",
-     "val":3.22
+     "exp":"3.2 m",
+     "val":3.2
     },
     "y":{
      "exp":"4.43 m",
