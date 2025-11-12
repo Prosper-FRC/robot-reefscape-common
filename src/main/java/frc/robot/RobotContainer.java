@@ -91,7 +91,7 @@ public class RobotContainer {
     /* TODO: Set to true before competition
      please */
 
-    private final boolean useCompetitionBindings = true;
+    private final boolean useCompetitionBindings = false;
 
     // Anshul said to use this because he loves event loops
     private final EventLoop teleopLoop = new EventLoop();
@@ -606,6 +606,10 @@ public class RobotContainer {
             driverController.x()
                 .onTrue(robotDrive.setDriveStateCommand(DriveState.SYSID_CHARACTERIZATION).andThen(Commands.run(() -> 
                     robotDrive.runMOICharacterization(20), robotDrive)))
+                .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
+            
+            driverController.leftBumper()
+                .onTrue(robotDrive.characterizeLinearMotion())
                 .onFalse(robotDrive.setDriveStateCommand(DriveState.TELEOP));
 
             // driverController.x()
